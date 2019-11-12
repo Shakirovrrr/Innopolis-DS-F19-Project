@@ -130,22 +130,71 @@ public class ClientAPI {
     }
 
     public int init() {
+        System.out.println("Clear the storage? No files could be restored (yes/no)");
+        if (this.in.hasNextLine()) {
+            String answer = this.in.nextLine();
+            if (answer.equals("yes")) {
+                //todo вызвать серверное удаление всего
+            }
+            if (answer.equals("no")) {
+                System.out.println("Aborted.");
+            } else {
+                System.out.println("Type either (yes/no), please ");
+
+                if (this.in.hasNextLine()) {
+                    answer = this.in.nextLine();
+                    if (answer.equals("yes")) {
+                        //todo вызвать серверное удаление всего
+                    }
+                    if (answer.equals("no")) {
+                        System.out.println("Aborted.");
+                    } else {
+                        newLine();
+                    }
+                }
+            }
+        }
         return 0;
     }
 
     public int touch(String newFilePath) {
+        //todo вызвать создание пустого файла
         return 1;
     }
 
     public int get(String[] filePaths) {
+        //todo захендлить случай, когда файла такого нет
+
+        if (filePaths.length == 1) {
+            //todo вызвать скачивание в дефолтную директорию
+            // remote_path = filePaths[0]; get(remote_path));
+
+        }
+        else {
+            //todo вызвать скачивание в указанную директорию
+            //remote_path = filePaths[0]; local_path = filePaths[1]; get(remote_path,local_path));
+
+        }
         return 2;
+
     }
 
     public int put(String[] filePaths) {
+        if (filePaths.length == 1) {
+            //todo вызвать создание файла в руте клиента
+            // local_path = filePaths[0]; get(local_path));
+
+        }
+        else {
+            //todo вызвать создание файла в указанной директории клиента
+            //local_path = filePaths[0]; remote_path = filePaths[1]; get(local_path,remote_path)); }
+
+        }
         return 3;
     }
 
     public int rm(String fileOrDirPath) {
+        //todo вызвать удаление файла по пути
         return 4;
     }
 
@@ -184,7 +233,7 @@ public class ClientAPI {
             if (in.hasNextLine()) {
                 String input = in.nextLine();
                 //commandRouter(input);
-                System.out.println("Happens"+ " "+input);
+                System.out.println("Happens" + " " + input);
 
             }
         }
