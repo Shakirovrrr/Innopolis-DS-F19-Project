@@ -1,8 +1,10 @@
 package storage;
 
+import commons.commands.Command;
+import commons.commands.FileDownload;
+
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -18,19 +20,24 @@ public class ClientDispatcher extends Thread {
 	private void serve() throws IOException {
 		while (true) {
 			Socket conn = server.accept();
-
-
+			dispatch(conn);
 		}
 	}
 
 	private void dispatch(Socket conn) {
 		try {
-			InputStream input = conn.getInputStream();
-			OutputStream output = conn.getOutputStream();
+			ObjectInputStream input = new ObjectInputStream(conn.getInputStream());
+			Command command = (Command) input.readObject();
 
-
+			if (command instanceof FileDownload) {
+				ClientSend sender = new ClientSend((FileDownload) command, conn);
+				sender.start();
+			}
 		} catch (IOException ex) {
 			System.err.println("Connection reset.");
+		} catch (ClassNotFoundException | ClassCastException ex) {
+			ex.printStackTrace();
+			System.err.println("Unable to dispatch the command.");
 		}
 	}
 
@@ -40,8 +47,8 @@ public class ClientDispatcher extends Thread {
 			try {
 				server.close();
 			} catch (IOException ex) {
-				System.err.println("IOException thrown while handling another exception " + ex);
 				ex.printStackTrace();
+				System.err.println("IOException thrown while handling another exception " + ex);
 			}
 		});
 
@@ -49,8 +56,8 @@ public class ClientDispatcher extends Thread {
 			server = new ServerSocket(listeningPort);
 			System.out.println("Socket has been bound to port " + listeningPort);
 		} catch (IOException e) {
-			System.err.println("Could not bind a socket to port " + listeningPort);
 			e.printStackTrace();
+			System.err.println("Could not bind a socket to port " + listeningPort);
 		}
 
 		try {
