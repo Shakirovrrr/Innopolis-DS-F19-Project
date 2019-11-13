@@ -1,7 +1,10 @@
 package storage;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.ServerSocket;
+import java.net.Socket;
 
 public class ClientDispatcher extends Thread {
 
@@ -14,7 +17,20 @@ public class ClientDispatcher extends Thread {
 
 	private void serve() throws IOException {
 		while (true) {
-			server.accept();
+			Socket conn = server.accept();
+
+
+		}
+	}
+
+	private void dispatch(Socket conn) {
+		try {
+			InputStream input = conn.getInputStream();
+			OutputStream output = conn.getOutputStream();
+
+
+		} catch (IOException ex) {
+			System.err.println("Connection reset.");
 		}
 	}
 
