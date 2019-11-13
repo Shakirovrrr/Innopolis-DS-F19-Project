@@ -6,7 +6,7 @@ public class FileDownload extends Command {
 	private UUID uuid;
 
 	public FileDownload(UUID uuid) {
-		commandNum = 1;
+		commandNum = 2;
 		this.uuid = uuid;
 	}
 
