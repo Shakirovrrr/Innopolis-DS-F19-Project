@@ -22,6 +22,7 @@ public class ClientDispatcher extends Thread {
 		while (true) {
 			Socket conn = server.accept();
 			dispatch(conn);
+			new Thread(() -> dispatch(conn)).start();
 		}
 	}
 
