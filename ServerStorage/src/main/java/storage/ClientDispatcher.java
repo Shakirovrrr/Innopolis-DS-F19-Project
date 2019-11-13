@@ -2,6 +2,7 @@ package storage;
 
 import commons.commands.Command;
 import commons.commands.FileDownload;
+import commons.commands.FileUpload;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -32,6 +33,9 @@ public class ClientDispatcher extends Thread {
 			if (command instanceof FileDownload) {
 				ClientSend sender = new ClientSend((FileDownload) command, conn);
 				sender.start();
+			} else if (command instanceof FileUpload) {
+				ClientReceive receiver = new ClientReceive((FileUpload) command, conn);
+				receiver.start();
 			}
 		} catch (IOException ex) {
 			System.err.println("Connection reset.");

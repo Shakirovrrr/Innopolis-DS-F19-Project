@@ -1,6 +1,7 @@
 package storage;
 
 import commons.commands.FileDownload;
+import commons.ioroutines.IORoutines;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -28,14 +29,9 @@ public class ClientSend extends Thread {
 		}
 
 		try {
-			int count;
-			byte[] buffer = new byte[8192];
-			while ((count = fileIn.read(buffer)) > 0) {
-				sockOut.write(buffer, 0, count);
-			}
+			IORoutines.transmit(fileIn, sockOut, 8192);
 
 			// TODO Notify naming
-
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		} finally {
@@ -43,6 +39,7 @@ public class ClientSend extends Thread {
 				fileIn.close();
 				sockOut.close();
 			} catch (IOException ex) {
+				ex.printStackTrace();
 				System.err.println("IOException thrown while trying to close streams.");
 			}
 		}
@@ -50,6 +47,6 @@ public class ClientSend extends Thread {
 
 	@Override
 	public void run() {
-
+		sendFile();
 	}
 }
