@@ -1,4 +1,4 @@
-package commons.ioroutines;
+package commons.routines;
 
 import java.io.IOException;
 import java.io.InputStream;
