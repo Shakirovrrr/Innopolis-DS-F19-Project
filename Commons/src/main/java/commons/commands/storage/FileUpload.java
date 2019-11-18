@@ -1,4 +1,4 @@
-package commons.commands;
+package commons.commands.storage;
 
 import java.net.InetAddress;
 import java.util.Collection;

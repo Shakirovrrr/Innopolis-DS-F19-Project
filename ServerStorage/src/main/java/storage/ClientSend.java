@@ -1,6 +1,6 @@
 package storage;
 
-import commons.commands.FileDownload;
+import commons.commands.storage.FileDownload;
 import commons.routines.IORoutines;
 
 import java.io.FileInputStream;
