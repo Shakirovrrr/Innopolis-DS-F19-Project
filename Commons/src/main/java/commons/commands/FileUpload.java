@@ -2,11 +2,11 @@ package commons.commands;
 
 import java.util.UUID;
 
-public class FileDownload extends Command {
+public class FileUpload extends Command {
 	private UUID uuid;
 
-	public FileDownload(UUID uuid) {
-		commandNum = 2;
+	public FileUpload(UUID uuid) {
+		commandNum = 3;
 		this.uuid = uuid;
 	}
 
