@@ -1,5 +1,6 @@
 package commons.commands.storage;
 
+@Deprecated(forRemoval = true)
 public class FileUploadAck extends StorageCommand {
 	// FUAck
 	private int statusCode;
