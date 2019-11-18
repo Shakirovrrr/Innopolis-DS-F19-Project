@@ -29,7 +29,7 @@ public class ClientSend extends Thread {
 		}
 
 		try {
-			IORoutines.transmit(fileIn, sockOut, 8192);
+			IORoutines.transmit(fileIn, sockOut);
 
 			// TODO Notify naming
 		} catch (IOException ex) {
