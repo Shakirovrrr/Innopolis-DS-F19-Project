@@ -32,7 +32,12 @@ public class IORoutines {
 		}
 	}
 
+	@Deprecated(forRemoval = true)
 	public static void notify(InetAddress address, int port, Command command) throws IOException {
+		signal(address, port, command);
+	}
+
+	public static void signal(InetAddress address, int port, Command command) throws IOException {
 		Socket socket = new Socket(address, port);
 		ObjectOutputStream outStream = new ObjectOutputStream(socket.getOutputStream());
 		outStream.writeObject(command);
