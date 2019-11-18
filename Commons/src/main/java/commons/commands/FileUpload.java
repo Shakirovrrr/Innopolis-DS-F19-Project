@@ -6,7 +6,6 @@ public class FileUpload extends Command {
 	private UUID uuid;
 
 	public FileUpload(UUID uuid) {
-		commandNum = 3;
 		this.uuid = uuid;
 	}
 

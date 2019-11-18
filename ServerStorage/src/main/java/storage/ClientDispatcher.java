@@ -38,6 +38,8 @@ public class ClientDispatcher extends Thread {
 				ClientReceive receiver = new ClientReceive((FileUpload) command, conn);
 				receiver.start();
 			}
+
+
 		} catch (IOException ex) {
 			System.err.println("Connection reset.");
 		} catch (ClassNotFoundException | ClassCastException ex) {
