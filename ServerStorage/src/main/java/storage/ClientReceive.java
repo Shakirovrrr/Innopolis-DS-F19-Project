@@ -68,6 +68,7 @@ public class ClientReceive extends Thread {
 			notifyClient(0, command.getUuid());
 		} catch (IOException e) {
 			e.printStackTrace();
+			System.err.println("Could not notify naming server nor client about fail.");
 		}
 	}
 
