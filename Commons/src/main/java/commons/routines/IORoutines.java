@@ -2,10 +2,7 @@ package commons.routines;
 
 import commons.commands.Command;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 
@@ -34,13 +31,22 @@ public class IORoutines {
 
 	@Deprecated(forRemoval = true)
 	public static void notify(InetAddress address, int port, Command command) throws IOException {
-		signal(address, port, command);
+		sendSignalOnce(address, port, command);
 	}
 
-	public static void signal(InetAddress address, int port, Command command) throws IOException {
+	public static void sendSignalOnce(InetAddress address, int port, Command command) throws IOException {
 		Socket socket = new Socket(address, port);
+		sendSignal(socket, command);
+		socket.close();
+	}
+
+	public static void sendSignal(Socket socket, Command command) throws IOException {
 		ObjectOutputStream outStream = new ObjectOutputStream(socket.getOutputStream());
 		outStream.writeObject(command);
-		socket.close();
+	}
+
+	public static Command receiveSignal(Socket socket) throws IOException, ClassNotFoundException {
+		ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
+		return (Command) inputStream.readObject();
 	}
 }
