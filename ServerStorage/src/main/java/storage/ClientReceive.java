@@ -1,6 +1,6 @@
 package storage;
 
-import commons.commands.FileUpload;
+import commons.commands.storage.FileUpload;
 import commons.routines.IORoutines;
 
 import java.io.FileOutputStream;
