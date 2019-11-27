@@ -10,7 +10,7 @@ public class File {
     private long size;
     private int access;
     private UUID uuid;
-    private Set<InetAddress> nodes;
+    private Set<Node> nodes;
 
     public File(String name, long size, int access, UUID uuid) {
         this.name = name;
@@ -20,7 +20,7 @@ public class File {
         this.nodes = new HashSet<>();
     }
 
-    public File(String name, long size, int access, UUID uuid, Set<InetAddress> nodes) {
+    public File(String name, long size, int access, UUID uuid, Set<Node> nodes) {
         this.name = name;
         this.size = size;
         this.access = access;
@@ -44,7 +44,7 @@ public class File {
         return uuid;
     }
 
-    public Set<InetAddress> getNodes() {
+    public Set<Node> getNodes() {
         return nodes;
     }
 }
