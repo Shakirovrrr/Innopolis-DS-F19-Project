@@ -1,22 +1,27 @@
 package naming;
 
 import java.net.InetAddress;
-import java.util.LinkedList;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 public class File {
     private String name;
-    private boolean isFolder;
     private long size;
     private int access;
     private UUID uuid;
-    private LinkedList<InetAddress> nodes;
+    private Set<InetAddress> nodes;
 
-    public File(String name, boolean isFolder, long size, int access, UUID uuid, LinkedList<InetAddress> nodes) {
-        assert !isFolder;    // make sure that the structure preserves
-
+    public File(String name, long size, int access, UUID uuid) {
         this.name = name;
-        this.isFolder = false;
+        this.size = size;
+        this.access = access;
+        this.uuid = uuid;
+        this.nodes = new HashSet<>();
+    }
+
+    public File(String name, long size, int access, UUID uuid, Set<InetAddress> nodes) {
+        this.name = name;
         this.size = size;
         this.access = access;
         this.uuid = uuid;
@@ -25,10 +30,6 @@ public class File {
 
     public String getName() {
         return name;
-    }
-
-    public boolean isFolder() {
-        return isFolder;
     }
 
     public long getSize() {
@@ -43,7 +44,7 @@ public class File {
         return uuid;
     }
 
-    public LinkedList<InetAddress> getNodes() {
+    public Set<InetAddress> getNodes() {
         return nodes;
     }
 }

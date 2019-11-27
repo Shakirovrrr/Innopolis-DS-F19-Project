@@ -8,6 +8,11 @@ public class FileTree implements Iterable{
     private String username;
     private Folder root;
 
+    FileTree(String username) {
+        this.username = username;
+        this.root = new Folder("root");
+    }
+
     FileTree(String username, Folder root) {
         this.username = username;
         this.root = root;
