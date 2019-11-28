@@ -1,5 +1,7 @@
 package commons.commands.naming;
 
+import commons.StatusCodes;
+
 import java.net.InetAddress;
 import java.util.Collection;
 import java.util.UUID;
@@ -9,7 +11,7 @@ public class PutAck extends NamingCommandAck {
     private UUID fileId;
     private Collection<InetAddress> replicaAddresses;
 
-    public PutAck(int statusCode, InetAddress storageAddress, UUID fileId, Collection<InetAddress> replicaAddresses) {
+    public PutAck(StatusCodes.Code statusCode, InetAddress storageAddress, UUID fileId, Collection<InetAddress> replicaAddresses) {
         this.status = statusCode;
         this.storageAddress = storageAddress;
         this.fileId = fileId;

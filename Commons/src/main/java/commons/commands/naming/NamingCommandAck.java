@@ -1,9 +1,11 @@
 package commons.commands.naming;
 
-public abstract class NamingCommandAck extends NamingCommand {
-    int status;
+import commons.StatusCodes;
 
-    public int getStatus() {
+public abstract class NamingCommandAck extends NamingCommand {
+    StatusCodes.Code status;
+
+    public StatusCodes.Code getStatus() {
         return status;
     }
 }
