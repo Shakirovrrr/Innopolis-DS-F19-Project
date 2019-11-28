@@ -1,12 +1,22 @@
 package client;
 
+import commons.Ports;
+import commons.commands.Command;
+import commons.commands.naming.NamingCommand;
+import commons.routines.IORoutines;
+
+import java.io.*;
+import java.net.Socket;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Scanner;
 
 public class ClientAPI {
-    Scanner in = new Scanner(System.in);
 
+    String defaultDir = "root/";
+    String host = "";
+    Scanner in = new Scanner(System.in);
+    private String currentRemoteDir;
     HashMap<String, Integer> commandsSet = new HashMap<>() {
         {
             put("init", 0); //clear all
@@ -23,6 +33,20 @@ public class ClientAPI {
 
         }
     };
+
+//    public ClientAPI(Scanner in) {
+//        this.in = in;
+//        this.currentRemoteDir = "root";
+//    }
+
+    public String getCurrentRemoteDir() {
+        return currentRemoteDir;
+    }
+
+    public void setCurrentRemoteDir(String currentRemoteDir) {
+        this.currentRemoteDir = currentRemoteDir;
+    }
+
 
     protected class ConsoleToken {
         int command_key;
@@ -41,96 +65,73 @@ public class ClientAPI {
         return new ConsoleToken(key, paths);
     }
 
-    protected int commandRouter(String input) {
+    protected int commandRouter(String input) throws IOException, ClassNotFoundException {
         ConsoleToken consoleToken = parseCommand(input);
         String[] paths = consoleToken.file_dir_paths;
         switch (consoleToken.command_key) {
             case (0):
                 return init();
-//                break;
             case (1):
                 if (paths.length == 1) {
-                   return touch(consoleToken.file_dir_paths[0]);
-                } else {
-                    return newLine();
+                    return touch(consoleToken.file_dir_paths[0]);
                 }
-                //break;
             case (2):
                 if (paths.length == 1 || paths.length == 2) {
                     return get(consoleToken.file_dir_paths);
-                } else {
-                    return newLine();
                 }
-                //break;
             case (3):
                 if (paths.length == 1 || paths.length == 2) {
                     return put(paths);
-                } else {
-                    return newLine();
                 }
-               // break;
             case (4):
                 if (paths.length == 1) {
                     return rm(paths[0]);
-                } else {
-                    return newLine();
                 }
-               // break;
             case (5):
                 if (paths.length == 1) {
                     return info(paths[0]);
-                } else {
-                    return newLine();
                 }
-               // break;
             case (6):
                 if (paths.length == 2) {
-                   return cp(paths);
-                } else {
-                 return    newLine();
+                    return cp(paths);
                 }
-                //break;
             case (7):
                 if (paths.length == 2) {
                     mv(paths);
-                } else {
-                    return newLine();
                 }
-              //  break;
             case (8):
                 if (paths.length == 1) {
                     cd(paths[0]);
-                } else {
-                    return newLine();
                 }
-              //  break;
             case (9):
                 if (paths.length == 1) {
                     return ls(paths[0]);
-                } else {
-                    return newLine();
                 }
-             //   break;
             case (10):
                 if (paths.length == 1) {
                     return mkdir(paths[0]);
-                } else {
-                    return newLine();
                 }
-              //  break;
-            default:
-                return newLine();
-               // break;
+
         }
-       // return 150;
+        return 0;
     }
 
-    public int init() {
-        System.out.println("Clear the storage? No files could be restored (yes/no)");
+    private int init_yes() throws IOException, ClassNotFoundException {
+        Socket socket = new Socket(host, Ports.PORT_NAMING);
+        NamingCommand namingCommand = new commons.commands.naming.Init();
+        // WILL THERE BE A RESPONSE FROM NAMING??
+        IORoutines.sendSignal(socket, namingCommand);
+        Command receiveAkn = IORoutines.receiveSignal(socket);
+
+        return 0;
+    }
+
+    public int init() throws IOException, ClassNotFoundException {
+        System.out.println("Clear the storage? (yes/no)\n This action CANNOT BE UNDONE ");
         if (this.in.hasNextLine()) {
             String answer = this.in.nextLine();
             if (answer.equals("yes")) {
-                //todo вызвать серверное удаление всего
+                init_yes();
             }
             if (answer.equals("no")) {
                 System.out.println("Aborted.");
@@ -140,49 +141,58 @@ public class ClientAPI {
                 if (this.in.hasNextLine()) {
                     answer = this.in.nextLine();
                     if (answer.equals("yes")) {
-                        //todo вызвать серверное удаление всего
+                        init_yes();
                     }
                     if (answer.equals("no")) {
                         System.out.println("Aborted.");
-                    } else {
-                        newLine();
                     }
                 }
             }
         }
         return 0;
     }
-//TODO IMPORTANT:  большинство вызовов подразумевает обращнение к нейминг серверу, а потом к сторедж
-    public int touch(String newFilePath) {
-        //todo вызвать создание пустого файла
 
-        return 1;
+    public int touch(String newFilePath) throws IOException, ClassNotFoundException {
+        Socket socket = new Socket(host, Ports.PORT_NAMING);
+        NamingCommand namingCommand = new commons.commands.naming.TouchFile(newFilePath);
+        IORoutines.sendSignal(socket, namingCommand);
+        Command receiveAkn = IORoutines.receiveSignal(socket);
+        return 0;
     }
 
-    public int get(String[] filePaths) {
-        //todo захендлить случай, когда файла такого нет
+    public int get(String[] filePaths) throws IOException, ClassNotFoundException {
+        //NAMING_SERVER_SHOUKD захендлить случай, когда файла такого нет
 
+        //todo NAMING_SERVER_CONNECTION
+        Socket namingSocket = new Socket(host, Ports.PORT_NAMING);
+        NamingCommand namingCommand = new commons.commands.naming.Get(filePaths[0]);
+        IORoutines.sendSignal(namingSocket, namingCommand);
+        Command receiveAknName = IORoutines.receiveSignal(namingSocket);
+        //todo STORAGE_SERVER_CONNECTION
+        Socket storageSocket = new Socket(host, Ports.PORT_STORAGE);
+        String localFileName = "";
         if (filePaths.length == 1) {
-            //todo вызвать скачивание в дефолтную директорию
-            // remote_path = filePaths[0]; get(remote_path));
-
+            localFileName = filePaths[0];
+        } else {
+            localFileName = filePaths[1];
         }
-        else {
-            //todo вызвать скачивание в указанную директорию
-            //remote_path = filePaths[0]; local_path = filePaths[1]; get(remote_path,local_path));
-
-        }
-        return 2;
-
+        OutputStream fileOut = storageSocket.getOutputStream();
+        InputStream downloadedFile = new FileInputStream(localFileName);
+        IORoutines.transmit(downloadedFile, fileOut);
+        Command receiveAknStor = IORoutines.receiveSignal(storageSocket);
+        downloadedFile.close();
+        fileOut.close();
+        return 0;
     }
+
+
 
     public int put(String[] filePaths) {
         if (filePaths.length == 1) {
             //todo вызвать создание файла в руте клиента
             // local_path = filePaths[0]; get(local_path));
 
-        }
-        else {
+        } else {
             //todo вызвать создание файла в указанной директории клиента
             //local_path = filePaths[0]; remote_path = filePaths[1]; get(local_path,remote_path)); }
 
@@ -235,15 +245,18 @@ public class ClientAPI {
         return 100;
     }
 
-    public void commandHandler() {
+    public void commandHandler() throws IOException, ClassNotFoundException {
 
         //connect to console
         //input - next line in console after enter press
-        while (true) {                System.out.print("$ ");
+        while (true) {
+            System.out.print("$ ");
 
             if (in.hasNextLine()) {
                 String input = in.nextLine();
-                System.out.println(commandRouter(input));
+                System.out.println();
+                //
+//                System.out.println(commandRouter(input)input);
 
             }
         }
