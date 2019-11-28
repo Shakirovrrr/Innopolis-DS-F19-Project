@@ -1,4 +1,5 @@
 package commons.commands.naming;
 
-public class LsAck {
+public class LsAck extends NamingCommandAck {
+
 }
