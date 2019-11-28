@@ -1,25 +1,22 @@
 package commons.commands.naming;
 
-import naming.File;
-import naming.Folder;
-
 import java.util.List;
 
 public class LsAck extends NamingCommandAck {
-    private List<Folder> folders;
-    private List<File> files;
+    private List<String> folders;
+    private List<String> files;
 
-    public LsAck(int statusCode, List<Folder> folders, List<File> files) {
+    public LsAck(int statusCode, List<String> folders, List<String> files) {
         this.status = statusCode;
         this.folders = folders;
         this.files = files;
     }
 
-    public List<Folder> getFolders() {
+    public List<String> getFolders() {
         return folders;
     }
 
-    public List<File> getFiles() {
+    public List<String> getFiles() {
         return files;
     }
 }

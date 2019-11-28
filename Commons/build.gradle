@@ -5,5 +5,4 @@ plugins {
 
 dependencies {
 	// No dependencies for now
-	implementation project(':ServerNaming')
 }
