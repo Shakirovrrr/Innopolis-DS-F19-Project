@@ -4,23 +4,24 @@ import commons.Ports;
 import commons.StatusCodes;
 import commons.commands.Command;
 import commons.commands.naming.NamingCommand;
+import commons.commands.storage.StorageCommand;
 import commons.routines.IORoutines;
 
 import java.io.*;
+import java.net.InetAddress;
 import java.net.Socket;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class ClientAPI {
+    String downloadsDir;
 
-    String defaultDir = "root";
-    String hostNaming = "10.91.51.171";
+    private String hostNaming;
+    private static final String defaultDir = "root";
+    private static final String defaultDownloadDir = "downloads";
 
-    Scanner in = new Scanner(System.in);
+    private Scanner in = new Scanner(System.in);
     private String currentRemoteDir;
-    HashMap<String, Integer> commandsSet = new HashMap<>() {
+    private HashMap<String, Integer> commandsSet = new HashMap<>() {
         {
             put("init", 0); //clear all
             put("touch", 1); // create empty file
@@ -37,6 +38,16 @@ public class ClientAPI {
         }
     };
 
+    public ClientAPI(String downloadsDir) {
+        this.downloadsDir = downloadsDir;
+        this.currentRemoteDir = defaultDir;
+    }
+
+    public ClientAPI() {
+        this.downloadsDir = defaultDownloadDir;
+        this.currentRemoteDir = defaultDir;
+    }
+
     public String getCurrentRemoteDir() {
         return currentRemoteDir;
     }
@@ -45,7 +56,15 @@ public class ClientAPI {
         this.currentRemoteDir = currentRemoteDir;
     }
 
+    public String getCurrentDownloadDir() {
+        return downloadsDir;
+    }
 
+    public void setCurrentDownloadsDir(String newDownloadDir) {
+        this.downloadsDir = newDownloadDir;
+    }
+
+    //TODO add a command that allows changing download dir inside the console
     protected class ConsoleToken {
         int command_key;
         String[] file_dir_paths;
@@ -85,12 +104,20 @@ public class ClientAPI {
                 break;
             case (2):
                 if (paths.length == 1 || paths.length == 2) {
-                    // return get(consoleToken.file_dir_paths);
+                    get(consoleToken.file_dir_paths);
+                } else {
+                    System.out.println("Invalid number of arguments: ``` get <remote_path> <local_path> ```  or ```get <remote_path>``` ");
+                    break;
                 }
+                break;
             case (3):
                 if (paths.length == 1 || paths.length == 2) {
-                    // return put(paths);
+                    put(consoleToken.file_dir_paths);
+                } else {
+                    System.out.println("Invalid number of arguments: ``` put <local_path> <remote_path> ```  or ```get <local_path>``` ");
+                    break;
                 }
+                break;
             case (4):
                 if (paths.length == 1) {
                     rm(paths[0]);
@@ -137,7 +164,7 @@ public class ClientAPI {
                 } else if (paths.length == 0) {
                     ls(this.getCurrentRemoteDir());
                 } else {
-                    System.out.println("Invalid number of arguments: ``` ls <file_path> or ls  ``` ");
+                    System.out.println("Invalid number of arguments: ``` ls <file_path> ``` or ``` ls ``` ");
                     break;
                 }
                 break;
@@ -194,57 +221,87 @@ public class ClientAPI {
         System.out.println(receiveAkn.getStatus());
     }
 
-    private int get(String[] filePaths) throws IOException, ClassNotFoundException {
+    private void get(String[] filePaths) throws IOException, ClassNotFoundException {
 
         //todo NAMING_SERVER_CONNECTION
         Socket namingSocket = new Socket(hostNaming, Ports.PORT_NAMING);
         NamingCommand namingCommand = new commons.commands.naming.Get(filePaths[0]);
         IORoutines.sendSignal(namingSocket, namingCommand);
-        commons.commands.naming.GetAck receiveAknName = (commons.commands.naming.GetAck)IORoutines.receiveSignal(namingSocket);
+        commons.commands.naming.GetAck receiveAknName = (commons.commands.naming.GetAck) IORoutines.receiveSignal(namingSocket);
 
-        //todo STORAGE_SERVER_CONNECTION
-        Socket storageSocket = new Socket(hostNaming, Ports.PORT_STORAGE);
-        String localFileName = "";
+        InetAddress hostStorage = receiveAknName.getNodeAddress();
+        UUID fileId = receiveAknName.getFileId();
+
+        String localFileName;
         if (filePaths.length == 1) {
-            localFileName = filePaths[0];
+            String[] fileDirChain = filePaths[0].split("/");
+            localFileName = this.getCurrentDownloadDir() + "/" + fileDirChain[fileDirChain.length - 1];
         } else {
             localFileName = filePaths[1];
         }
-        OutputStream fileOut = storageSocket.getOutputStream();
-        InputStream downloadedFile = new FileInputStream(localFileName);
-        IORoutines.transmit(downloadedFile, fileOut);
-        Command receiveAknStor = (commons.commands.naming.GetAck) IORoutines.receiveSignal(storageSocket);
-        //NAMING_SERVER_SHOULD no such file
-        downloadedFile.close();
-        fileOut.close();
-        return 0;
+
+        //todo STORAGE_SERVER_CONNECTION
+        Socket storageSocket = new Socket(hostStorage, Ports.PORT_STORAGE);
+        StorageCommand storageCommand = new commons.commands.storage.FileDownload(fileId);
+        IORoutines.sendSignal(storageSocket, storageCommand);
+
+        InputStream downloading = storageSocket.getInputStream();
+        OutputStream savingTheFile = new FileOutputStream(localFileName);
+        IORoutines.transmit(downloading, savingTheFile);
+        commons.commands.general.FileDownloadAck receiveAknStor =
+                (commons.commands.general.FileDownloadAck) IORoutines.receiveSignal(storageSocket);
+
+        System.out.println(receiveAknStor.getStatusCode());
+        savingTheFile.close();
+        downloading.close();
     }
 
 
-    private int put(String[] filePaths) throws IOException, ClassNotFoundException {
+    private void put(String[] filePaths) throws IOException, ClassNotFoundException {
 
         //todo NAMING_SERVER_CONNECTION
-        Socket namingSocket = new Socket(hostNaming, Ports.PORT_NAMING);
-        NamingCommand namingCommand = new commons.commands.naming.PutFile(filePaths[0]);
-        IORoutines.sendSignal(namingSocket, namingCommand);
-        Command receiveAknName = IORoutines.receiveSignal(namingSocket);
-        //todo STORAGE_SERVER_CONNECTION
-        Socket storageSocket = new Socket(hostNaming, Ports.PORT_STORAGE);
-        String localFileName = "";
+        String remoteFileName;
         if (filePaths.length == 1) {
-            localFileName = filePaths[0];
+            String[] fileDirChain = filePaths[0].split("/");
+            remoteFileName = this.getCurrentRemoteDir() + "/" + fileDirChain[fileDirChain.length - 1];
         } else {
-            localFileName = filePaths[1];
+            remoteFileName = filePaths[1];
         }
-        OutputStream fileOut = storageSocket.getOutputStream();
-        InputStream downloadedFile = new FileInputStream(localFileName);
-        IORoutines.transmit(downloadedFile, fileOut);
-        Command receiveAknStor = (commons.commands.naming.GetAck) IORoutines.receiveSignal(storageSocket);
-        //NAMING_SERVER_SHOULD
-        downloadedFile.close();
-        fileOut.close();
-        return 0;
+
+        NamingCommand namingCommand = new commons.commands.naming.PutFile(remoteFileName);
+
+        Socket namingSocket = new Socket(hostNaming, Ports.PORT_NAMING);
+        IORoutines.sendSignal(namingSocket, namingCommand);
+        commons.commands.naming.PutAck receiveAknName = (commons.commands.naming.PutAck) IORoutines.receiveSignal(namingSocket);
+
+        InetAddress hostStorage = receiveAknName.getStorageAddress();
+        UUID fileId = receiveAknName.getFileId();
+        Collection<InetAddress> replicasAddresses = receiveAknName.getReplicaAddresses();
+        //todo STORAGE_SERVER_CONNECTION
+        Socket storageSocket = new Socket(hostStorage, Ports.PORT_STORAGE);
+        StorageCommand storageCommand = new commons.commands.storage.FileUpload(fileId, replicasAddresses);
+        IORoutines.sendSignal(storageSocket, storageCommand);
+        commons.commands.general.FileDownloadAck receiveAknStor =
+                (commons.commands.general.FileDownloadAck) IORoutines.receiveSignal(storageSocket);
+//        if(! (receiveAknStor.getStatusCode()).equals(StatusCodes.Code.OK)){
+//            System.out.println("Error connection with storage");
+//        }
+//        else{
+
+
+        OutputStream uploadingToServer = storageSocket.getOutputStream();
+        InputStream readingTheFile = new FileInputStream(filePaths[0]);
+        IORoutines.transmit(readingTheFile, uploadingToServer);
+
+
+        receiveAknStor =
+                (commons.commands.general.FileDownloadAck) IORoutines.receiveSignal(storageSocket);
+
+        System.out.println(receiveAknStor.getStatusCode());
+        uploadingToServer.close();
+        readingTheFile.close();
     }
+
 
     private void rm(String fileOrDirPath) throws IOException, ClassNotFoundException {
         Socket socket = new Socket(hostNaming, Ports.PORT_NAMING);
@@ -337,7 +394,7 @@ public class ClientAPI {
         //connect to console
         //input - next line in console after enter press
         while (true) {
-            System.out.print(this.getCurrentRemoteDir() + "/" + " $ ");
+            System.out.print(this.getCurrentRemoteDir() + "/ " + "$ ");
 
             if (in.hasNextLine()) {
                 String input = in.nextLine();
