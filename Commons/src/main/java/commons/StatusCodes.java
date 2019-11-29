@@ -7,6 +7,7 @@ public class StatusCodes {
         FILE_DOES_NOT_EXIST,
         DIRECTORY_DOES_NOT_EXIST,
         FILE_ALREADY_EXISTS,
-        DIRECTORY_ALREADY_EXISTS
+        DIRECTORY_ALREADY_EXISTS,
+        NOT_A_DIRECTORY
     }
 }
