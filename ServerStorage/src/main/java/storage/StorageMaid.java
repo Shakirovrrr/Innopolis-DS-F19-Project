@@ -19,6 +19,11 @@ public class StorageMaid extends Thread {
 		return files;
 	}
 
+	public static long getFileSize(UUID uuid) {
+		File file = new File(Main.dataPath + uuid.toString());
+		return file.length();
+	}
+
 	private void tidy() {
 		Collection<UUID> localFiles = getFiles();
 		localFiles.removeAll(uuids);
