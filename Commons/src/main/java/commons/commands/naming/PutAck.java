@@ -9,18 +9,18 @@ import java.util.Collection;
 import java.util.UUID;
 
 public class PutAck extends NamingCommandAck {
-    private NodePublicAddress storageAddress;
+    private InetAddress storageAddress;
     private UUID fileId;
-    private Collection<NodePrivateAddress> replicaAddresses;
+    private Collection<InetAddress> replicaAddresses;
 
-    public PutAck(StatusCodes.Code statusCode, NodePublicAddress storageAddress, UUID fileId, Collection<NodePrivateAddress> replicaAddresses) {
+    public PutAck(StatusCodes.Code statusCode, InetAddress storageAddress, UUID fileId, Collection<InetAddress> replicaAddresses) {
         this.status = statusCode;
         this.storageAddress = storageAddress;
         this.fileId = fileId;
         this.replicaAddresses = replicaAddresses;
     }
 
-    public NodePublicAddress getStorageAddress() {
+    public InetAddress getStorageAddress() {
         return storageAddress;
     }
 
@@ -28,7 +28,7 @@ public class PutAck extends NamingCommandAck {
         return fileId;
     }
 
-    public Collection<NodePrivateAddress> getReplicaAddresses() {
+    public Collection<InetAddress> getReplicaAddresses() {
         return replicaAddresses;
     }
 }
