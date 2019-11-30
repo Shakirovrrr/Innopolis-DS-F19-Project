@@ -41,7 +41,7 @@ public class ClientSend extends Thread {
 				System.out.println("SEND: Done.");
 			}
 		} catch (IOException ex) {
-			System.err.println("Connection failed.");
+			System.err.println("Connection lost.");
 		} catch (ClassNotFoundException | ClassCastException ex) {
 			System.err.println("SEND: Bad confirm command.");
 		} finally {

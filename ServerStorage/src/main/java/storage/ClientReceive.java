@@ -1,6 +1,7 @@
 package storage;
 
 import commons.Ports;
+import commons.StatusCodes;
 import commons.commands.general.FileUploadAck;
 import commons.commands.storage.FileUpload;
 import commons.routines.IORoutines;
@@ -11,7 +12,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.UUID;
 
 public class ClientReceive extends Thread {
 	private FileUpload command;
@@ -22,13 +22,13 @@ public class ClientReceive extends Thread {
 		this.conn = conn;
 	}
 
-	private void notifyNaming(int status, UUID uuid) throws IOException {
-		FileUploadAck uploadAck = new FileUploadAck(status, uuid);
+	private void notifyNaming(int status) throws IOException {
+		FileUploadAck uploadAck = new FileUploadAck(status, command.getUuid());
 		IORoutines.sendSignalOnce(Main.namingAddress, Ports.PORT_INTERNAL, uploadAck);
 	}
 
-	private void notifyClientFail(UUID uuid) throws IOException {
-		FileUploadAck uploadAck = new FileUploadAck(0, uuid);
+	private void notifyClient(int status) throws IOException {
+		FileUploadAck uploadAck = new FileUploadAck(status, command.getUuid());
 		IORoutines.sendSignal(conn, uploadAck);
 	}
 
@@ -66,12 +66,15 @@ public class ClientReceive extends Thread {
 			System.out.println("RECEIVE: Receiving file " + command.getUuid().toString());
 			IORoutines.transmitSplit(sockIn, sockReplica);
 			System.out.println("RECEIVE: Done.");
+
+			FileUploadAck ack = new FileUploadAck(StatusCodes.OK, command.getUuid());
+			IORoutines.sendSignal(conn, ack);
 		} catch (IOException ex) {
-			ex.printStackTrace();
+			System.err.println("RECEIVE: Connection lost.");
 		} finally {
 			try {
 				fileOut.close();
-				notifyNaming(1, command.getUuid());
+				notifyNaming(StatusCodes.OK);
 				sockIn.close();
 				sockOut.close();
 			} catch (IOException ex) {
@@ -81,8 +84,8 @@ public class ClientReceive extends Thread {
 		}
 
 		try {
-			notifyNaming(0, command.getUuid());
-			notifyClientFail(command.getUuid());
+			notifyNaming(StatusCodes.FILE_ALREADY_EXISTS); // TODO Correct code
+			notifyClient(StatusCodes.FILE_ALREADY_EXISTS);
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.err.println("RECEIVE: Could not notify naming server nor client about fail.");
