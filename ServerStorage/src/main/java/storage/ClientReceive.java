@@ -84,8 +84,8 @@ public class ClientReceive extends Thread {
 		}
 
 		try {
-			notifyNaming(StatusCodes.FILE_ALREADY_EXISTS); // TODO Correct code
-			notifyClient(StatusCodes.FILE_ALREADY_EXISTS);
+			notifyNaming(StatusCodes.UPLOAD_FAILED);
+			notifyClient(StatusCodes.UPLOAD_FAILED);
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.err.println("RECEIVE: Could not notify naming server nor client about fail.");
