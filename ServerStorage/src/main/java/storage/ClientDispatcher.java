@@ -15,16 +15,15 @@ public class ClientDispatcher extends Thread {
 	private ServerSocket server;
 
 	ClientDispatcher(int listeningPort) {
+		this.setDaemon(true);
 		this.listeningPort = listeningPort;
 	}
 
 	private void serve() throws IOException {
-		//noinspection InfiniteLoopStatement
-		while (true) {
+		while (!this.isInterrupted()) {
 			Socket conn = server.accept();
-			System.out.println("DISPATCH: Got connection from " + conn.getInetAddress());
+			System.out.println("DISPATCHER: Got connection from " + conn.getInetAddress());
 			dispatch(conn);
-//			new Thread(() -> dispatch(conn)).start();
 		}
 	}
 
@@ -34,48 +33,50 @@ public class ClientDispatcher extends Thread {
 			Command command = (Command) input.readObject();
 
 			if (command instanceof FileDownload) {
-				System.out.println("DISPATCH: Asked to download file.");
+				System.out.println("DISPATCHER: Asked to download file.");
 				ClientSend sender = new ClientSend((FileDownload) command, conn);
 				sender.start();
 			} else if (command instanceof FileUpload) {
-				System.out.println("DISPATCH: Asked to upload file.");
+				System.out.println("DISPATCHER: Asked to upload file.");
 				ClientReceive receiver = new ClientReceive((FileUpload) command, conn);
 				receiver.start();
 			}
 
 
 		} catch (IOException ex) {
-			System.err.println("Connection reset.");
+			System.err.println("DISPATCHER: Connection reset.");
 		} catch (ClassNotFoundException | ClassCastException ex) {
 			ex.printStackTrace();
-			System.err.println("Unable to dispatch the command.");
+			System.err.println("DISPATCHER: Unable to dispatch the command.");
 		}
 	}
 
 	@Override
 	public void run() {
 		this.setUncaughtExceptionHandler((t, e) -> {
-			try {
-				server.close();
-			} catch (IOException ex) {
-				ex.printStackTrace();
-				System.err.println("IOException thrown while handling another exception " + ex);
-			}
+//			try {
+//				server.close();
+//			} catch (IOException ex) {
+//				ex.printStackTrace();
+//				System.err.println("IOException thrown while handling another exception " + ex);
+//			}
+			System.err.println("DISPATCHER: Ne padat'!");
 		});
 
 		try {
 			server = new ServerSocket(listeningPort);
-			System.out.println("Socket has been bound to port " + listeningPort);
+			System.out.println("DISPATCHER: Socket has been bound to port " + listeningPort);
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.err.println("Could not bind a socket to port " + listeningPort);
+			System.err.println("DISPATCHER: Could not bind a socket to port " + listeningPort);
 		}
 
 		try {
 			serve();
 		} catch (IOException e) {
-			System.err.println("Server died.");
+			System.err.println("DISPATCHER: Server died.");
 			e.printStackTrace();
+			Main.die();
 		}
 	}
 }
