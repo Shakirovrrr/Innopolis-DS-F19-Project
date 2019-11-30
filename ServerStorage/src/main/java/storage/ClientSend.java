@@ -1,5 +1,7 @@
 package storage;
 
+import commons.commands.storage.AskReady;
+import commons.commands.storage.ConfirmReady;
 import commons.commands.storage.FileDownload;
 import commons.routines.IORoutines;
 
@@ -29,11 +31,19 @@ public class ClientSend extends Thread {
 		}
 
 		try {
-			System.out.println("SEND: Sending file " + command.getUuid().toString());
-			IORoutines.transmit(fileIn, sockOut, 8192);
-			System.out.println("SEND: Done.");
+			IORoutines.sendSignal(conn, new AskReady());
+
+			ConfirmReady confirm = (ConfirmReady) IORoutines.receiveSignal(conn);
+
+			if (confirm.isAgree()) {
+				System.out.println("SEND: Sending file " + command.getUuid().toString());
+				IORoutines.transmit(fileIn, sockOut);
+				System.out.println("SEND: Done.");
+			}
 		} catch (IOException ex) {
-			ex.printStackTrace();
+			System.err.println("Connection failed.");
+		} catch (ClassNotFoundException | ClassCastException ex) {
+			System.err.println("SEND: Bad confirm command.");
 		} finally {
 			try {
 				fileIn.close();
