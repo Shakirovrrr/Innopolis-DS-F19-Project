@@ -1,6 +1,5 @@
 package naming;
 
-import java.net.InetAddress;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -10,17 +9,28 @@ public class File {
     private long size;
     private int access;
     private UUID uuid;
-    private Set<Node> nodes;
+    private boolean isTouched;
+    private Set<UUID> nodes;
 
-    public File(String name, long size, int access, UUID uuid) {
+    public File(String name, UUID uuid, boolean isTouched) {
+        this.name = name;
+        this.size = 0;
+        this.access = 0;
+        this.uuid = uuid;
+        this.isTouched = isTouched;
+        this.nodes = new HashSet<>();
+    }
+
+    public File(String name, long size, int access, UUID uuid, boolean isTouched) {
         this.name = name;
         this.size = size;
         this.access = access;
         this.uuid = uuid;
+        this.isTouched = isTouched;
         this.nodes = new HashSet<>();
     }
 
-    public File(String name, long size, int access, UUID uuid, Set<Node> nodes) {
+    public File(String name, long size, int access, UUID uuid, boolean isTouched, Set<UUID> nodes) {
         this.name = name;
         this.size = size;
         this.access = access;
@@ -40,11 +50,31 @@ public class File {
         return access;
     }
 
-    public UUID getUuid() {
+    public UUID getId() {
         return uuid;
     }
 
-    public Set<Node> getNodes() {
+    public boolean getIsTouched() {
+        return isTouched;
+    }
+
+    public Set<UUID> getNodes() {
         return nodes;
+    }
+
+    public void setSize(long size) {
+        this.size = size;
+    }
+
+    public void setAccess(int access) {
+        this.access = access;
+    }
+
+    public void addNode(UUID nodeId) {
+        nodes.add(nodeId);
+    }
+
+    public void removeNode(UUID nodeId) {
+        nodes.remove(nodeId);
     }
 }
