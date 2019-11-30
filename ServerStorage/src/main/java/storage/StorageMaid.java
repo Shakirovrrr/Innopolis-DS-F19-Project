@@ -24,15 +24,17 @@ public class StorageMaid extends Thread {
 		return file.length();
 	}
 
+	public static boolean deleteFile(UUID uuid) {
+		File file = new File(Main.dataPath + uuid.toString());
+		return file.delete();
+	}
+
 	private void tidy() {
 		Collection<UUID> localFiles = getFiles();
 		localFiles.removeAll(uuids);
 
 		for (UUID uuid : localFiles) {
-			File file = new File(Main.dataPath + uuid.toString());
-			if (!file.delete()) {
-				System.err.println("MAID: Couldn't delete file " + uuid.toString());
-			}
+			deleteFile(uuid);
 		}
 	}
 

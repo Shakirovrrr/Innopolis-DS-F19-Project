@@ -15,7 +15,7 @@ public class ClientDispatcher extends Thread {
 	private ServerSocket server;
 
 	ClientDispatcher(int listeningPort) {
-		this.setDaemon(true);
+//		this.setDaemon(true);
 		this.listeningPort = listeningPort;
 	}
 

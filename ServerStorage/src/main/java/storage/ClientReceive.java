@@ -3,6 +3,7 @@ package storage;
 import commons.Ports;
 import commons.StatusCodes;
 import commons.commands.general.FileUploadAck;
+import commons.commands.storage.ConfirmReady;
 import commons.commands.storage.FileUpload;
 import commons.routines.IORoutines;
 
@@ -63,6 +64,8 @@ public class ClientReceive extends Thread {
 		}
 
 		try {
+			IORoutines.sendSignal(conn, new ConfirmReady());
+
 			System.out.println("RECEIVE: Receiving file " + command.getUuid().toString());
 			IORoutines.transmitSplit(sockIn, sockReplica);
 			System.out.println("RECEIVE: Done.");
@@ -70,12 +73,19 @@ public class ClientReceive extends Thread {
 			notifyClient(StatusCodes.OK);
 		} catch (IOException ex) {
 			try {
+				fileOut.close();
 				notifyNaming(StatusCodes.UPLOAD_FAILED);
 				notifyClient(StatusCodes.UPLOAD_FAILED);
 			} catch (IOException e) {
 				System.err.println("RECEIVE: Could not notify naming server nor client about fail.");
 			}
+			ex.printStackTrace();
 			System.err.println("RECEIVE: Connection lost.");
+			if (StorageMaid.deleteFile(command.getUuid())) {
+				System.out.println("RECEIVE: Cleaned up uncompleted download.");
+			} else {
+				System.err.println("RECEIVE: Couldn't clean up uncompleted download.");
+			}
 		} finally {
 			try {
 				fileOut.close();

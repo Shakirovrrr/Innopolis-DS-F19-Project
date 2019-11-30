@@ -26,6 +26,7 @@ public class ClientSend extends Thread {
 			fileIn = new FileInputStream(Main.dataPath + command.getUuid().toString());
 			sockOut = conn.getOutputStream();
 		} catch (IOException e) {
+			// TODO notify not found
 			e.printStackTrace();
 			return;
 		}
