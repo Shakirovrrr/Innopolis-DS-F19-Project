@@ -6,15 +6,18 @@ import java.util.UUID;
 
 public class FileUpload extends StorageCommand {
 	private UUID uuid;
+	private long fileSize;
 	private InetAddress[] replicaAddresses;
 
-	public FileUpload(UUID uuid, Collection<InetAddress> replicaAddresses) {
+	public FileUpload(UUID uuid, long fileSize, Collection<InetAddress> replicaAddresses) {
 		this.uuid = uuid;
-		this.replicaAddresses = replicaAddresses.toArray(InetAddress[]::new);
+		this.fileSize = fileSize;
+		this.replicaAddresses = (InetAddress[]) replicaAddresses.toArray();
 	}
 
-	public FileUpload(UUID uuid, InetAddress... replicaAddresses) {
+	public FileUpload(UUID uuid, long fileSize, InetAddress... replicaAddresses) {
 		this.uuid = uuid;
+		this.fileSize = fileSize;
 		this.replicaAddresses = replicaAddresses;
 	}
 
@@ -24,5 +27,9 @@ public class FileUpload extends StorageCommand {
 
 	public InetAddress[] getReplicaAddresses() {
 		return replicaAddresses;
+	}
+
+	public long getFileSize() {
+		return fileSize;
 	}
 }
