@@ -9,7 +9,6 @@ public class StatusCodes {
         FILE_OR_DIRECTORY_ALREADY_EXISTS,
 //        DIRECTORY_ALREADY_EXISTS,
         INCORRECT_NAME,
-        NOT_A_DIRECTORY,
         NO_NODES_AVAILABLE,
         UNKNOWN_COMMAND
     }
