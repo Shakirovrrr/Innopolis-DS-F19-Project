@@ -15,7 +15,6 @@ class Main {
 		System.out.println("Hello Storage!");
 
 		dataPath = "./data/";
-
 		nodeUuid = UUID.randomUUID();
 		try {
 			namingAddress = InetAddress.getByName("192.168.0.1");

@@ -67,9 +67,14 @@ public class ClientReceive extends Thread {
 			IORoutines.transmitSplit(sockIn, sockReplica);
 			System.out.println("RECEIVE: Done.");
 
-			FileUploadAck ack = new FileUploadAck(StatusCodes.OK, command.getUuid());
-			IORoutines.sendSignal(conn, ack);
+			notifyClient(StatusCodes.OK);
 		} catch (IOException ex) {
+			try {
+				notifyNaming(StatusCodes.UPLOAD_FAILED);
+				notifyClient(StatusCodes.UPLOAD_FAILED);
+			} catch (IOException e) {
+				System.err.println("RECEIVE: Could not notify naming server nor client about fail.");
+			}
 			System.err.println("RECEIVE: Connection lost.");
 		} finally {
 			try {
@@ -81,14 +86,6 @@ public class ClientReceive extends Thread {
 				ex.printStackTrace();
 				System.err.println("RECEIVE: IOException thrown while trying to close streams.");
 			}
-		}
-
-		try {
-			notifyNaming(StatusCodes.UPLOAD_FAILED);
-			notifyClient(StatusCodes.UPLOAD_FAILED);
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.err.println("RECEIVE: Could not notify naming server nor client about fail.");
 		}
 	}
 

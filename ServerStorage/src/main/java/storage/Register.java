@@ -1,6 +1,8 @@
 package storage;
 
+import commons.Ports;
 import commons.commands.internal.RegisterNode;
+import commons.routines.IORoutines;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -31,7 +33,7 @@ class Register {
 		RegisterNode registerNodeCmd = new RegisterNode(Main.nodeUuid, getFiles(),
 				InetAddress.getByName(publicIp), InetAddress.getLocalHost());
 
-//		IORoutines.sendSignalOnce(namingAddress, Ports.PORT_INTERNAL, registerNodeCmd);
+		IORoutines.sendSignalOnce(namingAddress, Ports.PORT_INTERNAL, registerNodeCmd);
 	}
 
 	private static UUID[] getFiles() {
