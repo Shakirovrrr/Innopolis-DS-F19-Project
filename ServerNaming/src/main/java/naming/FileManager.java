@@ -2,38 +2,39 @@ package naming;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class FileManager {
-    private FileTree fileTree;
+    private Folder root;
 
     public FileManager() {
-        this.fileTree = new FileTree("uniuser");
+        this.root = new Folder("root");
     }
 
     public FileManager(Folder root) {
-        this.fileTree = new FileTree("uniuser", root);
+        this.root = root;
     }
 
-    public FileManager(String username) {
-        this.fileTree = new FileTree(username);
+    public Folder getRoot() {
+        return root;
     }
 
-    public FileManager(String username, Folder root) {
-        this.fileTree  = new FileTree(username, root);
+    public List<File> getAllFiles() {
+        List<File> files = new LinkedList<>();
+        appendFiles(getRoot(), files);
+
+        return files;
     }
 
-    public FileManager(FileTree fileTree) {
-        this.fileTree = fileTree;
-    }
+    public List<File> getFilesRecursively(Folder directory) {
+        List<File> files = new LinkedList<>();
+        appendFiles(directory, files);
 
-    public FileTree getFileTree() {
-        return fileTree;
+        return files;
     }
 
     public Folder getFolder(Path path) {
-        Folder currentFolder = fileTree.getRoot();
+        Folder currentFolder = getRoot();
         for (int i = 0; i < path.getNameCount(); i++) {
             String folderName = path.getName(i).toString();
             if (currentFolder.folderExists(folderName)) {
@@ -66,8 +67,8 @@ public class FileManager {
         return null;
     }
 
-    public boolean addFile(Path directoryPath, String fileName, int fileSize, int fileAccess, UUID fileId, Set<Node> nodes) {
-        File file = new File(fileName, fileSize, fileAccess, fileId, nodes);
+    public boolean addFile(Path directoryPath, String fileName, int fileSize, int fileAccess, UUID fileId, boolean isTouched, Set<UUID> nodes) {
+        File file = new File(fileName, fileSize, fileAccess, fileId, isTouched, nodes);
         return addFile(directoryPath, file);
     }
 
@@ -78,5 +79,28 @@ public class FileManager {
             return true;
         }
         return false;
+    }
+
+    public boolean removeFile(Path directoryPath, String fileName) {
+        Folder directory = getFolder(directoryPath);
+        if (directory != null) {
+            return directory.removeFile(fileName);
+        }
+        return false;
+    }
+
+    public boolean removeFolder(Path directoryPath, String folderName) {
+        Folder directory = getFolder(directoryPath);
+        if (directory != null) {
+            return directory.removeFolder(folderName);
+        }
+        return false;
+    }
+
+    private void appendFiles(Folder directory, List<File> files) {
+        for (Folder folder : directory.getFolders()) {
+            appendFiles(folder, files);
+        }
+        files.addAll(directory.getFiles());
     }
 }

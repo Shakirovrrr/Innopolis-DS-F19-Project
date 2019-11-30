@@ -1,6 +1,8 @@
 package commons.commands.naming;
 
 import commons.StatusCodes;
+import commons.commands.internal.NodePrivateAddress;
+import commons.commands.internal.NodePublicAddress;
 
 import java.net.InetAddress;
 import java.util.Collection;

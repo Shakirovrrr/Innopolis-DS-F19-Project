@@ -40,6 +40,12 @@ public class Node {
         this.keepingFiles = new HashSet<>();
     }
 
+    public Node(UUID nodeId, InetAddress publicAddress, InetAddress privateAddress, int portNumber, Set<UUID> keepingFiles) {
+        this.nodeId = nodeId;
+        this.nodeAddress = new NodeAddress(publicAddress, privateAddress, portNumber);
+        this.keepingFiles = keepingFiles;
+    }
+
     public UUID getNodeId() {
         return nodeId;
     }
@@ -66,5 +72,9 @@ public class Node {
 
     public boolean removeKeepingFile(UUID fileId) {
         return keepingFiles.remove(fileId);
+    }
+
+    public void removeAllKeepingFiles() {
+        keepingFiles = new HashSet<>();
     }
 }

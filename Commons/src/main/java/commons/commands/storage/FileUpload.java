@@ -10,7 +10,7 @@ public class FileUpload extends StorageCommand {
 
 	public FileUpload(UUID uuid, Collection<InetAddress> replicaAddresses) {
 		this.uuid = uuid;
-		this.replicaAddresses = (InetAddress[]) replicaAddresses.toArray();
+		this.replicaAddresses = replicaAddresses.toArray(InetAddress[]::new);
 	}
 
 	public FileUpload(UUID uuid, InetAddress... replicaAddresses) {
