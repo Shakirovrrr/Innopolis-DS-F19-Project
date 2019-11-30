@@ -8,6 +8,8 @@ public class StatusCodes {
 	public static final int NO_NODES_AVAILABLE = 4;
 	public static final int UNKNOWN_COMMAND = 5;
 
+	public static final int UPLOAD_FAILED = 11;
+
 	// init, put, touch, get, info, cp, mv, cd, ls, mkdir
 	@Deprecated(forRemoval = true)
 	public enum Code {
