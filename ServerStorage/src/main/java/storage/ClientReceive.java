@@ -24,8 +24,7 @@ public class ClientReceive extends Thread {
 
 	private void notifyNaming(int status, UUID uuid) throws IOException {
 		FileUploadAck uploadAck = new FileUploadAck(status, uuid);
-		InetAddress address = InetAddress.getByName("192.168.1.2");
-		IORoutines.sendSignalOnce(address, Ports.PORT_INTERNAL, uploadAck);
+		IORoutines.sendSignalOnce(Main.namingAddress, Ports.PORT_INTERNAL, uploadAck);
 	}
 
 	private void notifyClientFail(UUID uuid) throws IOException {
