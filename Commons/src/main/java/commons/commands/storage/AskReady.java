@@ -1,13 +1,13 @@
 package commons.commands.storage;
 
 public class AskReady extends StorageCommand {
-	private int fileSize;
+	private long fileSize;
 
-	public AskReady(int fileSize) {
+	public AskReady(long fileSize) {
 		this.fileSize = fileSize;
 	}
 
-	public int getFileSize() {
+	public long getFileSize() {
 		return fileSize;
 	}
 }
