@@ -1,24 +1,26 @@
 package commons.commands.naming;
 
 import commons.StatusCodes;
+import commons.commands.internal.NodePrivateAddress;
+import commons.commands.internal.NodePublicAddress;
 
 import java.net.InetAddress;
 import java.util.Collection;
 import java.util.UUID;
 
 public class PutAck extends NamingCommandAck {
-    private InetAddress storageAddress;
+    private NodePublicAddress storageAddress;
     private UUID fileId;
-    private Collection<InetAddress> replicaAddresses;
+    private Collection<NodePrivateAddress> replicaAddresses;
 
-    public PutAck(StatusCodes.Code statusCode, InetAddress storageAddress, UUID fileId, Collection<InetAddress> replicaAddresses) {
+    public PutAck(StatusCodes.Code statusCode, NodePublicAddress storageAddress, UUID fileId, Collection<NodePrivateAddress> replicaAddresses) {
         this.status = statusCode;
         this.storageAddress = storageAddress;
         this.fileId = fileId;
         this.replicaAddresses = replicaAddresses;
     }
 
-    public InetAddress getStorageAddress() {
+    public NodePublicAddress getStorageAddress() {
         return storageAddress;
     }
 
@@ -26,7 +28,7 @@ public class PutAck extends NamingCommandAck {
         return fileId;
     }
 
-    public Collection<InetAddress> getReplicaAddresses() {
+    public Collection<NodePrivateAddress> getReplicaAddresses() {
         return replicaAddresses;
     }
 }
