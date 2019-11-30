@@ -8,8 +8,10 @@ import java.net.Socket;
 
 @SuppressWarnings("WeakerAccess")
 public class IORoutines {
+	private static int defaultTransmitBufferSize = 64 * 1024;
+
 	public static void transmit(InputStream streamFrom, OutputStream streamTo) throws IOException {
-		transmit(streamFrom, streamTo, 8192);
+		transmit(streamFrom, streamTo, defaultTransmitBufferSize);
 	}
 
 	public static void transmit(InputStream streamFrom, OutputStream streamTo, int bufferSize) throws IOException {
@@ -17,7 +19,7 @@ public class IORoutines {
 	}
 
 	public static void transmitSplit(InputStream streamFrom, OutputStream... streamTo) throws IOException {
-		transmitSplit(streamFrom, 8192, streamTo);
+		transmitSplit(streamFrom, defaultTransmitBufferSize, streamTo);
 	}
 
 	public static void transmitSplit(InputStream streamFrom, int bufferSize, OutputStream... streamTo) throws IOException {
