@@ -3,9 +3,16 @@ package commons.commands.naming;
 import commons.StatusCodes;
 
 public abstract class NamingCommandAck extends NamingCommand {
-    StatusCodes.Code status;
+	@Deprecated
+	StatusCodes.Code status;
+	int statusCode;
 
-    public StatusCodes.Code getStatus() {
-        return status;
-    }
+	@Deprecated
+	public StatusCodes.Code getStatus() {
+		return status;
+	}
+
+	public int getStatusCode() {
+		return statusCode;
+	}
 }
