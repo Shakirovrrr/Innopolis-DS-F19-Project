@@ -23,7 +23,7 @@ public class ClientDispatcher extends Thread {
     private ServerSocket server;
     private Dispatcher dispatcher;
 
-    ClientDispatcher(int listeningPort, Dispatcher dispatcher) {
+    public ClientDispatcher(int listeningPort, Dispatcher dispatcher) {
         this.listeningPort = listeningPort;
         this.dispatcher = dispatcher;
     }

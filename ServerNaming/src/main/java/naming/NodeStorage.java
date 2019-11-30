@@ -29,7 +29,7 @@ public class NodeStorage implements Iterable {
     }
 
     public List<Node> getNodes() {
-        return (List<Node>)nodes.values();
+        return new LinkedList<>(nodes.values());
     }
 }
 
