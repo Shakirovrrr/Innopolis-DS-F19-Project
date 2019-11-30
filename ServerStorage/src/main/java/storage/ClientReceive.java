@@ -67,7 +67,7 @@ public class ClientReceive extends Thread {
 			IORoutines.sendSignal(conn, new ConfirmReady());
 
 			System.out.println("RECEIVE: Receiving file " + command.getUuid().toString());
-			IORoutines.transmitSplit(sockIn, sockReplica);
+			IORoutines.transmitNBytesSplit(10, sockIn, sockReplica); // TODO Correct bytes
 			System.out.println("RECEIVE: Done.");
 
 			notifyClient(StatusCodes.OK);
@@ -82,9 +82,9 @@ public class ClientReceive extends Thread {
 			ex.printStackTrace();
 			System.err.println("RECEIVE: Connection lost.");
 			if (StorageMaid.deleteFile(command.getUuid())) {
-				System.out.println("RECEIVE: Cleaned up uncompleted download.");
+				System.out.println("MAID: Cleaned up uncompleted download.");
 			} else {
-				System.err.println("RECEIVE: Couldn't clean up uncompleted download.");
+				System.err.println("MAID: Couldn't clean up uncompleted download.");
 			}
 		} finally {
 			try {
