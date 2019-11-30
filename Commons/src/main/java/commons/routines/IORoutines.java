@@ -26,6 +26,7 @@ public class IORoutines {
 		int count;
 		byte[] buffer = new byte[bufferSize];
 		while ((count = streamFrom.read(buffer)) > 0) {
+
 			for (OutputStream to : streamTo) {
 				to.write(buffer, 0, count);
 			}
