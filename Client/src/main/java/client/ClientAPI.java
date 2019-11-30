@@ -17,7 +17,7 @@ public class ClientAPI {
 
     private String hostNaming;
     private static final String defaultDir = "root";
-    private static final String defaultDownloadDir = "downloads";
+    private static final String defaultDownloadDir = "./downloads";
 
     private Scanner in = new Scanner(System.in);
     private String currentRemoteDir;
@@ -222,8 +222,8 @@ public class ClientAPI {
     }
 
     private void get(String[] filePaths) throws IOException, ClassNotFoundException {
-
-        //todo NAMING_SERVER_CONNECTION
+//
+//        //todo NAMING_SERVER_CONNECTION
         Socket namingSocket = new Socket(hostNaming, Ports.PORT_NAMING);
         NamingCommand namingCommand = new commons.commands.naming.Get(filePaths[0]);
         IORoutines.sendSignal(namingSocket, namingCommand);
@@ -231,13 +231,16 @@ public class ClientAPI {
 
         InetAddress hostStorage = receiveAknName.getNodeAddress();
         UUID fileId = receiveAknName.getFileId();
+//        InetAddress hostStorage = InetAddress.getByName("10.91.51.200");
+//        UUID fileId = UUID.fromString("ad99feb3-d4ac-4b99-8f3d-7b9353d34468");
 
         String localFileName;
         if (filePaths.length == 1) {
             String[] fileDirChain = filePaths[0].split("/");
+//            System.out.println(this.getCurrentDownloadDir());
             localFileName = this.getCurrentDownloadDir() + "/" + fileDirChain[fileDirChain.length - 1];
         } else {
-            localFileName = filePaths[1];
+            localFileName = this.getCurrentDownloadDir() + "/" + filePaths[1];
         }
 
         //todo STORAGE_SERVER_CONNECTION
@@ -248,10 +251,12 @@ public class ClientAPI {
         InputStream downloading = storageSocket.getInputStream();
         OutputStream savingTheFile = new FileOutputStream(localFileName);
         IORoutines.transmit(downloading, savingTheFile);
-        commons.commands.general.FileDownloadAck receiveAknStor =
-                (commons.commands.general.FileDownloadAck) IORoutines.receiveSignal(storageSocket);
-
-        System.out.println(receiveAknStor.getStatusCode());
+        System.out.println(localFileName);
+//        commons.commands.general.FileDownloadAck receiveAknStor =
+//                (commons.commands.general.FileDownloadAck) IORoutines.receiveSignal(storageSocket);
+//
+//        System.out.println(receiveAknStor.getStatusCode());
+        System.out.println("Downloaded");
         savingTheFile.close();
         downloading.close();
     }
@@ -265,7 +270,7 @@ public class ClientAPI {
             String[] fileDirChain = filePaths[0].split("/");
             remoteFileName = this.getCurrentRemoteDir() + "/" + fileDirChain[fileDirChain.length - 1];
         } else {
-            remoteFileName = filePaths[1];
+            remoteFileName = this.getCurrentRemoteDir() + "/" + filePaths[1];
         }
 
         NamingCommand namingCommand = new commons.commands.naming.PutFile(remoteFileName);
@@ -276,13 +281,17 @@ public class ClientAPI {
 
         InetAddress hostStorage = receiveAknName.getStorageAddress();
         UUID fileId = receiveAknName.getFileId();
-        Collection<InetAddress> replicasAddresses = receiveAknName.getReplicaAddresses();
+         Collection<InetAddress> replicasAddresses = receiveAknName.getReplicaAddresses();
+//
+//        Collection<InetAddress> replicasAddresses = new LinkedList<>();
+//        UUID fileId = UUID.randomUUID();
+//        InetAddress hostStorage = InetAddress.getByName("10.91.51.200");
         //todo STORAGE_SERVER_CONNECTION
         Socket storageSocket = new Socket(hostStorage, Ports.PORT_STORAGE);
         StorageCommand storageCommand = new commons.commands.storage.FileUpload(fileId, replicasAddresses);
         IORoutines.sendSignal(storageSocket, storageCommand);
-        commons.commands.general.FileDownloadAck receiveAknStor =
-                (commons.commands.general.FileDownloadAck) IORoutines.receiveSignal(storageSocket);
+//        commons.commands.general.FileDownloadAck receiveAknStor =
+//                (commons.commands.general.FileDownloadAck) IORoutines.receiveSignal(storageSocket);
 //        if(! (receiveAknStor.getStatusCode()).equals(StatusCodes.Code.OK)){
 //            System.out.println("Error connection with storage");
 //        }
@@ -294,10 +303,11 @@ public class ClientAPI {
         IORoutines.transmit(readingTheFile, uploadingToServer);
 
 
-        receiveAknStor =
-                (commons.commands.general.FileDownloadAck) IORoutines.receiveSignal(storageSocket);
-
-        System.out.println(receiveAknStor.getStatusCode());
+//        receiveAknStor =
+//                (commons.commands.general.FileDownloadAck) IORoutines.receiveSignal(storageSocket);
+//
+//        System.out.println(receiveAknStor.getStatusCode());
+        System.out.println("Uploaded");
         uploadingToServer.close();
         readingTheFile.close();
     }
@@ -316,8 +326,9 @@ public class ClientAPI {
         Socket socket = new Socket(hostNaming, Ports.PORT_NAMING);
         NamingCommand namingCommand = new commons.commands.naming.InfoFile(filePath);
         IORoutines.sendSignal(socket, namingCommand);
+        //TODO output path
         commons.commands.naming.InfoAck receiveAkn = (commons.commands.naming.InfoAck) IORoutines.receiveSignal(socket);
-        System.out.println(String.valueOf(receiveAkn.getStatus()) + receiveAkn.getPath() +
+        System.out.println(String.valueOf(receiveAkn.getStatus()) + receiveAkn.getNodes().toString() +
                 "\n" + receiveAkn.getFileSize() + "\n" + receiveAkn.getAccessRights());
     }
 
@@ -344,7 +355,7 @@ public class ClientAPI {
         commons.commands.naming.CdAck receiveAkn = (commons.commands.naming.CdAck) IORoutines.receiveSignal(socket);
         StatusCodes.Code status = receiveAkn.getStatus();
         System.out.println(status);
-        if (!(status.equals(StatusCodes.Code.DIRECTORY_DOES_NOT_EXIST) || status.equals(StatusCodes.Code.NOT_A_DIRECTORY))) {
+        if (!(status.equals(StatusCodes.Code.FILE_OR_DIRECTORY_DOES_NOT_EXIST))) {
             this.setCurrentRemoteDir(dirPath);
         }
     }
