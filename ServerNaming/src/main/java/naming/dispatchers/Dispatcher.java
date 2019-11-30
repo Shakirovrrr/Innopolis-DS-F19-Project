@@ -4,6 +4,7 @@ import commons.StatusCodes;
 import naming.*;
 import naming.dispatchers.returns.*;
 
+import java.net.InetAddress;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -186,23 +187,35 @@ public class Dispatcher {
             returnValue = new GetReturnValue(StatusCodes.Code.FILE_OR_DIRECTORY_DOES_NOT_EXIST,null, null);
         } else {
             if (file.getIsTouched()) {
-                returnValue = new GetReturnValue(StatusCodes.Code.)
-            }
-
-            if (file.getNodes().size() == 0) {
-                returnValue = new GetReturnValue(StatusCodes.Code.NO_NODES_AVAILABLE, null, null);
+                returnValue = new GetReturnValue(StatusCodes.Code.IS_TOUCHED, null, null);
             } else {
-                returnValue = new GetReturnValue(StatusCodes.Code.OK, (Node)file.getNodes().toArray()[0], file.getId());
+                if (fileStorage.getFileNodes(file.getId()).size() == 0) {
+                    returnValue = new GetReturnValue(StatusCodes.Code.NO_NODES_AVAILABLE, null, null);
+                } else {
+                    returnValue = new GetReturnValue(StatusCodes.Code.OK, fileStorage.getFileNodes(file.getId()).get(0), file.getId());
+                }
             }
         }
         return returnValue;
     }
 
-    public boolean removeNode(UUID nodeId) {
+    public void removeNode(UUID nodeId) {
         Node node = nodeStorage.getNode(nodeId);
         Set<UUID> keepingFiles = node.getKeepingFiles();
-        for (UUID file : keepingFiles) {
-            fileStorage.get
+        for (UUID fileId : keepingFiles) {
+            fileStorage.removeFileNode(fileId, node);
+        }
+        nodeStorage.removeNode(nodeId);
+    }
+
+    public void registerNode(UUID nodeId, List<UUID> fileIds, InetAddress publicAddress, InetAddress privateAddress) {
+        Node node = new Node(nodeId, publicAddress, privateAddress);
+        nodeStorage.addNode(node);
+        for (UUID fileId : fileIds) {
+            if (fileStorage.fileExists(fileId)) {
+                node.addKeepingFile(fileId);
+                fileStorage.addFileNode(fileId, node);
+            }
         }
     }
 

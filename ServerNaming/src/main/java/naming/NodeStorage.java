@@ -14,8 +14,12 @@ public class NodeStorage implements Iterable {
         nodes.remove(nodeId);
     }
 
-    public void addNode(UUID nodeId, InetAddress publicAddress, InetAddress privateAddress, int portNumber) {
-        Node node = new Node(nodeId, publicAddress, privateAddress, portNumber);
+    public void addNode(Node node) {
+        nodes.put(node.getNodeId(), node);
+    }
+
+    public void addNode(UUID nodeId, InetAddress publicAddress, InetAddress privateAddress) {
+        Node node = new Node(nodeId, publicAddress, privateAddress);
         nodes.put(nodeId, node);
     }
 

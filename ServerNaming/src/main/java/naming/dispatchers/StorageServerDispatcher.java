@@ -1,19 +1,21 @@
 package naming.dispatchers;
 
+import com.google.gson.internal.$Gson$Preconditions;
 import commons.commands.Command;
 import commons.commands.general.ErrorAck;
+import commons.commands.internal.FetchFiles;
+import commons.commands.internal.Heartbeat;
+import commons.commands.internal.RegisterNode;
 import commons.routines.IORoutines;
 import naming.Node;
 import naming.NodeStorage;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.Timestamp;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.PriorityQueue;
-import java.util.UUID;
+import java.util.*;
 
 import static naming.dispatchers.Constants.TIMER_SLEEP_TIME;
 
@@ -41,7 +43,7 @@ public class StorageServerDispatcher extends Thread {
 
         @Override
         public int compareTo(NodeTimer nodeTimer) {
-            if (this.getLastCall() == nodeTimer.getLastCall()) { return 0 }
+            if (this.getLastCall() == nodeTimer.getLastCall()) { return 0; }
             if (this.getLastCall() < nodeTimer.getLastCall()) {
                 return -1;
             } else {
@@ -68,17 +70,18 @@ public class StorageServerDispatcher extends Thread {
         try {
             while (true) {
                 sleep(Constants.TIMER_SLEEP_TIME);
-                int n = servers.size();
                 for (NodeTimer node : servers) {
                     if (node.getLastCall() + Constants.WAITING_TIME > new Date().getTime()) {
                         dispatcher.removeNode(node.getNodeId());
-                    };
+                        servers.remove(node);
+                    } else {
+                        break;
+                    }
                 }
             }
         } catch (InterruptedException ex) {
             System.err.println("Thread interrupted.");
         }
-
     }
 
     private void serve() throws IOException {
@@ -91,7 +94,24 @@ public class StorageServerDispatcher extends Thread {
     private void dispatch(Socket conn) {
         try {
             Command command = IORoutines.receiveSignal(conn);
-            Command ack = new ErrorAck();
+
+            if (command instanceof RegisterNode) {
+                UUID nodeId = ((RegisterNode) command).getNodeId();
+                List<UUID> files = Arrays.asList(((RegisterNode) command).getFiles());
+                InetAddress publicAddress = ((RegisterNode) command).getPublicAddress();
+                InetAddress localAddress = ((RegisterNode) command).getLocalAddress();
+
+                dispatcher.registerNode(nodeId, files, publicAddress, localAddress);
+                servers.add(new NodeTimer(nodeId, new Date().getTime()));
+            } else if (command instanceof FetchFiles) {
+                
+
+            } else if (command instanceof Heartbeat) {
+
+            } else {
+                Command ack = new ErrorAck();
+                IORoutines.sendSignal(conn, ack);
+            }
 
         } catch (IOException ex) {
             System.err.println("Connection reset.");

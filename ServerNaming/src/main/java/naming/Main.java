@@ -14,9 +14,13 @@ import java.util.UUID;
 class Main {
 	public static void main(String[] args) throws UnknownHostException {
 
+		Path path = Paths.get("////a/!/garg/");
+		System.out.println(path.getParent());
+		System.out.println(path.getNameCount());
+		System.out.println(path.getFileName());
 //		FileTree fileTree = new FileTree("uniuser");
 //		Folder root = fileTree.getRoot();
-		FileManager fileManager = new FileManager();
+//		FileManager fileManager = new FileManager();
 //		Folder root = fileManager.getRoot();
 //
 //		File fileOne = new File("hello.txx", 124, 12, UUID.randomUUID(), false);
@@ -42,14 +46,14 @@ class Main {
 //			System.out.println(currentFolder);
 //		}
 
-		NodeStorage nodeStorage = new NodeStorage();
-		nodeStorage.addNode(UUID.randomUUID(), InetAddress.getByName("192.168.0.1"), InetAddress.getByName("192.168.0.1"), 30);
-		FileStorage fileStorage = new FileStorage();
-		Dispatcher dispatcher = new Dispatcher(fileManager, nodeStorage, fileStorage);
-//
-        ClientDispatcher clientDispatcher = new ClientDispatcher(Ports.PORT_NAMING, dispatcher);
-        new Thread(() -> clientDispatcher.start());
-        clientDispatcher.start();
+//		NodeStorage nodeStorage = new NodeStorage();
+//		nodeStorage.addNode(UUID.randomUUID(), InetAddress.getByName("192.168.0.1"), InetAddress.getByName("192.168.0.1"), 30);
+//		FileStorage fileStorage = new FileStorage();
+//		Dispatcher dispatcher = new Dispatcher(fileManager, nodeStorage, fileStorage);
+////
+//        ClientDispatcher clientDispatcher = new ClientDispatcher(Ports.PORT_NAMING, dispatcher);
+//        new Thread(() -> clientDispatcher.start());
+//        clientDispatcher.start();
 
 //        while (true) {
 //

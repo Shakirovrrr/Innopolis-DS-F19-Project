@@ -79,5 +79,9 @@ public class FileStorage {
         return new LinkedList<Node>(fileToNodes.get(fileId));
     }
 
+    public boolean fileExists(UUID fileId) {
+        return filePaths.containsKey(fileId);
+    }
+
 //    UUID fileId, Path filePath
 }

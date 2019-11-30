@@ -9,12 +9,10 @@ public class Node {
     private class NodeAddress {
         private InetAddress publicAddress;
         private InetAddress privateAddress;
-        private int portNumber;
 
-        public NodeAddress(InetAddress publicAddress, InetAddress privateAddress, int portNumber) {
+        public NodeAddress(InetAddress publicAddress, InetAddress privateAddress) {
             this.publicAddress = publicAddress;
             this.privateAddress = privateAddress;
-            this.portNumber = portNumber;
         }
 
         public InetAddress getPublicAddress() {
@@ -24,25 +22,21 @@ public class Node {
         public InetAddress getPrivateAddress() {
             return privateAddress;
         }
-
-        public int getPortNumber() {
-            return portNumber;
-        }
     }
 
     private UUID nodeId;
     private NodeAddress nodeAddress;
     private Set<UUID> keepingFiles;
 
-    public Node(UUID nodeId, InetAddress publicAddress, InetAddress privateAddress, int portNumber) {
+    public Node(UUID nodeId, InetAddress publicAddress, InetAddress privateAddress) {
         this.nodeId = nodeId;
-        this.nodeAddress = new NodeAddress(publicAddress, privateAddress, portNumber);
+        this.nodeAddress = new NodeAddress(publicAddress, privateAddress);
         this.keepingFiles = new HashSet<>();
     }
 
-    public Node(UUID nodeId, InetAddress publicAddress, InetAddress privateAddress, int portNumber, Set<UUID> keepingFiles) {
+    public Node(UUID nodeId, InetAddress publicAddress, InetAddress privateAddress, Set<UUID> keepingFiles) {
         this.nodeId = nodeId;
-        this.nodeAddress = new NodeAddress(publicAddress, privateAddress, portNumber);
+        this.nodeAddress = new NodeAddress(publicAddress, privateAddress);
         this.keepingFiles = keepingFiles;
     }
 
