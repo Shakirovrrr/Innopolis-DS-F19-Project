@@ -53,6 +53,7 @@ public class ClientReceive extends Thread {
 
 		try {
 			fileOut = new FileOutputStream(Main.dataPath + command.getUuid().toString());
+			conn.setSoTimeout(10000);
 			sockIn = conn.getInputStream();
 			sockOut = conn.getOutputStream();
 			sockReplica = getReplicaOutputStreams(fileOut, command.getReplicaAddresses());
@@ -70,8 +71,8 @@ public class ClientReceive extends Thread {
 			ex.printStackTrace();
 		} finally {
 			try {
-				notifyNaming(1, command.getUuid());
 				fileOut.close();
+				notifyNaming(1, command.getUuid());
 				sockIn.close();
 				sockOut.close();
 			} catch (IOException ex) {
