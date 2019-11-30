@@ -19,8 +19,10 @@ public class ClientDispatcher extends Thread {
 	}
 
 	private void serve() throws IOException {
+		//noinspection InfiniteLoopStatement
 		while (true) {
 			Socket conn = server.accept();
+			System.out.println("DISPATCH: Got connection from " + conn.getInetAddress());
 			dispatch(conn);
 //			new Thread(() -> dispatch(conn)).start();
 		}
@@ -32,9 +34,11 @@ public class ClientDispatcher extends Thread {
 			Command command = (Command) input.readObject();
 
 			if (command instanceof FileDownload) {
+				System.out.println("DISPATCH: Asked to download file.");
 				ClientSend sender = new ClientSend((FileDownload) command, conn);
 				sender.start();
 			} else if (command instanceof FileUpload) {
+				System.out.println("DISPATCH: Asked to upload file.");
 				ClientReceive receiver = new ClientReceive((FileUpload) command, conn);
 				receiver.start();
 			}

@@ -8,9 +8,12 @@ import java.util.UUID;
 
 class Main {
 	static UUID nodeUuid;
+	static String dataPath;
 
 	public static void main(String[] args) throws CouldNotRegisterException {
 		System.out.println("Hello Storage!");
+
+		dataPath = "./data/";
 
 		nodeUuid = UUID.randomUUID();
 		try {

@@ -52,7 +52,7 @@ public class ClientReceive extends Thread {
 		OutputStream[] sockReplica;
 
 		try {
-			fileOut = new FileOutputStream(command.getUuid().toString());
+			fileOut = new FileOutputStream(Main.dataPath + command.getUuid().toString());
 			sockIn = conn.getInputStream();
 			sockOut = conn.getOutputStream();
 			sockReplica = getReplicaOutputStreams(fileOut, command.getReplicaAddresses());
@@ -63,7 +63,9 @@ public class ClientReceive extends Thread {
 		}
 
 		try {
+			System.out.println("RECEIVE: Receiving file " + command.getUuid().toString());
 			IORoutines.transmitSplit(sockIn, sockReplica);
+			System.out.println("RECEIVE: Done.");
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		} finally {

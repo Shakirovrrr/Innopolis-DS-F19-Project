@@ -21,7 +21,7 @@ public class ClientSend extends Thread {
 		FileInputStream fileIn;
 		OutputStream sockOut;
 		try {
-			fileIn = new FileInputStream(command.getUuid().toString());
+			fileIn = new FileInputStream(Main.dataPath + command.getUuid().toString());
 			sockOut = conn.getOutputStream();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -29,7 +29,9 @@ public class ClientSend extends Thread {
 		}
 
 		try {
+			System.out.println("SEND: Sending file " + command.getUuid().toString());
 			IORoutines.transmit(fileIn, sockOut, 8192);
+			System.out.println("SEND: Done.");
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		} finally {
