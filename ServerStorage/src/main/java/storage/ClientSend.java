@@ -31,7 +31,8 @@ public class ClientSend extends Thread {
 		}
 
 		try {
-			IORoutines.sendSignal(conn, new AskReady());
+			long fileSize = StorageMaid.getFileSize(command.getUuid());
+			IORoutines.sendSignal(conn, new AskReady(fileSize));
 
 			ConfirmReady confirm = (ConfirmReady) IORoutines.receiveSignal(conn);
 
