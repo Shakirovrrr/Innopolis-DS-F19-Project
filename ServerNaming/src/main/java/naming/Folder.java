@@ -63,7 +63,7 @@ public class Folder {
     }
 
     public boolean removeFile(String fileName) {
-        if (fileExists(fileName)) {
+        if (!fileExists(fileName)) {
             return false;
         }
         files.remove(fileName);
@@ -72,7 +72,7 @@ public class Folder {
     }
 
     public boolean removeFolder(String folderName) {
-        if (folderExists(folderName)) {
+        if (!folderExists(folderName)) {
             return false;
         }
         folders.remove(folderName);

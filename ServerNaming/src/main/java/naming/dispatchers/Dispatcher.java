@@ -1,7 +1,6 @@
 package naming.dispatchers;
 
 import commons.StatusCodes;
-import commons.commands.naming.Get;
 import naming.*;
 import naming.dispatchers.returns.*;
 
@@ -184,8 +183,9 @@ public class Dispatcher {
         } else {
             if (file.getNodes().size() == 0) {
                 returnValue = new GetReturnValue(StatusCodes.Code.NO_NODES_AVAILABLE, null, null);
+            } else {
+                returnValue = new GetReturnValue(StatusCodes.Code.OK, (Node)file.getNodes().toArray()[0], file.getId());
             }
-            returnValue = new GetReturnValue(StatusCodes.Code.OK, (Node)file.getNodes().toArray()[0], file.getId());
         }
         return returnValue;
     }
