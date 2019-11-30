@@ -6,6 +6,7 @@ public class StatusCodes {
 	public static final int DIRECTORY_DOES_NOT_EXIST = 2;
 	public static final int FILE_ALREADY_EXISTS = 3;
 	public static final int DIRECTORY_ALREADY_EXISTS = 4;
+	public static final int NOT_A_DIRECTORY = 5;
 
 	// init, put, touch, get, info, cp, mv, cd, ls, mkdir
 	@Deprecated(forRemoval = true)
