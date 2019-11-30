@@ -21,7 +21,7 @@ class Main {
 		nodeUuid = UUID.randomUUID();
 		try {
 			namingAddress = InetAddress.getByName("192.168.0.1");
-			//Register.register(namingAddress);
+			Register.register(namingAddress);
 		} catch (IOException e) {
 			throw new CouldNotRegisterException("MAIN: Could not register at naming server.", e);
 		}
