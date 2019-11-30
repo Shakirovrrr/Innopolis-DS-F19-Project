@@ -1,0 +1,24 @@
+package commons.commands.naming;
+
+import commons.StatusCodes;
+
+import java.util.List;
+
+public class LsAck extends NamingCommandAck {
+    private List<String> folders;
+    private List<String> files;
+
+    public LsAck(StatusCodes.Code statusCode, List<String> folders, List<String> files) {
+        this.status = statusCode;
+        this.folders = folders;
+        this.files = files;
+    }
+
+    public List<String> getFolders() {
+        return folders;
+    }
+
+    public List<String> getFiles() {
+        return files;
+    }
+}
