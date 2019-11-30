@@ -21,7 +21,7 @@ class Register {
 		String publicIp = reader.readLine();
 		reader.close();
 
-		UUID[] localFiles = FileMaid.getFiles().toArray(new UUID[0]);
+		UUID[] localFiles = StorageMaid.getFiles().toArray(new UUID[0]);
 
 		RegisterNode registerNodeCmd = new RegisterNode(Main.nodeUuid, localFiles,
 				InetAddress.getByName(publicIp), InetAddress.getLocalHost());

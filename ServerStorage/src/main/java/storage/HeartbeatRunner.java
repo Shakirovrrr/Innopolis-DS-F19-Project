@@ -21,7 +21,7 @@ public class HeartbeatRunner extends Thread {
 		IORoutines.sendSignal(conn, new FetchFiles());
 		FetchFilesAck ack = (FetchFilesAck) IORoutines.receiveSignal(conn);
 
-		FileMaid maid = new FileMaid(Arrays.asList(ack.getUuids()));
+		StorageMaid maid = new StorageMaid(Arrays.asList(ack.getUuids()));
 		maid.start();
 	}
 

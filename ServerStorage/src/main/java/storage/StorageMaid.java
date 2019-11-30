@@ -3,10 +3,10 @@ package storage;
 import java.io.File;
 import java.util.*;
 
-public class FileMaid extends Thread {
+public class StorageMaid extends Thread {
 	private Collection<UUID> uuids;
 
-	public FileMaid(Collection<UUID> uuids) {
+	public StorageMaid(Collection<UUID> uuids) {
 		this.uuids = uuids;
 	}
 
