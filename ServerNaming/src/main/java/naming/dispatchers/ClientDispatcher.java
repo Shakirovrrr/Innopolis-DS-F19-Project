@@ -10,6 +10,7 @@ import naming.Node;
 import naming.dispatchers.returns.*;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Path;
@@ -65,10 +66,10 @@ public class ClientDispatcher extends Thread {
 
                 PutReturnValue returnValue = dispatcher.put(directoryPath, fileName, false);
                 if (returnValue.getStatus() == StatusCodes.Code.OK) {
-                    NodePublicAddress storageAddress = new NodePublicAddress(nodes.get(0).getPublicIpAddress(), nodes.get(0).getPortNumber());
-                    List<NodePrivateAddress> replicaAddresses = new LinkedList<>();
+                    InetAddress storageAddress = nodes.get(0).getPublicIpAddress();
+                    List<InetAddress> replicaAddresses = new LinkedList<>();
                     for (int i = 1; i < nodes.size(); i++) {
-                        replicaAddresses.add(new NodePrivateAddress(nodes.get(i).getPrivateIpAddress(), nodes.get(i).getPortNumber()));
+                        replicaAddresses.add(nodes.get(i).getPrivateIpAddress());
                     }
                     ack = new PutAck(returnValue.getStatus(), storageAddress, returnValue.getFileId(), replicaAddresses);
                 } else {
@@ -99,7 +100,7 @@ public class ClientDispatcher extends Thread {
 
                 GetReturnValue returnValue = dispatcher.get(path);
                 if (returnValue.getStatus() == StatusCodes.Code.OK) {
-                    NodePublicAddress nodeAddress = new NodePublicAddress(returnValue.getNode().getPublicIpAddress(), returnValue.getNode().getPortNumber());
+                    InetAddress nodeAddress = returnValue.getNode().getPublicIpAddress();
                     ack = new GetAck(returnValue.getStatus(), nodeAddress, returnValue.getFileId());
                 } else {
                     ack = new GetAck(returnValue.getStatus(), null, null);
