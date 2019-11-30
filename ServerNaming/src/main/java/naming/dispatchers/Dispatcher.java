@@ -1,6 +1,7 @@
 package naming.dispatchers;
 
 import commons.StatusCodes;
+import commons.commands.naming.Get;
 import naming.*;
 import naming.dispatchers.returns.*;
 
@@ -169,6 +170,22 @@ public class Dispatcher {
 
                 returnValue = new MkDirReturnValue(StatusCodes.Code.OK);
             }
+        }
+        return returnValue;
+    }
+
+    public GetReturnValue get(Path path) {
+        GetReturnValue returnValue;
+
+        File file = fileManager.getFile(path);
+
+        if (file == null) {
+            returnValue = new GetReturnValue(StatusCodes.Code.FILE_OR_DIRECTORY_DOES_NOT_EXIST, null, null);
+        } else {
+            if (file.getNodes().size() == 0) {
+                returnValue = new GetReturnValue(StatusCodes.Code.NO_NODES_AVAILABLE, null, null);
+            }
+            returnValue = new GetReturnValue(StatusCodes.Code.OK, (Node)file.getNodes().toArray()[0], file.getId());
         }
         return returnValue;
     }

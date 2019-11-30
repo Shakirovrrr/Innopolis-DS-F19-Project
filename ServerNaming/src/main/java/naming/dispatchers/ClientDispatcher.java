@@ -10,15 +10,12 @@ import naming.Node;
 import naming.dispatchers.returns.*;
 
 import java.io.IOException;
-import java.io.PipedInputStream;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 
 public class ClientDispatcher extends Thread {
     private int listeningPort;
@@ -92,7 +89,21 @@ public class ClientDispatcher extends Thread {
                 PutReturnValue returnValue = dispatcher.put(directoryPath, fileName, true);
                 ack = new TouchAck(returnValue.getStatus());
 
-//            } else if (command instanceof Get) {
+            } else if (command instanceof Get) {
+                Path path = Paths.get(((Get) command).getFromPath());
+                if (path.getNameCount() == 0) {     // only root in the path
+                    ack = new GetAck(StatusCodes.Code.INCORRECT_NAME, null, null);
+                    IORoutines.sendSignal(conn, ack);
+                    return;
+                }
+
+                GetReturnValue returnValue = dispatcher.get(path);
+                if (returnValue.getStatus() == StatusCodes.Code.OK) {
+                    NodePublicAddress nodeAddress = new NodePublicAddress(returnValue.getNode().getPublicIpAddress(), returnValue.getNode().getPortNumber());
+                    ack = new GetAck(returnValue.getStatus(), nodeAddress, returnValue.getFileId());
+                } else {
+                    ack = new GetAck(returnValue.getStatus(), null, null);
+                }
 
             } else if (command instanceof InfoFile) {
                 Path path = Paths.get(((InfoFile) command).getRemotePath());
