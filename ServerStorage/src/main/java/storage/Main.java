@@ -16,7 +16,7 @@ class Main {
 		try {
 			Register.register(InetAddress.getByName("192.168.0.1"));
 		} catch (IOException e) {
-			throw new CouldNotRegisterException("Could not register at naming server.", e);
+			throw new CouldNotRegisterException("REGISTER: Could not register at naming server.", e);
 		}
 
 		ClientDispatcher dispatcher = new ClientDispatcher(Ports.PORT_STORAGE);

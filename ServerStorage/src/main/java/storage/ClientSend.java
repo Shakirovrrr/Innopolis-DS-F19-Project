@@ -38,7 +38,7 @@ public class ClientSend extends Thread {
 				sockOut.close();
 			} catch (IOException ex) {
 				ex.printStackTrace();
-				System.err.println("IOException thrown while trying to close streams.");
+				System.err.println("SEND: IOException thrown while trying to close streams.");
 			}
 		}
 	}
