@@ -30,8 +30,6 @@ public class ClientSend extends Thread {
 
 		try {
 			IORoutines.transmit(fileIn, sockOut, 8192);
-
-			// TODO Notify naming
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		} finally {

@@ -62,6 +62,24 @@ public class Folder {
         return true;
     }
 
+    public boolean removeFile(String fileName) {
+        if (!fileExists(fileName)) {
+            return false;
+        }
+        files.remove(fileName);
+
+        return true;
+    }
+
+    public boolean removeFolder(String folderName) {
+        if (!folderExists(folderName)) {
+            return false;
+        }
+        folders.remove(folderName);
+
+        return true;
+    }
+
     public boolean folderExists(String folderName) {
         return folders.containsKey(folderName);
     }
