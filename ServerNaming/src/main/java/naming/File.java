@@ -10,7 +10,7 @@ public class File {
     private int access;
     private UUID uuid;
     private boolean isTouched;
-    private Set<UUID> nodes;
+//    private Set<UUID> nodes;
 
     public File(String name, UUID uuid, boolean isTouched) {
         this.name = name;
@@ -18,7 +18,7 @@ public class File {
         this.access = 0;
         this.uuid = uuid;
         this.isTouched = isTouched;
-        this.nodes = new HashSet<>();
+//        this.nodes = new HashSet<>();
     }
 
     public File(String name, long size, int access, UUID uuid, boolean isTouched) {
@@ -27,16 +27,16 @@ public class File {
         this.access = access;
         this.uuid = uuid;
         this.isTouched = isTouched;
-        this.nodes = new HashSet<>();
+//        this.nodes = new HashSet<>();
     }
 
-    public File(String name, long size, int access, UUID uuid, boolean isTouched, Set<UUID> nodes) {
-        this.name = name;
-        this.size = size;
-        this.access = access;
-        this.uuid = uuid;
-        this.nodes = nodes;
-    }
+//    public File(String name, long size, int access, UUID uuid, boolean isTouched, Set<UUID> nodes) {
+//        this.name = name;
+//        this.size = size;
+//        this.access = access;
+//        this.uuid = uuid;
+//        this.nodes = nodes;
+//    }
 
     public String getName() {
         return name;
@@ -58,9 +58,9 @@ public class File {
         return isTouched;
     }
 
-    public Set<UUID> getNodes() {
-        return nodes;
-    }
+//    public Set<UUID> getNodes() {
+//        return nodes;
+//    }
 
     public void setSize(long size) {
         this.size = size;
@@ -70,11 +70,11 @@ public class File {
         this.access = access;
     }
 
-    public void addNode(UUID nodeId) {
-        nodes.add(nodeId);
-    }
+//    public void addNode(UUID nodeId) {
+//        nodes.add(nodeId);
+//    }
 
-    public void removeNode(UUID nodeId) {
-        nodes.remove(nodeId);
-    }
+//    public void removeNode(UUID nodeId) {
+//        nodes.remove(nodeId);
+//    }
 }

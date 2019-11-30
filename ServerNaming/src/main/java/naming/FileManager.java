@@ -67,8 +67,8 @@ public class FileManager {
         return null;
     }
 
-    public boolean addFile(Path directoryPath, String fileName, int fileSize, int fileAccess, UUID fileId, boolean isTouched, Set<UUID> nodes) {
-        File file = new File(fileName, fileSize, fileAccess, fileId, isTouched, nodes);
+    public boolean addFile(Path directoryPath, String fileName, int fileSize, int fileAccess, UUID fileId, boolean isTouched) {
+        File file = new File(fileName, fileSize, fileAccess, fileId, isTouched);
         return addFile(directoryPath, file);
     }
 

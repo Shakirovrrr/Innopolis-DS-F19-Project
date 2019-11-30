@@ -16,6 +16,12 @@ public class GetReturnValue extends ReturnValue {
         this.fileId = fileId;
     }
 
+    public GetReturnValue(StatusCodes.Code statusCode, boolean isTouched, Node node, UUID fileId) {
+        super(statusCode);
+        this.node = node;
+        this.fileId = fileId;
+    }
+
     public Node getNode() {
         return node;
     }

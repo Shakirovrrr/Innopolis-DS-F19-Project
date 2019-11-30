@@ -60,7 +60,11 @@ public class Dispatcher {
         if (file == null) {     // file or directory does not exist
             returnValue = new InfoReturnValue(StatusCodes.Code.FILE_OR_DIRECTORY_DOES_NOT_EXIST);
         } else {
-            returnValue = new InfoReturnValue(StatusCodes.Code.OK, file.getSize(), file.getAccess(), file.getNodes());
+            List<UUID> nodeIds = new LinkedList<>();
+            for (Node node : fileStorage.getFileNodes(file.getId())) {
+                nodeIds.add(node.getNodeId());
+            }
+            returnValue = new InfoReturnValue(StatusCodes.Code.OK, file.getSize(), file.getAccess(), nodeIds);
         }
 
         return returnValue;
@@ -179,8 +183,12 @@ public class Dispatcher {
         File file = fileManager.getFile(path);
 
         if (file == null) {
-            returnValue = new GetReturnValue(StatusCodes.Code.FILE_OR_DIRECTORY_DOES_NOT_EXIST, null, null);
+            returnValue = new GetReturnValue(StatusCodes.Code.FILE_OR_DIRECTORY_DOES_NOT_EXIST,null, null);
         } else {
+            if (file.getIsTouched()) {
+                returnValue = new GetReturnValue(StatusCodes.Code.)
+            }
+
             if (file.getNodes().size() == 0) {
                 returnValue = new GetReturnValue(StatusCodes.Code.NO_NODES_AVAILABLE, null, null);
             } else {
@@ -188,6 +196,14 @@ public class Dispatcher {
             }
         }
         return returnValue;
+    }
+
+    public boolean removeNode(UUID nodeId) {
+        Node node = nodeStorage.getNode(nodeId);
+        Set<UUID> keepingFiles = node.getKeepingFiles();
+        for (UUID file : keepingFiles) {
+            fileStorage.get
+        }
     }
 
 }

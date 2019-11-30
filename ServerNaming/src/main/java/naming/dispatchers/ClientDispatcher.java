@@ -31,7 +31,7 @@ public class ClientDispatcher extends Thread {
     private void serve() throws IOException {
         while (true) {
             Socket conn = server.accept();
-//			dispatch(conn);
+
             new Thread(() -> dispatch(conn)).start();
         }
     }
