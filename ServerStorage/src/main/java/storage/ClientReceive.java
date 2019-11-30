@@ -35,7 +35,7 @@ public class ClientReceive extends Thread {
 
 	private OutputStream[] getReplicaOutputStreams(OutputStream fileOut, InetAddress[] addresses) throws IOException {
 		OutputStream[] streams = new OutputStream[addresses.length + 1];
-		FileUpload uploadCommand = new FileUpload(command.getUuid());
+		FileUpload uploadCommand = new FileUpload(command.getUuid(), command.getFileSize());
 		streams[0] = fileOut;
 		for (int i = 1; i <= addresses.length; i++) {
 			Socket socket = new Socket(addresses[i], Ports.PORT_STORAGE);
@@ -67,7 +67,7 @@ public class ClientReceive extends Thread {
 			IORoutines.sendSignal(conn, new ConfirmReady());
 
 			System.out.println("RECEIVE: Receiving file " + command.getUuid().toString());
-			IORoutines.transmitNBytesSplit(10, sockIn, sockReplica); // TODO Correct bytes
+			IORoutines.transmitNBytesSplit(command.getFileSize(), sockIn, sockReplica);
 			System.out.println("RECEIVE: Done.");
 
 			notifyClient(StatusCodes.OK);
