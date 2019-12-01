@@ -3,6 +3,7 @@ package naming.dispatchers;
 import commons.StatusCodes;
 import commons.commands.Command;
 import commons.commands.naming.*;
+import commons.commands.general.ErrorAck;
 import commons.routines.IORoutines;
 import naming.Node;
 import naming.dispatchers.returns.*;
