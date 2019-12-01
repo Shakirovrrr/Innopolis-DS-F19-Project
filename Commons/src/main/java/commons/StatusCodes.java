@@ -8,8 +8,11 @@ public class StatusCodes {
 	public static final int INCORRECT_NAME = 4;
 	public static final int NO_NODES_AVAILABLE = 5;
 	public static final int UNKNOWN_COMMAND = 6;
+	public static final int CONFIRMATION_REQUIRED = 7;
 
 	public static final int UPLOAD_FAILED = 11;
+
+	public static final int UNKNOWN_NODE = 21;
 
 	// init, put, touch, get, info, cp, mv, cd, ls, mkdir
 	@Deprecated(forRemoval = true)
