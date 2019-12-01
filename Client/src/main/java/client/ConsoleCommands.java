@@ -207,7 +207,9 @@ public class ConsoleCommands {
             remoteFileName = this.getCurrentRemoteDir() + "/" + filePaths[1];
         }
 
-        NamingCommand namingCommand = new commons.commands.naming.PutFile(remoteFileName);
+        File file = new File(this.getAbsolutePath(filePaths[0]));
+
+        NamingCommand namingCommand = new commons.commands.naming.PutFile(remoteFileName,file.length());
 
         Socket namingSocket = new Socket(hostNaming, Ports.PORT_NAMING);
         IORoutines.sendSignal(namingSocket, namingCommand);
@@ -232,7 +234,7 @@ public class ConsoleCommands {
             IORoutines.sendSignal(storageSocket, storageCommand);
 
             ConfirmReady storageCommand1 = (ConfirmReady) IORoutines.receiveSignal(storageSocket);
-            System.out.println("Agree? " + storageCommand1.isAgree());
+//            System.out.println("Agree? " + storageCommand1.isAgree());
             OutputStream uploadingToServer = storageSocket.getOutputStream();
             InputStream readingTheFile = new FileInputStream(filePaths[0]);
             IORoutines.transmit(readingTheFile, uploadingToServer);
