@@ -43,7 +43,7 @@ public class ClientDispatcher extends Thread {
             if (command instanceof Init) {
                 dispatcher.init();
 
-                ack = new InitAck(StatusCodes.Code.OK);
+                ack = new InitAck(StatusCodes.OK);
 
             } else if (command instanceof PutFile) {
                 List<Node> nodes = dispatcher.getNodes();
