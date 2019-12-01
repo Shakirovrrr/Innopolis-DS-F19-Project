@@ -43,6 +43,16 @@ public class FileStorage {
         fileToMainNodeId.put(fileId, mainNodeId);
     }
 
+    public void addFile(UUID fileId, Path filePath) {
+        if (!filePaths.containsKey(fileId)) {
+            Set<Path> paths = new HashSet<>();
+            filePaths.put(fileId, paths);
+            Set<Node> nodes = new HashSet<>();
+            fileToNodes.put(fileId, nodes);
+        }
+        filePaths.get(fileId).add(filePath);
+    }
+
     public boolean addFileNode(UUID fileId, Node node) {
         if (fileToNodes.containsKey(fileId)) {
             fileToNodes.get(fileId).add(node);
@@ -89,7 +99,7 @@ public class FileStorage {
         return filePaths.containsKey(fileId);
     }
 
-    public UUID getFileMainNode(UUID fileId) {
+    public UUID getFileMainNodeId(UUID fileId) {
         return fileToMainNodeId.get(fileId);
     }
 

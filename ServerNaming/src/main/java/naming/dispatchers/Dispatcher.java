@@ -253,6 +253,10 @@ public class Dispatcher {
         }
     }
 
+    public UUID getFileMainNodeId(UUID fileId) {
+        return fileStorage.getFileMainNodeId(fileId);
+    }
+
     public void registerNode(UUID nodeId, List<UUID> fileIds, InetAddress publicAddress, InetAddress privateAddress) {
         Node node = new Node(nodeId, publicAddress, privateAddress);
         nodeStorage.addNode(node);
