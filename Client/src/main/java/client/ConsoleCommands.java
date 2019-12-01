@@ -121,7 +121,7 @@ public class ConsoleCommands {
         NamingCommand namingCommand = new commons.commands.naming.Init();
         IORoutines.sendSignal(socket, namingCommand);
         commons.commands.naming.InitAck receiveAkn = (commons.commands.naming.InitAck) IORoutines.receiveSignal(socket);
-        System.out.println(receiveAkn.getStatus());
+        System.out.println(receiveAkn.getStatusStr());
     }
 
 
@@ -134,9 +134,9 @@ public class ConsoleCommands {
         IORoutines.sendSignal(socket, namingCommand);
         commons.commands.naming.TouchAck receiveAkn = (commons.commands.naming.TouchAck) IORoutines.receiveSignal(socket);
         if (receiveAkn.getStatusCode() == StatusCodes.OK) {
-            System.out.println(receiveAkn.getStatus());
+            System.out.println(receiveAkn.getStatusStr());
         } else {
-            System.out.println(receiveAkn.getStatusCode());
+            System.out.println(receiveAkn.getStatusStr());
         }
     }
 
@@ -192,7 +192,7 @@ public class ConsoleCommands {
             savingTheFile.close();
             downloading.close();
         } else {
-            System.out.println(statusCode);
+            System.out.println(receiveAknName.getStatusStr());
         }
     }
 
@@ -212,16 +212,16 @@ public class ConsoleCommands {
         Socket namingSocket = new Socket(hostNaming, Ports.PORT_NAMING);
         IORoutines.sendSignal(namingSocket, namingCommand);
         commons.commands.naming.PutAck receiveAknName = (commons.commands.naming.PutAck) IORoutines.receiveSignal(namingSocket);
-        if (!receiveAknName.getStatus().equals(StatusCodes.Code.OK)) {
-            System.out.println(receiveAknName.getStatus());
+        if (receiveAknName.getStatusCode() != (StatusCodes.OK)) {
+            System.out.println(receiveAknName.getStatusStr());
         } else {
             InetAddress hostStorage = receiveAknName.getStorageAddress();
             UUID fileId = receiveAknName.getFileId();
             Collection<InetAddress> replicasAddresses = receiveAknName.getReplicaAddresses();
-            if (receiveAknName.getStatus().equals(StatusCodes.Code.OK)) {
+            if (receiveAknName.getStatusCode() == (StatusCodes.OK)) {
                 System.out.println(hostStorage + " " + fileId + " " + replicasAddresses.toString());
             } else {
-                System.out.println(receiveAknName.getStatus());
+                System.out.println(receiveAknName.getStatusStr());
             }
 //        Collection<InetAddress> replicasAddresses = new LinkedList<>();
 //        UUID fileId = UUID.randomUUID();
@@ -242,7 +242,7 @@ public class ConsoleCommands {
             uploadingToServer.close();
             readingTheFile.close();
 
-            System.out.println(storageCommand2.getStatusCode());
+            System.out.println(storageCommand2.getStatusStr());
         }
     }
 
@@ -270,7 +270,7 @@ public class ConsoleCommands {
             } else {
                 commons.commands.naming.RmAck receiveAkn1 = (commons.commands.naming.RmAck) IORoutines.receiveSignal(socket);
 
-                System.out.println(receiveAkn1.getStatusCode());
+                System.out.println(receiveAkn1.getStatusStr());
             }
 
         }
@@ -288,8 +288,7 @@ public class ConsoleCommands {
             System.out.println("access_rights_rwm: " + receiveAkn.getAccessRights());
             System.out.println("number_of_file_replicas: " + receiveAkn.getNodes().size());
         } else {
-            //TODO create local hashmap and take from it
-            System.out.println(receiveAkn.getStatusCode());
+            System.out.println(receiveAkn.getStatusStr());
         }
     }
 
@@ -300,7 +299,7 @@ public class ConsoleCommands {
         NamingCommand namingCommand = new commons.commands.naming.CpFile(fromPath, toPath);
         IORoutines.sendSignal(socket, namingCommand);
         commons.commands.naming.CpAck receiveAkn = (commons.commands.naming.CpAck) IORoutines.receiveSignal(socket);
-        System.out.println(receiveAkn.getStatus());
+        System.out.println(receiveAkn.getStatusStr());
     }
 
     public void mv(String fromPath, String toPath) throws IOException, ClassNotFoundException {
@@ -310,7 +309,7 @@ public class ConsoleCommands {
         NamingCommand namingCommand = new commons.commands.naming.MvFile(fromPath, toPath);
         IORoutines.sendSignal(socket, namingCommand);
         commons.commands.naming.MvAck receiveAkn = (commons.commands.naming.MvAck) IORoutines.receiveSignal(socket);
-        System.out.println(receiveAkn.getStatus());
+        System.out.println(receiveAkn.getStatusStr());
     }
 
     public void cd(String dirPath) throws IOException, ClassNotFoundException {
@@ -320,9 +319,9 @@ public class ConsoleCommands {
         NamingCommand namingCommand = new commons.commands.naming.Cd(dirPath);
         IORoutines.sendSignal(socket, namingCommand);
         commons.commands.naming.CdAck receiveAkn = (commons.commands.naming.CdAck) IORoutines.receiveSignal(socket);
-        StatusCodes.Code status = receiveAkn.getStatus();
+        int status = receiveAkn.getStatusCode();
         System.out.println(status);
-        if ((status.equals(StatusCodes.Code.OK))) {
+        if (status == StatusCodes.OK) {
             this.setCurrentRemoteDir(dirPath);
         }
     }
@@ -333,8 +332,8 @@ public class ConsoleCommands {
         NamingCommand namingCommand = new commons.commands.naming.Ls(dirPath);
         IORoutines.sendSignal(socket, namingCommand);
         commons.commands.naming.LsAck receiveAkn = (commons.commands.naming.LsAck) IORoutines.receiveSignal(socket);
-        StatusCodes.Code status = receiveAkn.getStatus();
-        if (status.equals(StatusCodes.Code.OK)) {
+        int status = receiveAkn.getStatusCode();
+        if (status == StatusCodes.OK) {
 
             List<String> folders = receiveAkn.getFolders();
             List<String> files = receiveAkn.getFiles();
@@ -356,7 +355,7 @@ public class ConsoleCommands {
             }
 
         } else {
-            System.out.println(status);
+            System.out.println(receiveAkn.getStatusStr());
         }
     }
 
@@ -369,7 +368,7 @@ public class ConsoleCommands {
         if (receiveAkn.getStatusCode() == StatusCodes.OK) {
             System.out.println("Directory " + dirPath + " created");
         } else {
-            System.out.println(receiveAkn.getStatus());
+            System.out.println(receiveAkn.getStatusStr());
         }
         ;
     }
