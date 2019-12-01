@@ -13,12 +13,12 @@ import java.util.Arrays;
 public class HeartbeatRunner extends Thread {
 	private void knockNaming() throws IOException {
 		IORoutines.sendSignalOnce(Main.namingAddress,
-				Ports.PORT_INTERNAL, new Heartbeat());
+				Ports.PORT_INTERNAL, new Heartbeat(Main.nodeUuid));
 	}
 
 	private void fetchFiles() throws IOException, ClassNotFoundException {
 		Socket conn = new Socket(Main.namingAddress, Ports.PORT_INTERNAL);
-		IORoutines.sendSignal(conn, new FetchFiles());
+		IORoutines.sendSignal(conn, new FetchFiles(Main.nodeUuid));
 		FetchFilesAck ack = (FetchFilesAck) IORoutines.receiveSignal(conn);
 
 		StorageMaid maid = new StorageMaid(Arrays.asList(ack.getExistedFiles()));
