@@ -4,6 +4,7 @@ import com.google.gson.internal.$Gson$Preconditions;
 import commons.StatusCodes;
 import commons.commands.Command;
 import commons.commands.general.ErrorAck;
+import commons.commands.general.FileUploadAck;
 import commons.commands.internal.FetchFiles;
 import commons.commands.internal.FetchFilesAck;
 import commons.commands.internal.Heartbeat;
@@ -91,6 +92,9 @@ public class StorageServerDispatcher extends Thread {
             } else if (command instanceof Heartbeat) {
                 UUID nodeId = ((Heartbeat) command).getNodeId();
                 serversHeartbeats.replace(nodeId, new Date().getTime());
+
+            } else if (command instanceof FileUploadAck) {
+
 
             } else {
                 Command ack = new ErrorAck();
