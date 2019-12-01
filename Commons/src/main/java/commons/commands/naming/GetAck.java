@@ -9,8 +9,8 @@ public class GetAck extends NamingCommandAck {
     private InetAddress nodeAddress;
     private  UUID fileId;
 
-    public GetAck(StatusCodes.Code statusCode, InetAddress nodeAddress, UUID fileId) {
-        this.status = statusCode;
+    public GetAck(int statusCode, InetAddress nodeAddress, UUID fileId) {
+        super(statusCode);
         this.nodeAddress = nodeAddress;
         this.fileId = fileId;
     }
