@@ -1,6 +1,7 @@
 package storage;
 
 import commons.Ports;
+import commons.StatusCodes;
 import commons.commands.internal.FetchFiles;
 import commons.commands.internal.FetchFilesAck;
 import commons.commands.internal.Heartbeat;
@@ -21,8 +22,15 @@ public class HeartbeatRunner extends Thread {
 		IORoutines.sendSignal(conn, new FetchFiles(Main.nodeUuid));
 		FetchFilesAck ack = (FetchFilesAck) IORoutines.receiveSignal(conn);
 
-		StorageMaid maid = new StorageMaid(Arrays.asList(ack.getExistedFiles()));
-		maid.start();
+		if (ack.getStatus() == StatusCodes.UNKNOWN_NODE) {
+			System.err.println("HEARTBEAT: This server has been forgotten, re-registering...");
+			Register.register(Main.namingAddress);
+		}
+
+		if (ack.getExistedFiles() != null) {
+			StorageMaid maid = new StorageMaid(Arrays.asList(ack.getExistedFiles()));
+			maid.start();
+		}
 	}
 
 	private void heartbeat() throws InterruptedException {
@@ -35,8 +43,12 @@ public class HeartbeatRunner extends Thread {
 				} else {
 					knockNaming();
 				}
-				fails = 0;
 				knock++;
+
+				if (fails > 0) {
+					fails = 0;
+					System.out.println("HEARTBEAT: Connection restored.");
+				}
 			} catch (IOException ex) {
 				fails++;
 				System.err.printf("HEARTBEAT: Couldn't connect, trial %d of 5\n", fails);
@@ -56,7 +68,10 @@ public class HeartbeatRunner extends Thread {
 
 	@Override
 	public void run() {
-		this.setUncaughtExceptionHandler((t, e) -> System.err.println("HEARTBEAT: Ne padat'!"));
+		this.setUncaughtExceptionHandler((t, e) -> {
+			System.err.println("HEARTBEAT: Ne padat'!");
+			e.printStackTrace();
+		});
 
 		try {
 			heartbeat();

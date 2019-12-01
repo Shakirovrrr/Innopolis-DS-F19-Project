@@ -13,8 +13,11 @@ public class StorageMaid extends Thread {
 	public static Collection<UUID> getFiles() {
 		File dataDir = new File(Main.dataPath);
 		Set<UUID> files = new HashSet<>();
-		for (File file : Objects.requireNonNull(dataDir.listFiles())) {
-			files.add(UUID.fromString(file.getName()));
+
+		if (dataDir.listFiles() != null) {
+			for (File file : Objects.requireNonNull(dataDir.listFiles())) {
+				files.add(UUID.fromString(file.getName()));
+			}
 		}
 		return files;
 	}

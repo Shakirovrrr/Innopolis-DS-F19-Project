@@ -67,7 +67,6 @@ public class ClientDispatcher extends Thread {
 			server = new ServerSocket(listeningPort);
 			System.out.println("DISPATCHER: Socket has been bound to port " + listeningPort);
 		} catch (IOException e) {
-			e.printStackTrace();
 			System.err.println("DISPATCHER: Could not bind a socket to port " + listeningPort);
 		}
 

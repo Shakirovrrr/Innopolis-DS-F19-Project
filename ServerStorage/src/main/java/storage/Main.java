@@ -20,7 +20,7 @@ class Main {
 		dataPath = "./data/";
 		nodeUuid = UUID.randomUUID();
 		try {
-			namingAddress = InetAddress.getByName("192.168.0.1");
+			namingAddress = InetAddress.getByName("10.91.51.171");
 			Register.register(namingAddress);
 		} catch (IOException e) {
 			throw new CouldNotRegisterException("MAIN: Could not register at naming server.", e);
