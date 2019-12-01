@@ -8,8 +8,8 @@ public class LsAck extends NamingCommandAck {
     private List<String> folders;
     private List<String> files;
 
-    public LsAck(StatusCodes.Code statusCode, List<String> folders, List<String> files) {
-        this.status = statusCode;
+    public LsAck(int statusCode, List<String> folders, List<String> files) {
+        super(statusCode);
         this.folders = folders;
         this.files = files;
     }
