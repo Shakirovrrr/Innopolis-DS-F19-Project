@@ -56,12 +56,13 @@ public class StorageServerDispatcher extends Thread {
     private ServerSocket server;
     private Dispatcher dispatcher;
 
-    private PriorityQueue<NodeTimer> servers;
+    private Map<UUID, Long> serversHeartbeats;
 
     public StorageServerDispatcher(int listeningPort, Dispatcher dispatcher) {
         this.listeningPort = listeningPort;
         this.dispatcher = dispatcher;
-        this.servers = new PriorityQueue<>();
+//        this.servers = new PriorityQueue<>();
+        this.serversHeartbeats = new HashMap<>();
 
 //        new Thread(() -> checkServers()).start();
     }
@@ -70,10 +71,10 @@ public class StorageServerDispatcher extends Thread {
         try {
             while (true) {
                 sleep(Constants.TIMER_SLEEP_TIME);
-                for (NodeTimer node : servers) {
-                    if (node.getLastCall() + Constants.WAITING_TIME > new Date().getTime()) {
-                        dispatcher.removeNode(node.getNodeId());
-                        servers.remove(node);
+                for (UUID nodeId : serversHeartbeats.keySet()) {
+                    if (serversHeartbeats.get(nodeId) + Constants.WAITING_TIME > new Date().getTime()) {
+                        dispatcher.removeNode(nodeId);
+                        serversHeartbeats.remove(nodeId);
                     } else {
                         break;
                     }
@@ -102,9 +103,10 @@ public class StorageServerDispatcher extends Thread {
                 InetAddress localAddress = ((RegisterNode) command).getLocalAddress();
 
                 dispatcher.registerNode(nodeId, files, publicAddress, localAddress);
-                servers.add(new NodeTimer(nodeId, new Date().getTime()));
+                serversHeartbeats.put(nodeId, new Date().getTime());
+
             } else if (command instanceof FetchFiles) {
-                
+
 
             } else if (command instanceof Heartbeat) {
 

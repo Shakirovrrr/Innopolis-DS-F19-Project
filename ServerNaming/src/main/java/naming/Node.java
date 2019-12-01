@@ -52,10 +52,6 @@ public class Node {
         return nodeAddress.getPrivateAddress();
     }
 
-    public int getPortNumber() {
-        return nodeAddress.getPortNumber();
-    }
-
     public Set<UUID> getKeepingFiles() {
         return keepingFiles;
     }
