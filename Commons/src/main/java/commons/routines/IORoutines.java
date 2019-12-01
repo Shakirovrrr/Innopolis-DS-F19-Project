@@ -8,7 +8,7 @@ import java.net.Socket;
 
 @SuppressWarnings("WeakerAccess")
 public class IORoutines {
-	private static int defaultTransmitBufferSize = 64 * 1024;
+	private static int defaultTransmitBufferSize = 8 * 1024;
 
 	public static void transmit(InputStream streamFrom, OutputStream streamTo) throws IOException {
 		transmit(streamFrom, streamTo, defaultTransmitBufferSize);

@@ -3,13 +3,22 @@ package commons.commands.naming;
 import commons.StatusCodes;
 
 public abstract class NamingCommandAck extends NamingCommand {
-	private int statusCode;
+	@Deprecated
+	StatusCodes.Code status;
+	int statusCode;
+	StatusCodes statusCodes = new StatusCodes();
 
-	public NamingCommandAck(int statusCode) {
-		this.statusCode = statusCode;
+	@Deprecated
+	public StatusCodes.Code getStatus() {
+		return status;
 	}
 
 	public int getStatusCode() {
 		return statusCode;
+	}
+
+	public String getStatusStr(){
+		return this.statusCodes.getStatusCode(statusCode);
+
 	}
 }
