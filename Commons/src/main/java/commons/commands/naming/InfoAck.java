@@ -10,8 +10,8 @@ public class InfoAck extends NamingCommandAck {
     private int fileSize;
     private int accessRights;
 
-    public InfoAck(StatusCodes.Code statusCode, Path path, int fileSize, int accessRights) {
-        this.status = statusCode;
+    public InfoAck(int statusCode, Path path, int fileSize, int accessRights) {
+        super(statusCode);
         this.path = path;
         this.fileSize = fileSize;
         this.accessRights = accessRights;
