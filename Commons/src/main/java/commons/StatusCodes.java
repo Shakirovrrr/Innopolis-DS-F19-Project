@@ -13,16 +13,4 @@ public class StatusCodes {
 	public static final int UPLOAD_FAILED = 11;
 
 	public static final int UNKNOWN_NODE = 21;
-
-	// init, put, touch, get, info, cp, mv, cd, ls, mkdir
-	@Deprecated(forRemoval = true)
-	public enum Code {
-		OK,
-		IS_TOUCHED,
-		FILE_OR_DIRECTORY_DOES_NOT_EXIST,
-		FILE_OR_DIRECTORY_ALREADY_EXISTS,
-		INCORRECT_NAME,
-		NO_NODES_AVAILABLE,
-		UNKNOWN_COMMAND
-	}
 }
