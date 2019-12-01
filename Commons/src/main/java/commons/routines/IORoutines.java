@@ -46,11 +46,13 @@ public class IORoutines {
 
 	public static void transmitNBytesSplit(long n, InputStream streamFrom, int bufferSize, OutputStream... streamTo) throws IOException {
 		int count;
+		int total = 0;
 		byte[] buffer = new byte[bufferSize];
-		while ((count = streamFrom.read(buffer)) > 0 && count < n) {
+		while (total < n && (count = streamFrom.read(buffer)) > 0) {
 			for (OutputStream to : streamTo) {
 				to.write(buffer, 0, count);
 			}
+			total += count;
 		}
 	}
 
