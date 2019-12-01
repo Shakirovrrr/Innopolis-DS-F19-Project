@@ -55,11 +55,6 @@ public class IORoutines {
 		}
 	}
 
-	@Deprecated(forRemoval = true)
-	public static void notify(InetAddress address, int port, Command command) throws IOException {
-		sendSignalOnce(address, port, command);
-	}
-
 	public static void sendSignalOnce(InetAddress address, int port, Command command) throws IOException {
 		Socket socket = new Socket(address, port);
 		sendSignal(socket, command);
