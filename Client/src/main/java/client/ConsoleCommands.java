@@ -208,8 +208,19 @@ public class ConsoleCommands {
         }
 
         File file = new File(this.getAbsolutePath(filePaths[0]));
+        boolean[] rwe = {file.canRead(), file.canWrite(), file.canExecute()};
+        StringBuilder rights = new StringBuilder();
 
-        NamingCommand namingCommand = new commons.commands.naming.PutFile(remoteFileName,file.length());
+        for (boolean b : rwe) {
+            System.out.println(b);
+            if (b) {
+                rights.append("1");
+            } else {
+                rights.append("0");
+            }
+        }
+
+        NamingCommand namingCommand = new commons.commands.naming.PutFile(remoteFileName, rights.toString(), file.length());
 
         Socket namingSocket = new Socket(hostNaming, Ports.PORT_NAMING);
         IORoutines.sendSignal(namingSocket, namingCommand);
