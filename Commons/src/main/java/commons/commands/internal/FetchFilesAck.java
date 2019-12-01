@@ -23,27 +23,42 @@ public class FetchFilesAck extends InternalCommand {
 		}
 	}
 
+	private int status;
 	private UUID[] existedFiles;
 	private ToDownload[] filesToDownload;
 
-	public FetchFilesAck(UUID[] existedFiles, ToDownload[] filesToDownload) {
+	public FetchFilesAck(int statusCode, UUID[] existedFiles, ToDownload[] filesToDownload) {
+		this.status = statusCode;
 		this.existedFiles = existedFiles;
 		this.filesToDownload = filesToDownload;
 	}
 
-	public FetchFilesAck(Collection<UUID> existedFiles, ToDownload[] filesToDownload) {
+	public FetchFilesAck(int statusCode, Collection<UUID> existedFiles, ToDownload[] filesToDownload) {
+		this.status = statusCode;
 		this.existedFiles = existedFiles.toArray(new UUID[0]);
 		this.filesToDownload = filesToDownload;
 	}
 
-	public FetchFilesAck(UUID[] existedFiles, Collection<ToDownload> filesToDownload) {
+	public FetchFilesAck(int statusCode, UUID[] existedFiles, Collection<ToDownload> filesToDownload) {
+		this.status = statusCode;
 		this.existedFiles = existedFiles;
 		this.filesToDownload = filesToDownload.toArray(new ToDownload[0]);
 	}
 
-	public FetchFilesAck(Collection<UUID> existedFiles, Collection<ToDownload> filesToDownload) {
+	public FetchFilesAck(int statusCode, Collection<UUID> existedFiles, Collection<ToDownload> filesToDownload) {
+		this.status = statusCode;
 		this.existedFiles = existedFiles.toArray(new UUID[0]);
 		this.filesToDownload = filesToDownload.toArray(new ToDownload[0]);
+	}
+
+	public FetchFilesAck(int statusCode) {
+		this.status = statusCode;
+		this.existedFiles = null;
+		this.filesToDownload = null;
+	}
+
+	public int getStatus() {
+		return status;
 	}
 
 	public UUID[] getExistedFiles() {
