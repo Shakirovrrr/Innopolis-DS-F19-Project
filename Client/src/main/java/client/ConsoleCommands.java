@@ -253,7 +253,7 @@ public class ConsoleCommands {
 //        InetAddress hostStorage = InetAddress.getByName("10.91.51.200");
             //todo STORAGE_SERVER_CONNECTION
             Socket storageSocket = new Socket(hostStorage, Ports.PORT_STORAGE);
-            StorageCommand storageCommand = new commons.commands.storage.FileUpload(fileId, replicasAddresses);
+            StorageCommand storageCommand = new commons.commands.storage.FileUpload(fileId, file.length(),replicasAddresses);
             IORoutines.sendSignal(storageSocket, storageCommand);
 
             ConfirmReady storageCommand1 = (ConfirmReady) IORoutines.receiveSignal(storageSocket);
@@ -311,7 +311,7 @@ public class ConsoleCommands {
             System.out.println("abs_path: " + this.getAbsolutePath(filePath));
             System.out.println("file_size: " + receiveAkn.getFileSize());
             System.out.println("access_rights_rwm: " + receiveAkn.getAccessRights());
-            System.out.println("number_of_file_replicas: " + receiveAkn.getNodes().size());
+            System.out.println("number_of_file_replicas: " + receiveAkn.getNodes().length);
         } else {
             System.out.println(this.getStatusStr(receiveAkn.getStatusCode()));
         }

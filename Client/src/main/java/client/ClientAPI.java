@@ -187,21 +187,24 @@ public class ClientAPI {
         }
     }
 
-    public void commandHandler() throws IOException, ClassNotFoundException {
+    public void commandHandler()  {
 
         //connect to console
         //input - next line in console after enter press
         System.out.println("\nWelcome to the Distributed Storage!\nEnter 'help' for listing the commands\n");
         while (true) {
-            System.out.print("storage:" + this.consoleCommands.getCurrentRemoteDir() + " " + "$ ");
+
+                System.out.print("storage:" + this.consoleCommands.getCurrentRemoteDir() + " " + "$ ");
 
             if (this.consoleCommands.getInput().hasNextLine()) {
                 String input = this.consoleCommands.getInput().nextLine();
+                try{
 
                 commandRouter(input);
 
             }
+            catch ( IOException| ClassNotFoundException ex){}
         }
     }
 
-}
+}}
