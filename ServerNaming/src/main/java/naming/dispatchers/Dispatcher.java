@@ -36,9 +36,14 @@ public class Dispatcher {
         return  nodeStorage.getNodes();
     }
 
-    public PutReturnValue put(Path directoryPath, String fileName, boolean isTouched) {
+    public TouchReturnValue touch(Path directoryPath, String fileName) {
+        PutReturnValue returnValue = put(directoryPath, fileName, true, 0, Constants.DEFAULT_RIGHTS);
+        return new TouchReturnValue(returnValue.getStatus());
+    }
+
+    public PutReturnValue put(Path directoryPath, String fileName, boolean isTouched, long fileSize, String fileRights) {
         UUID fileId = UUID.randomUUID();
-        File file = new File(fileName, fileId, isTouched);
+        File file = new File(fileName, fileSize, fileRights, fileId, isTouched);
 
         PutReturnValue returnValue;
         boolean fileAdded = fileManager.addFile(directoryPath, file);
@@ -208,6 +213,44 @@ public class Dispatcher {
             fileStorage.removeFileNode(fileId, node);
         }
         nodeStorage.removeNode(nodeId);
+    }
+
+    public boolean folderExists(Path path) {
+        return (fileManager.getFolder(path) != null);
+    }
+
+    public boolean fileExists(Path path) {
+        return (fileManager.getFile(path) != null);
+    }
+
+    public void removeFolder(Path path) {
+        Folder folder = fileManager.getFolder(path);
+        if (folder != null) {
+            List<File> files = fileManager.getFilesRecursively(folder);
+            for (File file : files) {
+                remove(file);
+            }
+        }
+    }
+
+    public void removeFile(Path path) {
+        File file = fileManager.getFile(path);
+        remove(file);
+    }
+
+    public void remove(File file) {
+        if (file != null) {
+            List<Path> directories = fileStorage.getFilePaths(file.getId());
+            for (Path directory : directories) {
+                Folder folder = fileManager.getFolder(directory);
+                folder.removeFile(file.getName());
+            }
+            List<Node> nodes = fileStorage.getFileNodes(file.getId());
+            for (Node node : nodes) {
+                node.removeKeepingFile(file.getId());
+            }
+            fileStorage.removeFile(file.getId());
+        }
     }
 
     public void registerNode(UUID nodeId, List<UUID> fileIds, InetAddress publicAddress, InetAddress privateAddress) {

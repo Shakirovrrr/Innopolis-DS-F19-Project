@@ -9,7 +9,7 @@ public class FileUploadAck extends Command {
     // FUAck
     private int statusCode;
     private UUID uuid;
-    StatusCodes statusCodes = new StatusCodes();
+//    StatusCodes statusCodes = new StatusCodes();
 
 
     public FileUploadAck(int statusCode, UUID uuid) {

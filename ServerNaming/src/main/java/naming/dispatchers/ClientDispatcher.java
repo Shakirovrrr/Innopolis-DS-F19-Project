@@ -62,7 +62,9 @@ public class ClientDispatcher extends Thread {
                 Path directoryPath = path.getParent();
                 String fileName = path.getFileName().toString();
 
-                PutReturnValue returnValue = dispatcher.put(directoryPath, fileName, false);
+                long fileSize = ((PutFile) command).getSize();
+                String fileRights = ((PutFile) command).getRights();
+                PutReturnValue returnValue = dispatcher.put(directoryPath, fileName, false, fileSize, fileRights);
                 if (returnValue.getStatus() == StatusCodes.OK) {
                     InetAddress storageAddress = nodes.get(0).getPublicIpAddress();
                     List<InetAddress> replicaAddresses = new LinkedList<>();
@@ -85,7 +87,7 @@ public class ClientDispatcher extends Thread {
                 Path directoryPath = path.getParent();
                 String fileName = path.getFileName().toString();
 
-                PutReturnValue returnValue = dispatcher.put(directoryPath, fileName, true);
+                TouchReturnValue returnValue = dispatcher.touch(directoryPath, fileName);
                 ack = new TouchAck(returnValue.getStatus());
 
             } else if (command instanceof Get) {
@@ -158,6 +160,29 @@ public class ClientDispatcher extends Thread {
 
                 MkDirReturnValue returnValue = dispatcher.makeDirectory(path);
                 ack = new MkdirAck(returnValue.getStatus());
+            } else if (command instanceof RmFile) {
+                Path path = Paths.get(((RmFile) command).getRemotePath());
+
+                if (dispatcher.folderExists(path)) {
+                    ack = new RmAck(StatusCodes.CONFIRMATION_REQUIRED);
+                    IORoutines.sendSignal(conn, ack);
+
+                    command = IORoutines.receiveSignal(conn);
+                    if (command instanceof RmConfirm) {
+                        boolean isConfirmed = ((RmConfirm) command).isRemoveConfirmed();
+                        if (isConfirmed) {
+                            dispatcher.removeFolder(path);
+                        }
+                        ack = new RmAck(StatusCodes.OK);
+                    } else {
+                        ack = new ErrorAck();
+                    }
+                } else if (dispatcher.fileExists(path)) {
+                    dispatcher.removeFile(path);
+                    ack = new RmAck(StatusCodes.OK);
+                } else {
+                    ack = new RmAck(StatusCodes.FILE_OR_DIRECTORY_DOES_NOT_EXIST);
+                }
             }
 
         IORoutines.sendSignal(conn, ack);

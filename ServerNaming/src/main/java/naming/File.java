@@ -1,5 +1,8 @@
 package naming;
 
+import com.sun.nio.sctp.AbstractNotificationHandler;
+import naming.dispatchers.Constants;
+
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -7,7 +10,7 @@ import java.util.UUID;
 public class File {
     private String name;
     private long size;
-    private int access;
+    private String access;
     private UUID uuid;
     private boolean isTouched;
 //    private Set<UUID> nodes;
@@ -15,13 +18,13 @@ public class File {
     public File(String name, UUID uuid, boolean isTouched) {
         this.name = name;
         this.size = 0;
-        this.access = 0;
+        this.access = Constants.DEFAULT_RIGHTS;
         this.uuid = uuid;
         this.isTouched = isTouched;
 //        this.nodes = new HashSet<>();
     }
 
-    public File(String name, long size, int access, UUID uuid, boolean isTouched) {
+    public File(String name, long size, String access, UUID uuid, boolean isTouched) {
         this.name = name;
         this.size = size;
         this.access = access;
@@ -46,7 +49,7 @@ public class File {
         return size;
     }
 
-    public int getAccess() {
+    public String getAccess() {
         return access;
     }
 
@@ -66,7 +69,7 @@ public class File {
         this.size = size;
     }
 
-    public void setAccess(int access) {
+    public void setAccess(String access) {
         this.access = access;
     }
 
