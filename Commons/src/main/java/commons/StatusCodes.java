@@ -8,6 +8,7 @@ public class StatusCodes {
 	public static final int INCORRECT_NAME = 4;
 	public static final int NO_NODES_AVAILABLE = 5;
 	public static final int UNKNOWN_COMMAND = 6;
+	public static final int CONFIRMATION_REQUIRED = 7;
 
 	public static final int UPLOAD_FAILED = 11;
 
