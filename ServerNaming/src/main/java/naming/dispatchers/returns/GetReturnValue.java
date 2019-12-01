@@ -1,6 +1,7 @@
 package naming.dispatchers.returns;
 
 import commons.StatusCodes;
+import commons.commands.internal.NodePublicAddress;
 import naming.Node;
 
 import java.util.UUID;
