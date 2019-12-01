@@ -6,7 +6,6 @@ WORKDIR /dist
 RUN tar -xf ./ServerStorage.tar
 
 WORKDIR /dist/ServerStorage/bin
-RUN ls
 RUN chmod +x ./ServerStorage
 EXPOSE 14176
-CMD ["./ServerStorage"]
+ENTRYPOINT ["./ServerStorage"]
