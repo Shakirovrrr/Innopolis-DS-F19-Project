@@ -24,12 +24,12 @@ public class ClientReceive extends Thread {
 	}
 
 	private void notifyNaming(int status) throws IOException {
-		FileUploadAck uploadAck = new FileUploadAck(status, command.getUuid());
+		FileUploadAck uploadAck = new FileUploadAck(status, command.getUuid(), Main.nodeUuid);
 		IORoutines.sendSignalOnce(Main.namingAddress, Ports.PORT_INTERNAL, uploadAck);
 	}
 
 	private void notifyClient(int status) throws IOException {
-		FileUploadAck uploadAck = new FileUploadAck(status, command.getUuid());
+		FileUploadAck uploadAck = new FileUploadAck(status, command.getUuid(), Main.nodeUuid);
 		IORoutines.sendSignal(conn, uploadAck);
 	}
 
