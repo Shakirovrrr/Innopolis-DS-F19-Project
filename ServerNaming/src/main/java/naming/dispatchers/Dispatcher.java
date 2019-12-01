@@ -1,6 +1,8 @@
 package naming.dispatchers;
 
 import commons.StatusCodes;
+import commons.commands.internal.FetchFiles;
+import commons.commands.internal.FetchFilesAck;
 import naming.*;
 import naming.dispatchers.returns.*;
 
@@ -217,6 +219,26 @@ public class Dispatcher {
                 fileStorage.addFileNode(fileId, node);
             }
         }
+    }
+
+    public FetchFilesReturnValue fetchFiles(UUID nodeId) {
+        Node node = nodeStorage.getNode(nodeId);
+        if (node == null) {
+            return new FetchFilesReturnValue(StatusCodes.UNKNOWN_NODE, null, null);
+        }
+
+        Set<UUID> existedFiles = node.getKeepingFiles();
+        Collection<FetchFilesAck.ToDownload> filesToDownload = new LinkedList<>();
+        for (UUID fileId : fileStorage.getFileIds()) {
+            if (!existedFiles.contains(fileId)) {
+                List<Node> fileNodes = fileStorage.getFileNodes(fileId);
+                if (fileNodes.size() > 0) {
+                    FetchFilesAck.ToDownload toDownload = new FetchFilesAck.ToDownload(fileId, fileNodes.get(0).getPrivateIpAddress());
+                    filesToDownload.add(toDownload);
+                }
+            }
+        }
+        return new FetchFilesReturnValue(StatusCodes.OK, existedFiles, filesToDownload);
     }
 
 }

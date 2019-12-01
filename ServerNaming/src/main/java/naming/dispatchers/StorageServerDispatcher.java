@@ -1,14 +1,17 @@
 package naming.dispatchers;
 
 import com.google.gson.internal.$Gson$Preconditions;
+import commons.StatusCodes;
 import commons.commands.Command;
 import commons.commands.general.ErrorAck;
 import commons.commands.internal.FetchFiles;
+import commons.commands.internal.FetchFilesAck;
 import commons.commands.internal.Heartbeat;
 import commons.commands.internal.RegisterNode;
 import commons.routines.IORoutines;
 import naming.Node;
 import naming.NodeStorage;
+import naming.dispatchers.returns.FetchFilesReturnValue;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -20,38 +23,6 @@ import java.util.*;
 import static naming.dispatchers.Constants.TIMER_SLEEP_TIME;
 
 public class StorageServerDispatcher extends Thread {
-    private class NodeTimer implements Comparable<NodeTimer> {
-        private UUID nodeId;
-        private long lastCall;
-
-        public NodeTimer(UUID nodeId, long lastCall) {
-            this.nodeId = nodeId;
-            this.lastCall = lastCall;
-        }
-
-        public UUID getNodeId() {
-            return nodeId;
-        }
-
-        public long getLastCall() {
-            return lastCall;
-        }
-
-        public void setLastCall(long lastCall) {
-            this.lastCall = lastCall;
-        }
-
-        @Override
-        public int compareTo(NodeTimer nodeTimer) {
-            if (this.getLastCall() == nodeTimer.getLastCall()) { return 0; }
-            if (this.getLastCall() < nodeTimer.getLastCall()) {
-                return -1;
-            } else {
-                return 1;
-            }
-        }
-    }
-
     private int listeningPort;
     private ServerSocket server;
     private Dispatcher dispatcher;
@@ -61,7 +32,6 @@ public class StorageServerDispatcher extends Thread {
     public StorageServerDispatcher(int listeningPort, Dispatcher dispatcher) {
         this.listeningPort = listeningPort;
         this.dispatcher = dispatcher;
-//        this.servers = new PriorityQueue<>();
         this.serversHeartbeats = new HashMap<>();
 
 //        new Thread(() -> checkServers()).start();
@@ -106,9 +76,21 @@ public class StorageServerDispatcher extends Thread {
                 serversHeartbeats.put(nodeId, new Date().getTime());
 
             } else if (command instanceof FetchFiles) {
+                UUID nodeId = ((FetchFiles) command).getNodeId();
 
+                Command ack;
+                if (!serversHeartbeats.containsKey(nodeId)) {
+                    ack = new FetchFilesAck(StatusCodes.UNKNOWN_NODE);
+                } else {
+                    FetchFilesReturnValue returnValue = dispatcher.fetchFiles(nodeId);
+                    ack = new FetchFilesAck(returnValue.getStatus(), returnValue.getExistedFiles(), returnValue.getFilesToDownload());
+                }
+                serversHeartbeats.replace(nodeId, new Date().getTime());
+                IORoutines.sendSignal(conn, ack);
 
             } else if (command instanceof Heartbeat) {
+                UUID nodeId = ((Heartbeat) command).getNodeId();
+                serversHeartbeats.replace(nodeId, new Date().getTime());
 
             } else {
                 Command ack = new ErrorAck();
@@ -122,4 +104,32 @@ public class StorageServerDispatcher extends Thread {
             System.err.println("Unable to dispatch the command.");
         }
     }
+
+    @Override
+    public void run() {
+        this.setUncaughtExceptionHandler((t, e) -> {
+            try {
+                server.close();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+                System.err.println("IOException thrown while handling another exception " + ex);
+            }
+        });
+
+        try {
+            server = new ServerSocket(listeningPort);
+            System.out.println("Socket has been bound to port " + listeningPort);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Could not bind a socket to port " + listeningPort);
+        }
+
+        try {
+            serve();
+        } catch (IOException e) {
+            System.err.println("Server died.");
+            e.printStackTrace();
+        }
+    }
+}
 }
