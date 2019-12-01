@@ -4,10 +4,7 @@ import commons.StatusCodes;
 import commons.commands.Command;
 import commons.commands.general.ErrorAck;
 import commons.commands.general.FileUploadAck;
-import commons.commands.internal.FetchFiles;
-import commons.commands.internal.FetchFilesAck;
-import commons.commands.internal.Heartbeat;
-import commons.commands.internal.RegisterNode;
+import commons.commands.internal.*;
 import commons.routines.IORoutines;
 import naming.dispatchers.returns.FetchFilesReturnValue;
 
@@ -28,8 +25,6 @@ public class StorageServerDispatcher extends Thread {
         this.listeningPort = listeningPort;
         this.dispatcher = dispatcher;
         this.serversHeartbeats = new HashMap<>();
-
-//        new Thread(() -> checkServers()).start();
     }
 
     private void checkServers() {
@@ -64,15 +59,20 @@ public class StorageServerDispatcher extends Thread {
 
             if (command instanceof RegisterNode) {
                 UUID nodeId = ((RegisterNode) command).getNodeId();
+                System.out.println("Register Node " + nodeId);
                 List<UUID> files = Arrays.asList(((RegisterNode) command).getFiles());
                 InetAddress publicAddress = ((RegisterNode) command).getPublicAddress();
                 InetAddress localAddress = ((RegisterNode) command).getLocalAddress();
 
                 dispatcher.registerNode(nodeId, files, publicAddress, localAddress);
                 serversHeartbeats.put(nodeId, new Date().getTime());
+                Command ack = new RegisterNodeAck(StatusCodes.OK);
+                IORoutines.sendSignal(conn, ack);
 
             } else if (command instanceof FetchFiles) {
                 UUID nodeId = ((FetchFiles) command).getNodeId();
+
+                System.out.println("Fetch Files Node " + nodeId);
 
                 Command ack;
                 if (!serversHeartbeats.containsKey(nodeId)) {
@@ -88,10 +88,14 @@ public class StorageServerDispatcher extends Thread {
                 UUID nodeId = ((Heartbeat) command).getNodeId();
                 serversHeartbeats.replace(nodeId, new Date().getTime());
 
+                System.out.println("Heartbeat Node " + nodeId);
+
             } else if (command instanceof FileUploadAck) {
                 if (((FileUploadAck) command).getStatusCode() == StatusCodes.OK) {
                     dispatcher.addKeepingNode(((FileUploadAck) command).getFileUuid(), ((FileUploadAck) command).getStorageUuid());
                 }
+
+                System.out.println("File Upload Acknowledgement File " + ((FileUploadAck) command).getFileUuid() + " Node " + ((FileUploadAck) command).getStorageUuid());
 
             } else {
                 Command ack = new ErrorAck();
