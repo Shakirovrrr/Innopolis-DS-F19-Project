@@ -37,7 +37,7 @@ public class ClientReceive extends Thread {
 		OutputStream[] streams = new OutputStream[addresses.length + 1];
 		FileUpload uploadCommand = new FileUpload(command.getUuid(), command.getFileSize());
 		streams[0] = fileOut;
-		for (int i = 1; i <= addresses.length; i++) {
+		for (int i = 1; i < addresses.length; i++) {
 			Socket socket = new Socket(addresses[i], Ports.PORT_STORAGE);
 			IORoutines.sendSignal(socket, uploadCommand);
 			streams[i] = socket.getOutputStream();

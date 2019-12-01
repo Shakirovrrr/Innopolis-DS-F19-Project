@@ -23,11 +23,14 @@ public class ClientSend extends Thread {
 		FileInputStream fileIn;
 		OutputStream sockOut;
 		try {
-			fileIn = new FileInputStream(Main.dataPath + command.getUuid().toString());
 			sockOut = conn.getOutputStream();
+			fileIn = new FileInputStream(Main.dataPath + command.getUuid().toString());
 		} catch (IOException e) {
-			// TODO notify not found
-			e.printStackTrace();
+			try {
+				conn.close();
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			}
 			return;
 		}
 
@@ -43,7 +46,7 @@ public class ClientSend extends Thread {
 				System.out.println("SEND: Done.");
 			}
 		} catch (IOException ex) {
-			System.err.println("Connection lost.");
+			System.err.println("SEND: Connection lost.");
 		} catch (ClassNotFoundException | ClassCastException ex) {
 			System.err.println("SEND: Bad confirm command.");
 		} finally {
