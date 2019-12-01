@@ -1,6 +1,5 @@
 package naming.dispatchers;
 
-import com.google.gson.internal.$Gson$Preconditions;
 import commons.StatusCodes;
 import commons.commands.Command;
 import commons.commands.general.ErrorAck;
@@ -10,18 +9,13 @@ import commons.commands.internal.FetchFilesAck;
 import commons.commands.internal.Heartbeat;
 import commons.commands.internal.RegisterNode;
 import commons.routines.IORoutines;
-import naming.Node;
-import naming.NodeStorage;
 import naming.dispatchers.returns.FetchFilesReturnValue;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.sql.Timestamp;
 import java.util.*;
-
-import static naming.dispatchers.Constants.TIMER_SLEEP_TIME;
 
 public class StorageServerDispatcher extends Thread {
     private int listeningPort;
@@ -39,8 +33,9 @@ public class StorageServerDispatcher extends Thread {
     }
 
     private void checkServers() {
-        try {
-            while (true) {
+        while (true) {
+            try {
+
                 sleep(Constants.TIMER_SLEEP_TIME);
                 for (UUID nodeId : serversHeartbeats.keySet()) {
                     if (serversHeartbeats.get(nodeId) + Constants.WAITING_TIME > new Date().getTime()) {
@@ -50,9 +45,9 @@ public class StorageServerDispatcher extends Thread {
                         break;
                     }
                 }
+            } catch (InterruptedException ex) {
+                System.err.println("Thread interrupted.");
             }
-        } catch (InterruptedException ex) {
-            System.err.println("Thread interrupted.");
         }
     }
 
@@ -94,7 +89,9 @@ public class StorageServerDispatcher extends Thread {
                 serversHeartbeats.replace(nodeId, new Date().getTime());
 
             } else if (command instanceof FileUploadAck) {
-
+                if (((FileUploadAck) command).getStatusCode() == StatusCodes.OK) {
+                    dispatcher.addKeepingNode(((FileUploadAck) command).getFileUuid(), ((FileUploadAck) command).getStorageUuid());
+                }
 
             } else {
                 Command ack = new ErrorAck();
@@ -112,12 +109,8 @@ public class StorageServerDispatcher extends Thread {
     @Override
     public void run() {
         this.setUncaughtExceptionHandler((t, e) -> {
-            try {
-                server.close();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-                System.err.println("IOException thrown while handling another exception " + ex);
-            }
+            System.out.println("Server Storage Dispatcher. Uncaught exception has been got");
+            e.printStackTrace();
         });
 
         try {
@@ -127,6 +120,8 @@ public class StorageServerDispatcher extends Thread {
             e.printStackTrace();
             System.err.println("Could not bind a socket to port " + listeningPort);
         }
+
+        new Thread(this::checkServers).start();
 
         try {
             serve();

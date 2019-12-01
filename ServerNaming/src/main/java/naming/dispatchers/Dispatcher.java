@@ -253,10 +253,6 @@ public class Dispatcher {
         }
     }
 
-    public UUID getFileMainNodeId(UUID fileId) {
-        return fileStorage.getFileMainNodeId(fileId);
-    }
-
     public void registerNode(UUID nodeId, List<UUID> fileIds, InetAddress publicAddress, InetAddress privateAddress) {
         Node node = new Node(nodeId, publicAddress, privateAddress);
         nodeStorage.addNode(node);
@@ -286,6 +282,14 @@ public class Dispatcher {
             }
         }
         return new FetchFilesReturnValue(StatusCodes.OK, existedFiles, filesToDownload);
+    }
+
+    public void addKeepingNode(UUID fileId, UUID nodeId) {
+        Node node = nodeStorage.getNode(nodeId);
+        if (node != null && fileStorage.fileExists(fileId)) {
+            node.addKeepingFile(fileId);
+            fileStorage.addFileNode(fileId, node);
+        }
     }
 
 }

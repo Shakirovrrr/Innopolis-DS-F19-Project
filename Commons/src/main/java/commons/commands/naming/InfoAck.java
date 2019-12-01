@@ -5,17 +5,17 @@ import java.util.UUID;
 
 public class InfoAck extends NamingCommandAck {
     private long fileSize;
-    private int accessRights;
+    private String accessRights;
     private UUID[] nodes;
 
-    public InfoAck(int statusCode, long fileSize, int accessRights, UUID[] nodes) {
+    public InfoAck(int statusCode, long fileSize, String accessRights, UUID[] nodes) {
         super(statusCode);
         this.fileSize = fileSize;
         this.accessRights = accessRights;
         this.nodes = nodes;
     }
 
-    public InfoAck(int statusCode, long fileSize, int accessRights, Collection<UUID> nodes) {
+    public InfoAck(int statusCode, long fileSize, String accessRights, Collection<UUID> nodes) {
         super(statusCode);
         this.fileSize = fileSize;
         this.accessRights = accessRights;
@@ -26,7 +26,7 @@ public class InfoAck extends NamingCommandAck {
         return fileSize;
     }
 
-    public int getAccessRights() {
+    public String getAccessRights() {
         return accessRights;
     }
 

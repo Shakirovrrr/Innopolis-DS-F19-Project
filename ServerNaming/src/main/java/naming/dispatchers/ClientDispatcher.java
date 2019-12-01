@@ -109,7 +109,7 @@ public class ClientDispatcher extends Thread {
             } else if (command instanceof InfoFile) {
                 Path path = Paths.get(((InfoFile) command).getRemotePath());
                 if (path.getNameCount() == 0) {     // only root in the path
-                    ack = new InfoAck(StatusCodes.INCORRECT_NAME, 0, 0, (UUID[]) null);
+                    ack = new InfoAck(StatusCodes.INCORRECT_NAME, 0, null, (UUID[]) null);
                     IORoutines.sendSignal(conn, ack);
                     return;
                 }
