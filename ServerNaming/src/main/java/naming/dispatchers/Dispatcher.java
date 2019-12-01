@@ -42,12 +42,12 @@ public class Dispatcher {
         boolean fileAdded = fileManager.addFile(directoryPath, file);
         if (fileAdded) {
             fileStorage.addFile(fileId, Paths.get(directoryPath.toString() + fileName));
-            returnValue = new PutReturnValue(StatusCodes.Code.OK, fileId);
+            returnValue = new PutReturnValue(StatusCodes.OK, fileId);
         } else {
             if (fileManager.getFolder(directoryPath) == null) {
-               returnValue = new PutReturnValue(StatusCodes.Code.FILE_OR_DIRECTORY_DOES_NOT_EXIST, null);
+               returnValue = new PutReturnValue(StatusCodes.FILE_OR_DIRECTORY_DOES_NOT_EXIST, null);
             } else {
-                returnValue = new PutReturnValue(StatusCodes.Code.FILE_OR_DIRECTORY_ALREADY_EXISTS, null);
+                returnValue = new PutReturnValue(StatusCodes.FILE_OR_DIRECTORY_ALREADY_EXISTS, null);
             }
         }
 
@@ -59,13 +59,13 @@ public class Dispatcher {
 
         File file = fileManager.getFile(path);
         if (file == null) {     // file or directory does not exist
-            returnValue = new InfoReturnValue(StatusCodes.Code.FILE_OR_DIRECTORY_DOES_NOT_EXIST);
+            returnValue = new InfoReturnValue(StatusCodes.FILE_OR_DIRECTORY_DOES_NOT_EXIST);
         } else {
             List<UUID> nodeIds = new LinkedList<>();
             for (Node node : fileStorage.getFileNodes(file.getId())) {
                 nodeIds.add(node.getNodeId());
             }
-            returnValue = new InfoReturnValue(StatusCodes.Code.OK, file.getSize(), file.getAccess(), nodeIds);
+            returnValue = new InfoReturnValue(StatusCodes.OK, file.getSize(), file.getAccess(), nodeIds);
         }
 
         return returnValue;
@@ -76,7 +76,7 @@ public class Dispatcher {
 
         File file = fileManager.getFile(fromPath);
         if (file == null) {
-            returnValue = new CpReturnValue(StatusCodes.Code.FILE_OR_DIRECTORY_DOES_NOT_EXIST);
+            returnValue = new CpReturnValue(StatusCodes.FILE_OR_DIRECTORY_DOES_NOT_EXIST);
             return returnValue;
         }
 
@@ -88,12 +88,12 @@ public class Dispatcher {
 
         if (fileAdded) {
             fileStorage.addFile(file.getId(), toPath);
-            returnValue = new CpReturnValue(StatusCodes.Code.OK);
+            returnValue = new CpReturnValue(StatusCodes.OK);
         } else {
             if (fileManager.getFolder(directoryPath) == null) {
-                returnValue = new CpReturnValue(StatusCodes.Code.FILE_OR_DIRECTORY_DOES_NOT_EXIST);
+                returnValue = new CpReturnValue(StatusCodes.FILE_OR_DIRECTORY_DOES_NOT_EXIST);
             } else {
-                returnValue = new CpReturnValue(StatusCodes.Code.FILE_OR_DIRECTORY_ALREADY_EXISTS);
+                returnValue = new CpReturnValue(StatusCodes.FILE_OR_DIRECTORY_ALREADY_EXISTS);
             }
         }
         return returnValue;
@@ -104,7 +104,7 @@ public class Dispatcher {
 
         File file = fileManager.getFile(fromPath);
         if (file == null) {
-            returnValue = new MvReturnValue(StatusCodes.Code.FILE_OR_DIRECTORY_DOES_NOT_EXIST);
+            returnValue = new MvReturnValue(StatusCodes.FILE_OR_DIRECTORY_DOES_NOT_EXIST);
             return returnValue;
         }
 
@@ -119,12 +119,12 @@ public class Dispatcher {
             fileStorage.removeFilePath(file.getId(), fromPath);
             fileManager.removeFile(fromPath.getParent(), fromPath.getFileName().toString());
 
-            returnValue = new MvReturnValue(StatusCodes.Code.OK);
+            returnValue = new MvReturnValue(StatusCodes.OK);
         } else {
             if (fileManager.getFolder(directoryPath) == null) {
-                returnValue = new MvReturnValue(StatusCodes.Code.FILE_OR_DIRECTORY_DOES_NOT_EXIST);
+                returnValue = new MvReturnValue(StatusCodes.FILE_OR_DIRECTORY_DOES_NOT_EXIST);
             } else {
-                returnValue = new MvReturnValue(StatusCodes.Code.FILE_OR_DIRECTORY_ALREADY_EXISTS);
+                returnValue = new MvReturnValue(StatusCodes.FILE_OR_DIRECTORY_ALREADY_EXISTS);
             }
         }
         return returnValue;
@@ -139,7 +139,7 @@ public class Dispatcher {
 
         Folder directory = fileManager.getFolder(path);
         if (directory == null) {
-            returnValue = new LsReturnValue(StatusCodes.Code.FILE_OR_DIRECTORY_DOES_NOT_EXIST, null, null);
+            returnValue = new LsReturnValue(StatusCodes.FILE_OR_DIRECTORY_DOES_NOT_EXIST, null, null);
         } else {
             List<String> folders = new LinkedList<>();
             for (Folder folder : directory.getFolders()) {
@@ -149,7 +149,7 @@ public class Dispatcher {
             for (File file : directory.getFiles()) {
                 files.add(file.getName());
             }
-            returnValue = new LsReturnValue(StatusCodes.Code.OK, folders, files);
+            returnValue = new LsReturnValue(StatusCodes.OK, folders, files);
         }
 
         return returnValue;
@@ -164,15 +164,15 @@ public class Dispatcher {
         Folder parentDirectory = fileManager.getFolder(parentDirectoryPath);
 
         if (parentDirectory == null) {
-            returnValue = new MkDirReturnValue(StatusCodes.Code.FILE_OR_DIRECTORY_DOES_NOT_EXIST);
+            returnValue = new MkDirReturnValue(StatusCodes.FILE_OR_DIRECTORY_DOES_NOT_EXIST);
         } else {
             if (parentDirectory.folderExists(folderName)) {
-                returnValue = new MkDirReturnValue(StatusCodes.Code.FILE_OR_DIRECTORY_ALREADY_EXISTS);
+                returnValue = new MkDirReturnValue(StatusCodes.FILE_OR_DIRECTORY_ALREADY_EXISTS);
             } else {
                 Folder folder = new Folder(folderName);
                 parentDirectory.addFolder(folder);
 
-                returnValue = new MkDirReturnValue(StatusCodes.Code.OK);
+                returnValue = new MkDirReturnValue(StatusCodes.OK);
             }
         }
         return returnValue;
@@ -184,15 +184,15 @@ public class Dispatcher {
         File file = fileManager.getFile(path);
 
         if (file == null) {
-            returnValue = new GetReturnValue(StatusCodes.Code.FILE_OR_DIRECTORY_DOES_NOT_EXIST,null, null);
+            returnValue = new GetReturnValue(StatusCodes.FILE_OR_DIRECTORY_DOES_NOT_EXIST,null, null);
         } else {
             if (file.getIsTouched()) {
-                returnValue = new GetReturnValue(StatusCodes.Code.IS_TOUCHED, null, null);
+                returnValue = new GetReturnValue(StatusCodes.IS_TOUCHED, null, null);
             } else {
                 if (fileStorage.getFileNodes(file.getId()).size() == 0) {
-                    returnValue = new GetReturnValue(StatusCodes.Code.NO_NODES_AVAILABLE, null, null);
+                    returnValue = new GetReturnValue(StatusCodes.NO_NODES_AVAILABLE, null, null);
                 } else {
-                    returnValue = new GetReturnValue(StatusCodes.Code.OK, fileStorage.getFileNodes(file.getId()).get(0), file.getId());
+                    returnValue = new GetReturnValue(StatusCodes.OK, fileStorage.getFileNodes(file.getId()).get(0), file.getId());
                 }
             }
         }

@@ -14,8 +14,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class ClientDispatcher extends Thread {
     private int listeningPort;
@@ -48,14 +47,14 @@ public class ClientDispatcher extends Thread {
             } else if (command instanceof PutFile) {
                 List<Node> nodes = dispatcher.getNodes();
                 if (nodes.size() == 0) {
-                    ack = new PutAck(StatusCodes.Code.NO_NODES_AVAILABLE, null, null, null);
+                    ack = new PutAck(StatusCodes.NO_NODES_AVAILABLE, null, null, null);
                     IORoutines.sendSignal(conn, ack);
                     return;
                 }
 
                 Path path = Paths.get(((PutFile) command).getRemotePath());
                 if (path.getNameCount() == 0) {     // only root in the path
-                    ack = new PutAck(StatusCodes.Code.INCORRECT_NAME, null, null, null);
+                    ack = new PutAck(StatusCodes.INCORRECT_NAME, null, null, null);
                     IORoutines.sendSignal(conn, ack);
                     return;
                 }
@@ -64,7 +63,7 @@ public class ClientDispatcher extends Thread {
                 String fileName = path.getFileName().toString();
 
                 PutReturnValue returnValue = dispatcher.put(directoryPath, fileName, false);
-                if (returnValue.getStatus() == StatusCodes.Code.OK) {
+                if (returnValue.getStatus() == StatusCodes.OK) {
                     InetAddress storageAddress = nodes.get(0).getPublicIpAddress();
                     List<InetAddress> replicaAddresses = new LinkedList<>();
                     for (int i = 1; i < nodes.size(); i++) {
@@ -78,7 +77,7 @@ public class ClientDispatcher extends Thread {
             } else if (command instanceof TouchFile) {
                 Path path = Paths.get(((TouchFile) command).getNewPath());
                 if (path.getNameCount() == 0) {     // only root in the path
-                    ack = new TouchAck(StatusCodes.Code.INCORRECT_NAME);
+                    ack = new TouchAck(StatusCodes.INCORRECT_NAME);
                     IORoutines.sendSignal(conn, ack);
                     return;
                 }
@@ -92,13 +91,13 @@ public class ClientDispatcher extends Thread {
             } else if (command instanceof Get) {
                 Path path = Paths.get(((Get) command).getFromPath());
                 if (path.getNameCount() == 0) {     // only root in the path
-                    ack = new GetAck(StatusCodes.Code.INCORRECT_NAME, null, null);
+                    ack = new GetAck(StatusCodes.INCORRECT_NAME, null, null);
                     IORoutines.sendSignal(conn, ack);
                     return;
                 }
 
                 GetReturnValue returnValue = dispatcher.get(path);
-                if (returnValue.getStatus() == StatusCodes.Code.OK) {
+                if (returnValue.getStatus() == StatusCodes.OK) {
                     InetAddress nodeAddress = returnValue.getNode().getPublicIpAddress();
                     ack = new GetAck(returnValue.getStatus(), nodeAddress, returnValue.getFileId());
                 } else {
@@ -108,7 +107,7 @@ public class ClientDispatcher extends Thread {
             } else if (command instanceof InfoFile) {
                 Path path = Paths.get(((InfoFile) command).getRemotePath());
                 if (path.getNameCount() == 0) {     // only root in the path
-                    ack = new InfoAck(StatusCodes.Code.INCORRECT_NAME, 0, 0, null);
+                    ack = new InfoAck(StatusCodes.INCORRECT_NAME, 0, 0, (UUID[]) null);
                     IORoutines.sendSignal(conn, ack);
                     return;
                 }
@@ -120,7 +119,7 @@ public class ClientDispatcher extends Thread {
                 Path fromPath = Paths.get(((CpFile) command).getFromPath());
                 Path toPath = Paths.get(((CpFile) command).getToPath());
                 if (fromPath.getNameCount() == 0 || toPath.getNameCount() == 0) {     // only root in the path
-                    ack = new CpAck(StatusCodes.Code.INCORRECT_NAME);
+                    ack = new CpAck(StatusCodes.INCORRECT_NAME);
                     IORoutines.sendSignal(conn, ack);
                     return;
                 }
@@ -131,7 +130,7 @@ public class ClientDispatcher extends Thread {
                 Path fromPath = Paths.get(((MvFile) command).getFromPath());
                 Path toPath = Paths.get(((MvFile) command).getToPath());
                 if (fromPath.getNameCount() == 0 || toPath.getNameCount() == 0) {     // only root in the path
-                    ack = new MvAck(StatusCodes.Code.INCORRECT_NAME);
+                    ack = new MvAck(StatusCodes.INCORRECT_NAME);
                     IORoutines.sendSignal(conn, ack);
                     return;
                 }
@@ -143,9 +142,9 @@ public class ClientDispatcher extends Thread {
                 Path path = Paths.get(((Cd) command).getRemotePath());
 
                 if (dispatcher.directoryExists(path)) {
-                    ack = new CdAck(StatusCodes.Code.OK);
+                    ack = new CdAck(StatusCodes.OK);
                 } else {
-                    ack = new CdAck(StatusCodes.Code.FILE_OR_DIRECTORY_DOES_NOT_EXIST);
+                    ack = new CdAck(StatusCodes.FILE_OR_DIRECTORY_DOES_NOT_EXIST);
                 }
 
             } else if (command instanceof Ls) {
