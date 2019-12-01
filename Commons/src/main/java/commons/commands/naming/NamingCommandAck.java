@@ -6,7 +6,6 @@ public abstract class NamingCommandAck extends NamingCommand {
 	@Deprecated
 	StatusCodes.Code status;
 	int statusCode;
-	StatusCodes statusCodes = new StatusCodes();
 
 	@Deprecated
 	public StatusCodes.Code getStatus() {
@@ -17,8 +16,5 @@ public abstract class NamingCommandAck extends NamingCommand {
 		return statusCode;
 	}
 
-	public String getStatusStr(){
-		return this.statusCodes.getStatusCode(statusCode);
 
-	}
 }

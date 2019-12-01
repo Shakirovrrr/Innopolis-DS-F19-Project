@@ -23,6 +23,18 @@ public class ConsoleCommands {
 
     private String hostNaming = "10.91.51.171";
     private Scanner in = new Scanner(System.in);
+    private HashMap<Integer, String> responseCodes = new HashMap<>() {
+        {
+            put(StatusCodes.OK, "OK");
+            put(StatusCodes.IS_TOUCHED, "IS_TOUCHED");
+            put(StatusCodes.FILE_OR_DIRECTORY_DOES_NOT_EXIST, "FILE_OR_DIRECTORY_DOES_NOT_EXIST");
+            put(StatusCodes.FILE_OR_DIRECTORY_ALREADY_EXISTS, "FILE_OR_DIRECTORY_ALREADY_EXISTS");
+            put(StatusCodes.INCORRECT_NAME, "INCORRECT_NAME");
+            put(StatusCodes.NO_NODES_AVAILABLE, "NO_NODES_AVAILABLE");
+            put(StatusCodes.UNKNOWN_COMMAND, "UNKNOWN_COMMAND");
+            put(StatusCodes.UPLOAD_FAILED, "UPLOAD_FAILED");
+        }
+    };
 
 
     public String getHostNaming() {
@@ -121,7 +133,7 @@ public class ConsoleCommands {
         NamingCommand namingCommand = new commons.commands.naming.Init();
         IORoutines.sendSignal(socket, namingCommand);
         commons.commands.naming.InitAck receiveAkn = (commons.commands.naming.InitAck) IORoutines.receiveSignal(socket);
-        System.out.println(receiveAkn.getStatusStr());
+        System.out.println(this.getStatusStr(receiveAkn.getStatusCode()));
     }
 
 
@@ -134,9 +146,9 @@ public class ConsoleCommands {
         IORoutines.sendSignal(socket, namingCommand);
         commons.commands.naming.TouchAck receiveAkn = (commons.commands.naming.TouchAck) IORoutines.receiveSignal(socket);
         if (receiveAkn.getStatusCode() == StatusCodes.OK) {
-            System.out.println(receiveAkn.getStatusStr());
+            System.out.println(this.getStatusStr(receiveAkn.getStatusCode()));
         } else {
-            System.out.println(receiveAkn.getStatusStr());
+            System.out.println(this.getStatusStr(receiveAkn.getStatusCode()));
         }
     }
 
@@ -192,7 +204,7 @@ public class ConsoleCommands {
             savingTheFile.close();
             downloading.close();
         } else {
-            System.out.println(receiveAknName.getStatusStr());
+            System.out.println(this.getStatusStr(receiveAknName.getStatusCode()));
         }
     }
 
@@ -226,7 +238,7 @@ public class ConsoleCommands {
         IORoutines.sendSignal(namingSocket, namingCommand);
         commons.commands.naming.PutAck receiveAknName = (commons.commands.naming.PutAck) IORoutines.receiveSignal(namingSocket);
         if (receiveAknName.getStatusCode() != (StatusCodes.OK)) {
-            System.out.println(receiveAknName.getStatusStr());
+            System.out.println(this.getStatusStr(receiveAknName.getStatusCode()));
         } else {
             InetAddress hostStorage = receiveAknName.getStorageAddress();
             UUID fileId = receiveAknName.getFileId();
@@ -234,7 +246,7 @@ public class ConsoleCommands {
             if (receiveAknName.getStatusCode() == (StatusCodes.OK)) {
                 System.out.println(hostStorage + " " + fileId + " " + replicasAddresses.toString());
             } else {
-                System.out.println(receiveAknName.getStatusStr());
+                System.out.println();
             }
 //        Collection<InetAddress> replicasAddresses = new LinkedList<>();
 //        UUID fileId = UUID.randomUUID();
@@ -255,7 +267,7 @@ public class ConsoleCommands {
             uploadingToServer.close();
             readingTheFile.close();
 
-            System.out.println(storageCommand2.getStatusStr());
+            System.out.println(this.getStatusStr(storageCommand2.getStatusCode()));
         }
     }
 
@@ -283,7 +295,7 @@ public class ConsoleCommands {
             } else {
                 commons.commands.naming.RmAck receiveAkn1 = (commons.commands.naming.RmAck) IORoutines.receiveSignal(socket);
 
-                System.out.println(receiveAkn1.getStatusStr());
+                System.out.println(this.getStatusStr(receiveAkn.getStatusCode()));
             }
 
         }
@@ -301,7 +313,7 @@ public class ConsoleCommands {
             System.out.println("access_rights_rwm: " + receiveAkn.getAccessRights());
             System.out.println("number_of_file_replicas: " + receiveAkn.getNodes().size());
         } else {
-            System.out.println(receiveAkn.getStatusStr());
+            System.out.println(this.getStatusStr(receiveAkn.getStatusCode()));
         }
     }
 
@@ -312,7 +324,7 @@ public class ConsoleCommands {
         NamingCommand namingCommand = new commons.commands.naming.CpFile(fromPath, toPath);
         IORoutines.sendSignal(socket, namingCommand);
         commons.commands.naming.CpAck receiveAkn = (commons.commands.naming.CpAck) IORoutines.receiveSignal(socket);
-        System.out.println(receiveAkn.getStatusStr());
+        System.out.println(this.getStatusStr(receiveAkn.getStatusCode()));
     }
 
     public void mv(String fromPath, String toPath) throws IOException, ClassNotFoundException {
@@ -322,7 +334,7 @@ public class ConsoleCommands {
         NamingCommand namingCommand = new commons.commands.naming.MvFile(fromPath, toPath);
         IORoutines.sendSignal(socket, namingCommand);
         commons.commands.naming.MvAck receiveAkn = (commons.commands.naming.MvAck) IORoutines.receiveSignal(socket);
-        System.out.println(receiveAkn.getStatusStr());
+        System.out.println(this.getStatusStr(receiveAkn.getStatusCode()));
     }
 
     public void cd(String dirPath) throws IOException, ClassNotFoundException {
@@ -368,7 +380,7 @@ public class ConsoleCommands {
             }
 
         } else {
-            System.out.println(receiveAkn.getStatusStr());
+            System.out.println(this.getStatusStr(receiveAkn.getStatusCode()));
         }
     }
 
@@ -381,9 +393,13 @@ public class ConsoleCommands {
         if (receiveAkn.getStatusCode() == StatusCodes.OK) {
             System.out.println("Directory " + dirPath + " created");
         } else {
-            System.out.println(receiveAkn.getStatusStr());
+            System.out.println(this.getStatusStr(receiveAkn.getStatusCode()));
         }
-        ;
+
+    }
+
+    private String getStatusStr(int key) {
+        return this.responseCodes.get(key);
     }
 
     private void displayProgress(Boolean b) {

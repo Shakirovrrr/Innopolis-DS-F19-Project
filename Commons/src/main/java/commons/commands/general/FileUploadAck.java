@@ -9,7 +9,6 @@ public class FileUploadAck extends Command {
     // FUAck
     private int statusCode;
     private UUID uuid;
-    StatusCodes statusCodes = new StatusCodes();
 
 
     public FileUploadAck(int statusCode, UUID uuid) {
@@ -21,9 +20,7 @@ public class FileUploadAck extends Command {
         return statusCode;
     }
 
-    public String getStatusStr() {
-        return this.statusCodes.getStatusCode(statusCode);
-    }
+
 
     public UUID getUuid() {
         return uuid;

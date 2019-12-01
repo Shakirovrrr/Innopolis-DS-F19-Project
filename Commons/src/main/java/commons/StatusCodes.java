@@ -14,22 +14,7 @@ public class StatusCodes {
 
     public static final int UPLOAD_FAILED = 11;
 
-    private HashMap<Integer, String> responseCodes = new HashMap<>() {
-        {
-            put(0, "OK");
-            put(1, "IS_TOUCHED");
-            put(2, "FILE_OR_DIRECTORY_DOES_NOT_EXIST");
-            put(3, "FILE_OR_DIRECTORY_ALREADY_EXISTS");
-            put(4, "INCORRECT_NAME");
-            put(5, "NO_NODES_AVAILABLE");
-            put(6, "UNKNOWN_COMMAND");
-            put(11,"UPLOAD_FAILED");
-        }
-    };
 
-    public String getStatusCode(int key){
-        return this.responseCodes.get(key);
-    }
 
     // init, put, touch, get, info, cp, mv, cd, ls, mkdir
     @Deprecated(forRemoval = true)
