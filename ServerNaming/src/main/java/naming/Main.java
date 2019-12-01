@@ -9,15 +9,53 @@ import java.net.UnknownHostException;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.PriorityQueue;
 import java.util.UUID;
 
 class Main {
+	private static class Temp implements Comparable {
+		private int a;
+		public Temp(int a) {
+			this.a = a;
+		}
+
+		public int getA() {
+			return a;
+		}
+
+		public void setA(int a) {
+			this.a = a;
+		}
+
+		@Override
+		public int compareTo(Object o) {
+			if (this.getA() == ((Temp) o).getA()) {
+				return 0;
+			}
+			if (this.getA() < ((Temp) o).getA()) {
+				return 1;
+			} else {
+				return -1;
+			}
+		}
+	}
+
 	public static void main(String[] args) throws UnknownHostException {
 
 		Path path = Paths.get("////a/!/garg/");
 		System.out.println(path.getParent());
 		System.out.println(path.getNameCount());
 		System.out.println(path.getFileName());
+		Temp a = new Temp(2);
+		Temp b = new Temp(3);
+		PriorityQueue<Temp> priorityQueue = new PriorityQueue<Temp>();
+		priorityQueue.add(a);
+		priorityQueue.add(b);
+		System.out.println(priorityQueue.peek().getA());
+		priorityQueue.remove(b);
+		b.setA(1);
+		priorityQueue.add(b);
+		System.out.println(priorityQueue.peek().getA());
 //		FileTree fileTree = new FileTree("uniuser");
 //		Folder root = fileTree.getRoot();
 //		FileManager fileManager = new FileManager();
