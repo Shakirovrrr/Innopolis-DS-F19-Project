@@ -17,7 +17,7 @@ jobs:
         java-version: 1.11
 
     - name: Build Commons library
-      run sudo chmod +x gradlew && ./gradlew :Commons:build
+      run: sudo chmod +x gradlew && ./gradlew :Commons:build
 
     - name: Assemble client JAR
       run: ./gradlew :Client:jar
