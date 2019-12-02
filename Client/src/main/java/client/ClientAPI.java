@@ -13,7 +13,6 @@ import java.util.*;
 
 public class ClientAPI {
     private ConsoleCommands consoleCommands;
-    private Scanner in = new Scanner(System.in);
 
 
     private HashMap<String, Integer> commandsSet = new HashMap<>() {
@@ -106,7 +105,7 @@ public class ClientAPI {
                 break;
             case (4):
                 if (paths.length == 1) {
-                    this.consoleCommands.rm(paths[0], true);
+                    this.consoleCommands.rm(paths[0],true);
                 } else {
                     System.out.println("Invalid number of arguments: ``` rm <file_path> ``` ");
                     break;
@@ -217,20 +216,19 @@ public class ClientAPI {
         }
         System.out.println();
         System.out.print("\nstorage:" + this.consoleCommands.getCurrentRemoteDir() + " " + "$ ");
+        while (true) {
+            if (this.consoleCommands.getInput().hasNextLine()) {
+                String input = this.consoleCommands.getInput().nextLine();
+                try {
 
+                    commandRouter(input);
 
-        if (this.consoleCommands.getInput().hasNextLine()) {
-            String input = this.consoleCommands.getInput().nextLine();
-            try {
-
-                commandRouter(input);
-                System.out.print("\nstorage:" + this.consoleCommands.getCurrentRemoteDir() + " " + "$ ");
-
-            } catch (IOException | ClassNotFoundException ex) {
-                ex.printStackTrace();
+                    System.out.print("\nstorage:" + this.consoleCommands.getCurrentRemoteDir() + " " + "$ ");
+                } catch (IOException | ClassNotFoundException ex) {
+                    ex.printStackTrace();
+                }
             }
         }
+
     }
-
-
 }

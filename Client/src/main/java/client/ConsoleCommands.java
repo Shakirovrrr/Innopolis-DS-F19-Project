@@ -239,7 +239,8 @@ public class ConsoleCommands {
         if (Files.exists(path)) {
 
 
-            File file = new File(absLocPath);
+            File file = new File(path.toString());
+            System.out.println(path.toString());
             boolean[] rwe = {file.canRead(), file.canWrite(), file.canExecute()};
             StringBuilder rights = new StringBuilder();
 
@@ -289,6 +290,7 @@ public class ConsoleCommands {
                         }
                     } catch (IOException e) {
                         System.out.println("Error connection with storage");
+                        e.printStackTrace();
                         rm(remoteFileName, false);
                     }
                 } else {

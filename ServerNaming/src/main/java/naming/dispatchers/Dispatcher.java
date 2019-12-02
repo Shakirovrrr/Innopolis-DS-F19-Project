@@ -271,14 +271,17 @@ public class Dispatcher {
         if (folder != null) {
             List<Path> filesPaths = fileManager.getFilesPathsRecursively(folder, path);
             System.out.println("Folder is not null and contains " + filesPaths.size() + "objects");
-            // TODO: All copies of files are removed, not only the ones which are located in folder
             for (Path filePath : filesPaths) {
                 System.out.println(filePath);
                 remove(filePath);
             }
-            for (Folder innerFolder : folder.getFolders()) {
-                folder.removeFolder(innerFolder.getName());
+            if (!folder.getName().equals("root")) {
+                Folder parentFolder = fileManager.getFolder(path.getParent());
+                parentFolder.removeFolder(path.getFileName().toString());
             }
+//            for (Folder innerFolder : folder.getFolders()) {
+//                folder.removeFolder(innerFolder.getName());
+//            }
         }
         Dumper.dumpTree(fileManager);
         mutex.unlock();
