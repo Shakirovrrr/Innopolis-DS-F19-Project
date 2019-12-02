@@ -1,6 +1,7 @@
 package naming;
 
 import commons.Ports;
+import naming.dispatchers.BroadcastDispatcher;
 import naming.dispatchers.ClientDispatcher;
 import naming.dispatchers.Dispatcher;
 import naming.dispatchers.StorageServerDispatcher;
@@ -34,5 +35,8 @@ class Main {
 
 		StorageServerDispatcher storageServerDispatcher = new StorageServerDispatcher(Ports.PORT_INTERNAL, dispatcher);
 		storageServerDispatcher.start();
+
+		BroadcastDispatcher broadcastDispatcher = new BroadcastDispatcher();
+		broadcastDispatcher.start();
 	}
 }
