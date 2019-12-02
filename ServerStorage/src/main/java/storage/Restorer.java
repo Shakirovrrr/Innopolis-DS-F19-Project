@@ -4,6 +4,7 @@ import commons.Ports;
 import commons.StatusCodes;
 import commons.commands.general.FileUploadAck;
 import commons.commands.internal.FetchFilesAck;
+import commons.commands.storage.AskReady;
 import commons.commands.storage.ConfirmReady;
 import commons.commands.storage.FileDownload;
 import commons.routines.IORoutines;
@@ -53,7 +54,9 @@ public class Restorer {
 
 		try {
 			IORoutines.sendSignal(conn, request);
-			ConfirmReady ready = (ConfirmReady) IORoutines.receiveSignal(conn);
+			AskReady ready = (AskReady) IORoutines.receiveSignal(conn);
+
+			IORoutines.sendSignal(conn, new ConfirmReady());
 
 			System.out.println("RESTORER: Downloading file " + toDownload.getFileUuid());
 			IORoutines.transmit(sockIn, fileOut);
