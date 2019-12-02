@@ -208,7 +208,6 @@ public class ConsoleCommands {
             IORoutines.sendSignal(storageSocket, storageCommand);
             AskReady storageCommand1 = (AskReady) IORoutines.receiveSignal(storageSocket);
 
-            //todo get from storageCommand the size of file to show the progess_bar
             ConfirmReady storageCommand2 = new ConfirmReady();
             IORoutines.sendSignal(storageSocket, storageCommand2);
 
@@ -269,9 +268,10 @@ public class ConsoleCommands {
 
 
                     //STORAGE_SERVER_CONNECTION
+                    try {
                     Socket storageSocket = new Socket(hostStorage, Ports.PORT_STORAGE);
                     StorageCommand storageCommand = new commons.commands.storage.FileUpload(fileId, file.length(), replicasAddresses);
-                    try {
+
                         IORoutines.sendSignal(storageSocket, storageCommand);
 
                         ConfirmReady storageCommand1 = (ConfirmReady) IORoutines.receiveSignal(storageSocket);
