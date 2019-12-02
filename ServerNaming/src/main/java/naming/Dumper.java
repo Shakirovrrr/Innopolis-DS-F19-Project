@@ -33,13 +33,11 @@ public class Dumper {
                 Gson gson = new Gson();
                 return gson.fromJson(json, FileManager.class);
             }
-            System.out.println("Dump file does not exist");
             return null;
         } catch (IOException e) {
             System.out.println("Error while reading dumped file");
             e.printStackTrace();
             return null;
         }
-//        String json = new Gson()
     }
 }

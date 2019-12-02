@@ -23,10 +23,12 @@ public class ConsoleCommands {
     private final String defaultDir = "/";
     private final String defaultDownloadDir = "DFSdownloads";
     private String currentRemoteDir = "/";
+    private final String currentUploadDir ="DFSuploads";
 
     private String hostNaming = "3.122.52.241";
     private Scanner in = new Scanner(System.in);
 
+    public String getCurrentUploadDir(){return this.currentUploadDir;}
     public void setHostNaming(String s) {
         this.hostNaming = s;
     }

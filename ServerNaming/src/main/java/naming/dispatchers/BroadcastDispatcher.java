@@ -17,6 +17,7 @@ public class BroadcastDispatcher extends Thread {
             try {
                 List<InetAddress> broadcastAddresses = listAllBroadcastAddresses();
                 for (InetAddress address : broadcastAddresses) {
+                    System.out.println("Broadcast " + address);
                     broadcastInterface(address);
                 }
                 Thread.sleep(Constants.BROADCAST_SLEEP_TIME);

@@ -1,15 +1,11 @@
 package client;
 
-import client.ClientAPI.*;
 import commons.StatusCodes;
 
-import java.io.*;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
 
 public class ClientAPI {
     private ConsoleCommands consoleCommands;
@@ -36,16 +32,18 @@ public class ClientAPI {
     };
 
 
-    public ClientAPI(String downloadsDir) {
+    public ClientAPI(String hostNaming, String downloadsDir) {
         this.consoleCommands = new ConsoleCommands();
         this.consoleCommands.setCurrentDownloadsDir(downloadsDir);
         this.consoleCommands.setCurrentRemoteDir("/");
+        this.consoleCommands.setHostNaming(hostNaming);
     }
 
-    public ClientAPI() {
+    public ClientAPI(String hostNaming) {
         this.consoleCommands = new ConsoleCommands();
         this.consoleCommands.setCurrentDownloadsDir(this.consoleCommands.getDefaultDownloadDir());
         this.consoleCommands.setCurrentRemoteDir("/");
+        this.consoleCommands.setHostNaming(hostNaming);
     }
 
 
@@ -105,7 +103,7 @@ public class ClientAPI {
                 break;
             case (4):
                 if (paths.length == 1) {
-                    this.consoleCommands.rm(paths[0],true);
+                    this.consoleCommands.rm(paths[0], true);
                 } else {
                     System.out.println("Invalid number of arguments: ``` rm <file_path> ``` ");
                     break;
@@ -203,7 +201,19 @@ public class ClientAPI {
         //connect to console
         //input - next line in console after enter press
         System.out.println("\nWelcome to the Distributed Storage!\nEnter 'help' for listing the commands");
-        File dir1 = new File("."+this.consoleCommands.getCurrentDownloadDir());
+        File dir0 = new File("." + this.consoleCommands.getCurrentUploadDir());
+        System.out.println();
+        if (!dir0.exists()) {
+            if (dir0.mkdir()) {
+                System.out.println("Upload directory" + dir0.getAbsolutePath() + "created");
+            } else {
+                System.out.println("Fail to create upload directory " + dir0.getAbsolutePath());
+            }
+        } else {
+            System.out.println("Upload directory " + dir0.getAbsolutePath() + " already exists");
+        }
+        System.out.println("For uploading a file should be in project directory (default - " + this.consoleCommands.getCurrentUploadDir() + ")");
+        File dir1 = new File("." + this.consoleCommands.getCurrentDownloadDir());
         System.out.println();
         if (!dir1.exists()) {
             if (dir1.mkdir()) {

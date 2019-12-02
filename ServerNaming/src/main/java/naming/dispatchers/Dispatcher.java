@@ -200,10 +200,8 @@ public class Dispatcher {
         Folder parentDirectory = fileManager.getFolder(parentDirectoryPath);
 
         if (parentDirectory == null) {
-            System.out.println("parent Directory is null " + parentDirectoryPath);
             returnValue = new MkDirReturnValue(StatusCodes.FILE_OR_DIRECTORY_DOES_NOT_EXIST);
         } else {
-            System.out.println("Is ok");
             if (parentDirectory.folderExists(folderName)) {
                 returnValue = new MkDirReturnValue(StatusCodes.FILE_OR_DIRECTORY_ALREADY_EXISTS);
             } else {
@@ -265,12 +263,9 @@ public class Dispatcher {
     void removeFolder(Path path) {
         mutex.lock();
         Folder folder = fileManager.getFolder(path);
-        System.out.println("Remove Folder");
         if (folder != null) {
             List<Path> filesPaths = fileManager.getFilesPathsRecursively(folder, path);
-            System.out.println("Folder is not null and contains " + filesPaths.size() + "objects");
             for (Path filePath : filesPaths) {
-                System.out.println(filePath);
                 remove(filePath);
             }
             if (!folder.getName().equals("root")) {
@@ -305,8 +300,6 @@ public class Dispatcher {
 
     void registerNode(UUID nodeId, List<UUID> fileIds, InetAddress publicAddress, InetAddress privateAddress) {
         Node node = new Node(nodeId, publicAddress, privateAddress);
-        System.out.println("Node public addres " + publicAddress);
-        System.out.println("Node private addres " + privateAddress);
         mutex.lock();
         nodeStorage.addNode(node);
         for (UUID fileId : fileIds) {
@@ -321,9 +314,6 @@ public class Dispatcher {
     FetchFilesReturnValue fetchFiles(UUID nodeId) {
         mutex.lock();
         Node node = nodeStorage.getNode(nodeId);
-        System.out.println("\n" + "Node: " + nodeId + " " + node.getKeepingFiles().size() + "\n" +
-                "Node Storage: " + nodeStorage.getNodes().size() +
-                "Storage Files: " + fileStorage.getFileIds().size());
         if (node == null) {
             return new FetchFilesReturnValue(StatusCodes.UNKNOWN_NODE, null, null);
         }

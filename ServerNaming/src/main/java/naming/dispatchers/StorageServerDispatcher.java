@@ -38,18 +38,16 @@ public class StorageServerDispatcher extends Thread {
                 sleep(Constants.TIMER_SLEEP_TIME);
                 serversHeartbeatsLock.lock();
                 List<UUID> nodeIds = new LinkedList<>(serversHeartbeats.keySet());
-                serversHeartbeatsLock.unlock();
                 for (UUID nodeId : nodeIds) {
 //                    System.out.println("Check Servers THREAD Timestamp " + serversHeartbeats.get(nodeId));
                     if (new Date().getTime() - serversHeartbeats.get(nodeId) > Constants.WAITING_TIME) {
                         System.out.println("Check Servers THREAD Deleting Node " + nodeId);
+                        System.out.println("Server " + nodeId + " removed");
                         dispatcher.removeNode(nodeId);
-
-                        serversHeartbeatsLock.lock();
                         serversHeartbeats.remove(nodeId);
-                        serversHeartbeatsLock.unlock();
                     }
                 }
+                serversHeartbeatsLock.unlock();
             } catch (InterruptedException ex) {
                 System.err.println("Thread interrupted.");
             }
@@ -80,17 +78,14 @@ public class StorageServerDispatcher extends Thread {
                 serversHeartbeats.put(nodeId, new Date().getTime());
                 serversHeartbeatsLock.unlock();
 
-                System.out.println("Contains " + serversHeartbeats.containsKey(nodeId));
                 Command ack = new RegisterNodeAck(StatusCodes.OK);
                 IORoutines.sendSignal(conn, ack);
 
             } else if (command instanceof FetchFiles) {
                 UUID nodeId = ((FetchFiles) command).getNodeId();
-
-                System.out.println("Fetch Files Node " + nodeId);
+                System.out.println("Fetch files command from " + nodeId + " get");
 
                 Command ack;
-                System.out.println("Contains " + serversHeartbeats.containsKey(nodeId));
                 if (!serversHeartbeats.containsKey(nodeId)) {
                     ack = new FetchFilesAck(StatusCodes.UNKNOWN_NODE);
                 } else {
@@ -103,16 +98,12 @@ public class StorageServerDispatcher extends Thread {
             } else if (command instanceof Heartbeat) {
                 UUID nodeId = ((Heartbeat) command).getNodeId();
                 serversHeartbeats.replace(nodeId, new Date().getTime());
-
-                System.out.println("Heartbeat Node " + nodeId);
-
+                System.out.println("Heartbeat from " + nodeId + " get");
             } else if (command instanceof FileUploadAck) {
-                System.out.println("File acknowledgement got");
                 if (((FileUploadAck) command).getStatusCode() == StatusCodes.OK) {
                     dispatcher.addKeepingNode(((FileUploadAck) command).getFileUuid(), ((FileUploadAck) command).getStorageUuid());
                 }
-
-                System.out.println("File Upload Acknowledgement File " + ((FileUploadAck) command).getFileUuid() + " Node " + ((FileUploadAck) command).getStorageUuid());
+                System.out.println(((FileUploadAck) command).getStorageUuid() + " acknowledges uploading of " + ((FileUploadAck) command).getFileUuid() +  " file");
 
             } else {
                 Command ack = new ErrorAck();
