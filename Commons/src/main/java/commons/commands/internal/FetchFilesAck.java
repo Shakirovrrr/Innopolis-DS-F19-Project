@@ -1,11 +1,12 @@
 package commons.commands.internal;
 
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.Collection;
 import java.util.UUID;
 
 public class FetchFilesAck extends InternalCommand {
-	public static class ToDownload {
+	public static class ToDownload implements Serializable {
 		private UUID fileUuid;
 		private InetAddress nodeAddress;
 
