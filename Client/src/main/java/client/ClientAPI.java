@@ -1,6 +1,7 @@
 package client;
 
 import client.ClientAPI.*;
+import commons.StatusCodes;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -10,9 +11,6 @@ import java.util.*;
 public class ClientAPI {
     private ConsoleCommands consoleCommands;
 
-    public ConsoleCommands getConsoleCommands() {
-        return this.consoleCommands;
-    }
 
     private HashMap<String, Integer> commandsSet = new HashMap<>() {
         {
@@ -30,6 +28,7 @@ public class ClientAPI {
             put("help", 11);//show available commands
             put("setdd", 12);// set a directory for downloads
             put("getdd", 13); // get current directory for downloads
+            put("setnamip", 14);// set new naming server ip
         }
     };
 
@@ -58,7 +57,7 @@ public class ClientAPI {
     }
 
     private ConsoleToken parseCommand(String input) {
-        String[] input_mod =  input.strip().replaceAll("\\s+", " ").split(" ");
+        String[] input_mod = input.strip().replaceAll("\\s+", " ").split(" ");
         ;
         int key = commandsSet.getOrDefault(input_mod[0], -1);
         String[] paths = Arrays.copyOfRange(input_mod, 1, input_mod.length);
@@ -103,7 +102,7 @@ public class ClientAPI {
                 break;
             case (4):
                 if (paths.length == 1) {
-                    this.consoleCommands.rm(paths[0]);
+                    this.consoleCommands.rm(paths[0],true);
                 } else {
                     System.out.println("Invalid number of arguments: ``` rm <file_path> ``` ");
                     break;
@@ -183,28 +182,39 @@ public class ClientAPI {
                     break;
                 }
                 break;
+            case (14):
+                if (paths.length == 1) {
+                    this.consoleCommands.setHostNaming(paths[0]);
+                    System.out.println(this.consoleCommands.getStatusStr(StatusCodes.OK));
+                } else {
+                    System.out.println("Invalid number of arguments: ``` setnameip <ip> ``` ");
+                    break;
+                }
+                break;
 
         }
     }
 
-    public void commandHandler()  {
+    public void commandHandler() {
 
         //connect to console
         //input - next line in console after enter press
-        System.out.println("\nWelcome to the Distributed Storage!\nEnter 'help' for listing the commands\n");
+        System.out.println("\nWelcome to the Distributed Storage!\nEnter 'help' for listing the commands");
         while (true) {
 
-                System.out.print("storage:" + this.consoleCommands.getCurrentRemoteDir() + " " + "$ ");
+            System.out.print("\nstorage:" + this.consoleCommands.getCurrentRemoteDir() + " " + "$ ");
 
             if (this.consoleCommands.getInput().hasNextLine()) {
                 String input = this.consoleCommands.getInput().nextLine();
-                try{
+                try {
 
-                commandRouter(input);
+                    commandRouter(input);
 
+                } catch (IOException | ClassNotFoundException ex) {
+                    ex.printStackTrace();
+                }
             }
-            catch ( IOException| ClassNotFoundException ex){}
         }
-    }
 
-}}
+    }
+}
