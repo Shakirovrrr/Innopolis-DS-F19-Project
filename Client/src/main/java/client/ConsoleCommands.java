@@ -266,8 +266,8 @@ public class ConsoleCommands {
                 UUID fileId = receiveAknName.getFileId();
                 Collection<InetAddress> replicasAddresses = receiveAknName.getReplicaAddresses();
                 if (receiveAknName.getStatusCode() == (StatusCodes.OK)) {
-                    System.out.println("[TEST]: success with naming connection. Got :");
-                    System.out.println(hostStorage + " " + fileId + " " + replicasAddresses.toString());
+//                    System.out.println("[TEST]: success with naming connection. Got :");
+//                    System.out.println(hostStorage + " " + fileId + " " + replicasAddresses.toString());
 
 
                     //STORAGE_SERVER_CONNECTION
@@ -295,8 +295,6 @@ public class ConsoleCommands {
                         e.printStackTrace();
                         rm(remoteFileName, false);
                     }
-                } else {
-                    System.out.println("[TEST]: fail with naming connection.");
                 }
             }
         } else {
