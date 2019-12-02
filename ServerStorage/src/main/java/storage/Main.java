@@ -24,7 +24,7 @@ class Main {
 		dataPath = "./data/";
 		nodeUuid = UUID.randomUUID();
 		try {
-			waitForNamingDatagram();
+			saveAddresses(args);
 			Register.register();
 		} catch (IOException e) {
 			throw new CouldNotStartException("MAIN: Could not register at naming server.", e);
