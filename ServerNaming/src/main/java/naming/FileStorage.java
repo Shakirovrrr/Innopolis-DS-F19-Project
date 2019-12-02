@@ -22,11 +22,6 @@ public class FileStorage {
         this.fileToNodes = fileToNodes;
     }
 
-    public void removeFile(UUID fileId) {
-        filePaths.remove(fileId);
-        fileToNodes.remove(fileId);
-    }
-
     public void addFile(UUID fileId, Path filePath) {
         if (!filePaths.containsKey(fileId)) {
             Set<Path> paths = new HashSet<>();
@@ -37,12 +32,10 @@ public class FileStorage {
         filePaths.get(fileId).add(filePath);
     }
 
-    public boolean addFileNode(UUID fileId, Node node) {
+    public void addFileNode(UUID fileId, Node node) {
         if (fileToNodes.containsKey(fileId)) {
             fileToNodes.get(fileId).add(node);
-            return true;
         }
-        return false;
     }
 
     public void removeFileNode(UUID fileId, Node node) {
@@ -68,20 +61,14 @@ public class FileStorage {
     }
 
     public List<UUID> getFileIds() {
-        return new LinkedList<UUID>(filePaths.keySet());
-    }
-
-    public List<Path> getFilePaths(UUID fileId) {
-        return new LinkedList<Path>(filePaths.get(fileId));
+        return new LinkedList<>(filePaths.keySet());
     }
 
     public List<Node> getFileNodes(UUID fileId) {
-        return new LinkedList<Node>(fileToNodes.get(fileId));
+        return new LinkedList<>(fileToNodes.get(fileId));
     }
 
     public boolean fileExists(UUID fileId) {
         return filePaths.containsKey(fileId);
     }
-
-//    UUID fileId, Path filePath
 }

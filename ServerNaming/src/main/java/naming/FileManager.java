@@ -64,11 +64,6 @@ public class FileManager {
         return null;
     }
 
-    public boolean addFile(Path directoryPath, String fileName, int fileSize, String fileAccess, UUID fileId, boolean isTouched) {
-        File file = new File(fileName, fileSize, fileAccess, fileId, isTouched);
-        return addFile(directoryPath, file);
-    }
-
     public boolean addFile(Path directoryPath, File file) {
         Folder directory = getFolder(directoryPath);
         if (directory != null && !directory.fileExists(file.getName()) && !directory.folderExists(file.getName())) {
@@ -78,20 +73,18 @@ public class FileManager {
         return false;
     }
 
-    public boolean removeFile(Path directoryPath, String fileName) {
+    public void removeFile(Path directoryPath, String fileName) {
         Folder directory = getFolder(directoryPath);
         if (directory != null) {
-            return directory.removeFile(fileName);
+            directory.removeFile(fileName);
         }
-        return false;
     }
 
-    public boolean removeFolder(Path directoryPath, String folderName) {
+    public void removeFolder(Path directoryPath, String folderName) {
         Folder directory = getFolder(directoryPath);
         if (directory != null) {
-            return directory.removeFolder(folderName);
+            directory.removeFolder(folderName);
         }
-        return false;
     }
 
     private void appendFilesPaths(Folder directory, Path directoryPath, List<Path> filesPaths) {

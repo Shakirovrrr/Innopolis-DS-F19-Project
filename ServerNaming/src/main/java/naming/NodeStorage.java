@@ -6,7 +6,7 @@ import java.util.*;
 public class NodeStorage implements Iterable {
     private Map<UUID, Node> nodes;
 
-    public NodeStorage() {
+    NodeStorage() {
         this.nodes = new HashMap<>();
     }
 

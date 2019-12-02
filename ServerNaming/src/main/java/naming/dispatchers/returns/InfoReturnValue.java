@@ -1,6 +1,7 @@
 package naming.dispatchers.returns;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.UUID;
 
 public class InfoReturnValue extends ReturnValue {
@@ -10,6 +11,9 @@ public class InfoReturnValue extends ReturnValue {
 
     public InfoReturnValue(int statusCode) {
         super(statusCode);
+        this.fileSize = 0;
+        this.accessRights = null;
+        this.nodes = new LinkedList<>();
     }
 
     public InfoReturnValue(int statusCode, long fileSize, String accessRights, Collection<UUID> nodes) {

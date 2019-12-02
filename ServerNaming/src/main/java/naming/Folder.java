@@ -34,35 +34,33 @@ public class Folder {
         return new LinkedList<>(files.values());
     }
 
-    public Folder getFolder(String name) {
+    Folder getFolder(String name) {
         return folders.get(name);
     }
 
-    public File getFile(String name) {
+    File getFile(String name) {
         return files.get(name);
     }
 
-    public boolean addFolder(Folder folder) {
+    public void addFolder(Folder folder) {
         String folderName = folder.getName();
         if (folderExists(folderName)) {
-            return false;
+            return;
         }
         folders.put(folderName, folder);
 
-        return true;
     }
 
-    public boolean addFile(File file) {
+    void addFile(File file) {
         String fileName = file.getName();
         if (fileExists(fileName)) {
-            return false;
+            return;
         }
         files.put(fileName, file);
 
-        return true;
     }
 
-    public boolean removeFile(String fileName) {
+    boolean removeFile(String fileName) {
         if (!fileExists(fileName)) {
             return false;
         }
@@ -84,7 +82,7 @@ public class Folder {
         return folders.containsKey(folderName);
     }
 
-    public boolean fileExists(String fileName) {
+    boolean fileExists(String fileName) {
         return files.containsKey(fileName);
     }
 }
