@@ -192,6 +192,9 @@ public class ClientAPI {
                     break;
                 }
                 break;
+            default:
+                System.out.println("Incorrect input");
+                break;
 
         }
     }
