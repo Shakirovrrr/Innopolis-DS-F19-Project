@@ -31,6 +31,11 @@ public class HeartbeatRunner extends Thread {
 			StorageMaid maid = new StorageMaid(Arrays.asList(ack.getExistedFiles()));
 			maid.start();
 		}
+
+		if (ack.getFilesToDownload() != null) {
+			Restorer restorer = new Restorer(ack);
+			restorer.restore();
+		}
 	}
 
 	private void heartbeat() throws InterruptedException {

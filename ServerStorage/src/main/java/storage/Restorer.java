@@ -23,7 +23,7 @@ public class Restorer {
 		if (fetchAck.getFilesToDownload() == null) return;
 
 		for (FetchFilesAck.ToDownload toDownload : fetchAck.getFilesToDownload()) {
-
+			new Thread(() -> restoreJob(toDownload)).start();
 		}
 	}
 
