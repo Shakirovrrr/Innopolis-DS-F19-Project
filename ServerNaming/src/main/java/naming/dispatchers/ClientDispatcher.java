@@ -69,6 +69,7 @@ public class ClientDispatcher extends Thread {
                 PutReturnValue returnValue = dispatcher.put(directoryPath, fileName, false, fileSize, fileRights);
                 if (returnValue.getStatus() == StatusCodes.OK) {
                     InetAddress storageAddress = nodes.get(0).getPublicIpAddress();
+                    System.out.println("Storages public Address " + storageAddress);
                     List<InetAddress> replicaAddresses = new LinkedList<>();
                     for (int i = 1; i < nodes.size(); i++) {
                         replicaAddresses.add(nodes.get(i).getPrivateIpAddress());

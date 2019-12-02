@@ -8,6 +8,7 @@ import commons.routines.IORoutines;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.net.URL;
 import java.util.UUID;
@@ -25,7 +26,7 @@ class Register {
 		UUID[] localFiles = StorageMaid.getFiles().toArray(new UUID[0]);
 
 		RegisterNode registerNodeCmd = new RegisterNode(Main.nodeUuid, localFiles,
-				Main.localAddress, Main.localAddress); // FIXME
+				InetAddress.getByName(publicIp), Main.localAddress);
 
 		Socket conn = new Socket(Main.namingAddress, Ports.PORT_INTERNAL);
 		IORoutines.sendSignal(conn, registerNodeCmd);
