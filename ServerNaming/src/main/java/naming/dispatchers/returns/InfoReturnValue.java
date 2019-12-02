@@ -1,20 +1,18 @@
 package naming.dispatchers.returns;
 
-import commons.StatusCodes;
-
 import java.util.Collection;
 import java.util.UUID;
 
 public class InfoReturnValue extends ReturnValue {
     long fileSize;
-    int accessRights;
+    String accessRights;
     Collection<UUID> nodes;
 
-    public InfoReturnValue(StatusCodes.Code statusCode) {
+    public InfoReturnValue(int statusCode) {
         super(statusCode);
     }
 
-    public InfoReturnValue(StatusCodes.Code statusCode, long fileSize, int accessRights, Collection<UUID> nodes) {
+    public InfoReturnValue(int statusCode, long fileSize, String accessRights, Collection<UUID> nodes) {
         super(statusCode);
         this.fileSize = fileSize;
         this.accessRights = accessRights;
@@ -25,7 +23,7 @@ public class InfoReturnValue extends ReturnValue {
         return fileSize;
     }
 
-    public int getAccessRights() {
+    public String getAccessRights() {
         return accessRights;
     }
 

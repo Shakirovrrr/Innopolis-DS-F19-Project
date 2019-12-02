@@ -2,9 +2,8 @@ package naming.dispatchers;
 
 import commons.StatusCodes;
 import commons.commands.Command;
-import commons.commands.internal.NodePrivateAddress;
-import commons.commands.internal.NodePublicAddress;
 import commons.commands.naming.*;
+import commons.commands.general.ErrorAck;
 import commons.routines.IORoutines;
 import naming.Node;
 import naming.dispatchers.returns.*;
@@ -15,8 +14,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class ClientDispatcher extends Thread {
     private int listeningPort;
@@ -31,7 +29,7 @@ public class ClientDispatcher extends Thread {
     private void serve() throws IOException {
         while (true) {
             Socket conn = server.accept();
-//			dispatch(conn);
+
             new Thread(() -> dispatch(conn)).start();
         }
     }
@@ -41,22 +39,24 @@ public class ClientDispatcher extends Thread {
             Command command = IORoutines.receiveSignal(conn);
             Command ack = new ErrorAck();
 
+            System.out.println("Client connected");
+
             if (command instanceof Init) {
                 dispatcher.init();
 
-                ack = new InitAck(StatusCodes.Code.OK);
+                ack = new InitAck(StatusCodes.OK);
 
             } else if (command instanceof PutFile) {
                 List<Node> nodes = dispatcher.getNodes();
                 if (nodes.size() == 0) {
-                    ack = new PutAck(StatusCodes.Code.NO_NODES_AVAILABLE, null, null, null);
+                    ack = new PutAck(StatusCodes.NO_NODES_AVAILABLE, null, null, null);
                     IORoutines.sendSignal(conn, ack);
                     return;
                 }
 
                 Path path = Paths.get(((PutFile) command).getRemotePath());
                 if (path.getNameCount() == 0) {     // only root in the path
-                    ack = new PutAck(StatusCodes.Code.INCORRECT_NAME, null, null, null);
+                    ack = new PutAck(StatusCodes.INCORRECT_NAME, null, null, null);
                     IORoutines.sendSignal(conn, ack);
                     return;
                 }
@@ -64,8 +64,10 @@ public class ClientDispatcher extends Thread {
                 Path directoryPath = path.getParent();
                 String fileName = path.getFileName().toString();
 
-                PutReturnValue returnValue = dispatcher.put(directoryPath, fileName, false);
-                if (returnValue.getStatus() == StatusCodes.Code.OK) {
+                long fileSize = ((PutFile) command).getSize();
+                String fileRights = ((PutFile) command).getRights();
+                PutReturnValue returnValue = dispatcher.put(directoryPath, fileName, false, fileSize, fileRights);
+                if (returnValue.getStatus() == StatusCodes.OK) {
                     InetAddress storageAddress = nodes.get(0).getPublicIpAddress();
                     List<InetAddress> replicaAddresses = new LinkedList<>();
                     for (int i = 1; i < nodes.size(); i++) {
@@ -79,7 +81,7 @@ public class ClientDispatcher extends Thread {
             } else if (command instanceof TouchFile) {
                 Path path = Paths.get(((TouchFile) command).getNewPath());
                 if (path.getNameCount() == 0) {     // only root in the path
-                    ack = new TouchAck(StatusCodes.Code.INCORRECT_NAME);
+                    ack = new TouchAck(StatusCodes.INCORRECT_NAME);
                     IORoutines.sendSignal(conn, ack);
                     return;
                 }
@@ -87,19 +89,19 @@ public class ClientDispatcher extends Thread {
                 Path directoryPath = path.getParent();
                 String fileName = path.getFileName().toString();
 
-                PutReturnValue returnValue = dispatcher.put(directoryPath, fileName, true);
+                TouchReturnValue returnValue = dispatcher.touch(directoryPath, fileName);
                 ack = new TouchAck(returnValue.getStatus());
 
             } else if (command instanceof Get) {
                 Path path = Paths.get(((Get) command).getFromPath());
                 if (path.getNameCount() == 0) {     // only root in the path
-                    ack = new GetAck(StatusCodes.Code.INCORRECT_NAME, null, null);
+                    ack = new GetAck(StatusCodes.INCORRECT_NAME, null, null);
                     IORoutines.sendSignal(conn, ack);
                     return;
                 }
 
                 GetReturnValue returnValue = dispatcher.get(path);
-                if (returnValue.getStatus() == StatusCodes.Code.OK) {
+                if (returnValue.getStatus() == StatusCodes.OK) {
                     InetAddress nodeAddress = returnValue.getNode().getPublicIpAddress();
                     ack = new GetAck(returnValue.getStatus(), nodeAddress, returnValue.getFileId());
                 } else {
@@ -109,7 +111,7 @@ public class ClientDispatcher extends Thread {
             } else if (command instanceof InfoFile) {
                 Path path = Paths.get(((InfoFile) command).getRemotePath());
                 if (path.getNameCount() == 0) {     // only root in the path
-                    ack = new InfoAck(StatusCodes.Code.INCORRECT_NAME, 0, 0, null);
+                    ack = new InfoAck(StatusCodes.INCORRECT_NAME, 0, null, (UUID[]) null);
                     IORoutines.sendSignal(conn, ack);
                     return;
                 }
@@ -121,7 +123,7 @@ public class ClientDispatcher extends Thread {
                 Path fromPath = Paths.get(((CpFile) command).getFromPath());
                 Path toPath = Paths.get(((CpFile) command).getToPath());
                 if (fromPath.getNameCount() == 0 || toPath.getNameCount() == 0) {     // only root in the path
-                    ack = new CpAck(StatusCodes.Code.INCORRECT_NAME);
+                    ack = new CpAck(StatusCodes.INCORRECT_NAME);
                     IORoutines.sendSignal(conn, ack);
                     return;
                 }
@@ -132,7 +134,7 @@ public class ClientDispatcher extends Thread {
                 Path fromPath = Paths.get(((MvFile) command).getFromPath());
                 Path toPath = Paths.get(((MvFile) command).getToPath());
                 if (fromPath.getNameCount() == 0 || toPath.getNameCount() == 0) {     // only root in the path
-                    ack = new MvAck(StatusCodes.Code.INCORRECT_NAME);
+                    ack = new MvAck(StatusCodes.INCORRECT_NAME);
                     IORoutines.sendSignal(conn, ack);
                     return;
                 }
@@ -144,9 +146,9 @@ public class ClientDispatcher extends Thread {
                 Path path = Paths.get(((Cd) command).getRemotePath());
 
                 if (dispatcher.directoryExists(path)) {
-                    ack = new CdAck(StatusCodes.Code.OK);
+                    ack = new CdAck(StatusCodes.OK);
                 } else {
-                    ack = new CdAck(StatusCodes.Code.FILE_OR_DIRECTORY_DOES_NOT_EXIST);
+                    ack = new CdAck(StatusCodes.FILE_OR_DIRECTORY_DOES_NOT_EXIST);
                 }
 
             } else if (command instanceof Ls) {
@@ -160,6 +162,35 @@ public class ClientDispatcher extends Thread {
 
                 MkDirReturnValue returnValue = dispatcher.makeDirectory(path);
                 ack = new MkdirAck(returnValue.getStatus());
+            } else if (command instanceof RmFile) {
+                Path path = Paths.get(((RmFile) command).getRemotePath());
+                if (path.getNameCount() == 0) {
+                    ack = new RmAck(StatusCodes.INCORRECT_NAME);
+                    IORoutines.sendSignal(conn, ack);
+                    return;
+                }
+
+                if (dispatcher.folderExists(path)) {
+                    ack = new RmAck(StatusCodes.CONFIRMATION_REQUIRED);
+                    IORoutines.sendSignal(conn, ack);
+
+                    command = IORoutines.receiveSignal(conn);
+                    if (command instanceof RmConfirm) {
+                        boolean isConfirmed = ((RmConfirm) command).isRemoveConfirmed();
+                        System.out.println("IS confirmed: " + isConfirmed);
+                        if (isConfirmed) {
+                            dispatcher.removeFolder(path);
+                        }
+                        ack = new RmAck(StatusCodes.OK);
+                    } else {
+                        ack = new ErrorAck();
+                    }
+                } else if (dispatcher.fileExists(path)) {
+                    dispatcher.removeFile(path);
+                    ack = new RmAck(StatusCodes.OK);
+                } else {
+                    ack = new RmAck(StatusCodes.FILE_OR_DIRECTORY_DOES_NOT_EXIST);
+                }
             }
 
         IORoutines.sendSignal(conn, ack);

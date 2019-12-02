@@ -1,15 +1,13 @@
 package naming.dispatchers.returns;
 
-import commons.StatusCodes;
-
 public abstract class ReturnValue {
-    private StatusCodes.Code status;
+    private int status;
 
-    ReturnValue(StatusCodes.Code statusCode) {
+    ReturnValue(int statusCode) {
         this.status = statusCode;
     }
 
-    public StatusCodes.Code getStatus() {
+    public int getStatus() {
         return status;
     }
 }
