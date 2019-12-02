@@ -42,7 +42,6 @@ public class ClientDispatcher extends Thread {
 				receiver.start();
 			}
 
-
 		} catch (IOException ex) {
 			System.err.println("DISPATCHER: Connection reset.");
 		} catch (ClassNotFoundException | ClassCastException ex) {
