@@ -1,5 +1,6 @@
 rootProject.name = 'DistFileSyst'
 
+include 'Commons'
 include 'Client'
 include 'ServerNaming'
 include 'ServerStorage'
