@@ -20,7 +20,7 @@ jobs:
       run: sudo chmod +x gradlew && ./gradlew :Commons:build
 
     - name: Assemble client JAR
-      run: ./gradlew :Client:jar
+      run: ./gradlew :Client:fatJar
 
     - name: Upload artifact
       uses: actions/upload-artifact@v1
