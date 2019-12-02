@@ -33,7 +33,6 @@ public class StorageMaid extends Thread {
 	}
 
 	private void tidy() {
-		System.out.println("MAID: Housekeeping...");
 		Collection<UUID> localFiles = getFiles();
 		localFiles.removeAll(uuids);
 
