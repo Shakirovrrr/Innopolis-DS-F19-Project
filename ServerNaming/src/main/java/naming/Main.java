@@ -6,7 +6,6 @@ import naming.dispatchers.ClientDispatcher;
 import naming.dispatchers.Dispatcher;
 import naming.dispatchers.StorageServerDispatcher;
 
-import java.net.UnknownHostException;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -20,6 +19,7 @@ class Main {
 		if (fileManager == null) {
 			fileManager = new FileManager();
 			Dumper.dumpTree(fileManager);
+			System.out.println("Existent file tree has not been found. Creating the new one.");
 		} else {
 			List<Path> filesPaths = fileManager.getAllFilesPaths();
 			for (Path filePath : filesPaths) {
@@ -36,7 +36,7 @@ class Main {
 		StorageServerDispatcher storageServerDispatcher = new StorageServerDispatcher(Ports.PORT_INTERNAL, dispatcher);
 		storageServerDispatcher.start();
 
-		BroadcastDispatcher broadcastDispatcher = new BroadcastDispatcher();
-		broadcastDispatcher.start();
+//		BroadcastDispatcher broadcastDispatcher = new BroadcastDispatcher();
+//		broadcastDispatcher.start();
 	}
 }

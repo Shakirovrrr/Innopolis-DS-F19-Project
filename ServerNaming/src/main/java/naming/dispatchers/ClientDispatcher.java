@@ -39,14 +39,16 @@ public class ClientDispatcher extends Thread {
             Command command = IORoutines.receiveSignal(conn);
             Command ack = new ErrorAck();
 
-            System.out.println("Client connected");
+            System.out.print("Client connected. ");
 
             if (command instanceof Init) {
+                System.out.println("Initialization command get");
                 dispatcher.init();
 
                 ack = new InitAck(StatusCodes.OK);
 
             } else if (command instanceof PutFile) {
+                System.out.println("Put file command get");
                 List<Node> nodes = dispatcher.getNodes();
                 if (nodes.size() == 0) {
                     ack = new PutAck(StatusCodes.NO_NODES_AVAILABLE, null, null, null);
@@ -69,7 +71,6 @@ public class ClientDispatcher extends Thread {
                 PutReturnValue returnValue = dispatcher.put(directoryPath, fileName, false, fileSize, fileRights);
                 if (returnValue.getStatus() == StatusCodes.OK) {
                     InetAddress storageAddress = nodes.get(0).getPublicIpAddress();
-                    System.out.println("Storages public Address " + storageAddress);
                     List<InetAddress> replicaAddresses = new LinkedList<>();
                     for (int i = 1; i < nodes.size(); i++) {
                         replicaAddresses.add(nodes.get(i).getPrivateIpAddress());
@@ -80,6 +81,7 @@ public class ClientDispatcher extends Thread {
                 }
 
             } else if (command instanceof TouchFile) {
+                System.out.println("Touch file command get");
                 Path path = Paths.get(((TouchFile) command).getNewPath());
                 if (path.getNameCount() == 0) {     // only root in the path
                     ack = new TouchAck(StatusCodes.INCORRECT_NAME);
@@ -94,6 +96,7 @@ public class ClientDispatcher extends Thread {
                 ack = new TouchAck(returnValue.getStatus());
 
             } else if (command instanceof Get) {
+                System.out.println("Get file command get");
                 Path path = Paths.get(((Get) command).getFromPath());
                 if (path.getNameCount() == 0) {     // only root in the path
                     ack = new GetAck(StatusCodes.INCORRECT_NAME, null, null);
@@ -110,6 +113,7 @@ public class ClientDispatcher extends Thread {
                 }
 
             } else if (command instanceof InfoFile) {
+                System.out.println("File info command get");
                 Path path = Paths.get(((InfoFile) command).getRemotePath());
                 if (path.getNameCount() == 0) {     // only root in the path
                     ack = new InfoAck(StatusCodes.INCORRECT_NAME, 0, null, new UUID[0]);
@@ -121,6 +125,7 @@ public class ClientDispatcher extends Thread {
                 ack = new InfoAck(returnValue.getStatus(), returnValue.getFileSize(), returnValue.getAccessRights(), returnValue.getNodes());
 
             } else if (command instanceof CpFile) {
+                System.out.println("Copy file command get");
                 Path fromPath = Paths.get(((CpFile) command).getFromPath());
                 Path toPath = Paths.get(((CpFile) command).getToPath());
                 if (fromPath.getNameCount() == 0 || toPath.getNameCount() == 0) {     // only root in the path
@@ -132,6 +137,7 @@ public class ClientDispatcher extends Thread {
                 ack = new CpAck(returnValue.getStatus());
 
             } else if (command instanceof MvFile) {
+                System.out.println("Move file command get");
                 Path fromPath = Paths.get(((MvFile) command).getFromPath());
                 Path toPath = Paths.get(((MvFile) command).getToPath());
                 if (fromPath.getNameCount() == 0 || toPath.getNameCount() == 0) {     // only root in the path
@@ -144,6 +150,7 @@ public class ClientDispatcher extends Thread {
                 ack = new MvAck(returnValue.getStatus());
 
             } else if (command instanceof Cd) {
+                System.out.println("Checking directory existance command get");
                 Path path = Paths.get(((Cd) command).getRemotePath());
 
                 if (dispatcher.directoryExists(path)) {
@@ -153,12 +160,14 @@ public class ClientDispatcher extends Thread {
                 }
 
             } else if (command instanceof Ls) {
+                System.out.println("List files in directory command get");
                 Path path = Paths.get(((Ls) command).getRemotePath());
 
                 LsReturnValue returnValue = dispatcher.listDirectory(path);
                 ack = new LsAck(returnValue.getStatus(), returnValue.getFolders(), returnValue.getFiles());
 
             } else if (command instanceof MkDir) {
+                System.out.println("Create a directory command get");
                 Path path = Paths.get(((MkDir) command).getRemotePath());
 
                 MkDirReturnValue returnValue = dispatcher.makeDirectory(path);
@@ -172,13 +181,13 @@ public class ClientDispatcher extends Thread {
                 }
 
                 if (dispatcher.folderExists(path)) {
+                    System.out.println("Remove a folder command get");
                     ack = new RmAck(StatusCodes.CONFIRMATION_REQUIRED);
                     IORoutines.sendSignal(conn, ack);
 
                     command = IORoutines.receiveSignal(conn);
                     if (command instanceof RmConfirm) {
                         boolean isConfirmed = ((RmConfirm) command).isRemoveConfirmed();
-                        System.out.println("IS confirmed: " + isConfirmed);
                         if (isConfirmed) {
                             dispatcher.removeFolder(path);
                         }
@@ -187,6 +196,7 @@ public class ClientDispatcher extends Thread {
                         ack = new ErrorAck();
                     }
                 } else if (dispatcher.fileExists(path)) {
+                    System.out.println("Remove a file command get");
                     dispatcher.removeFile(path);
                     ack = new RmAck(StatusCodes.OK);
                 } else {
