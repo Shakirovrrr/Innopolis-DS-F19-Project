@@ -25,7 +25,7 @@ public class Dumper {
         }
     }
 
-    public static FileManager getTree() {
+    static FileManager getTree() {
         try {
             if (Files.exists(FILE_MANAGER_PATH)) {
                 System.out.println("Exists");

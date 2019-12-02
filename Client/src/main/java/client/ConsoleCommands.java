@@ -239,7 +239,8 @@ public class ConsoleCommands {
         if (Files.exists(path)) {
 
 
-            File file = new File(absLocPath);
+            File file = new File(path.toString());
+            System.out.println(path.toString());
             boolean[] rwe = {file.canRead(), file.canWrite(), file.canExecute()};
             StringBuilder rights = new StringBuilder();
 
@@ -252,6 +253,8 @@ public class ConsoleCommands {
             }
 
             NamingCommand namingCommand = new commons.commands.naming.PutFile(remoteFileName, rights.toString(), file.length());
+            System.out.println(Files.size(path));
+            System.out.println(file.length());
 
             Socket namingSocket = new Socket(hostNaming, Ports.PORT_NAMING);
             IORoutines.sendSignal(namingSocket, namingCommand);
@@ -289,6 +292,7 @@ public class ConsoleCommands {
                             this.rm(remoteFileName, false);
                         }
                     } catch (IOException e) {
+                        e.printStackTrace();
                         rm(remoteFileName, false);
                     }
                 } else {

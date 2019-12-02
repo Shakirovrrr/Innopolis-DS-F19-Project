@@ -200,16 +200,15 @@ public class ClientAPI {
         //connect to console
         //input - next line in console after enter press
         System.out.println("\nWelcome to the Distributed Storage!\nEnter 'help' for listing the commands");
+        System.out.print("\nstorage:" + this.consoleCommands.getCurrentRemoteDir() + " " + "$ ");
         while (true) {
-
-            System.out.print("\nstorage:" + this.consoleCommands.getCurrentRemoteDir() + " " + "$ ");
-
             if (this.consoleCommands.getInput().hasNextLine()) {
                 String input = this.consoleCommands.getInput().nextLine();
                 try {
 
                     commandRouter(input);
 
+                    System.out.print("\nstorage:" + this.consoleCommands.getCurrentRemoteDir() + " " + "$ ");
                 } catch (IOException | ClassNotFoundException ex) {
                     ex.printStackTrace();
                 }
