@@ -33,17 +33,15 @@ public class ClientAPI {
 
 
     public ClientAPI(String hostNaming, String downloadsDir) {
-        this.consoleCommands = new ConsoleCommands();
+        this.consoleCommands = new ConsoleCommands(hostNaming);
         this.consoleCommands.setCurrentDownloadsDir(downloadsDir);
         this.consoleCommands.setCurrentRemoteDir("/");
-        this.consoleCommands.setHostNaming(hostNaming);
     }
 
     public ClientAPI(String hostNaming) {
-        this.consoleCommands = new ConsoleCommands();
+        this.consoleCommands = new ConsoleCommands(hostNaming);
         this.consoleCommands.setCurrentDownloadsDir(this.consoleCommands.getDefaultDownloadDir());
         this.consoleCommands.setCurrentRemoteDir("/");
-        this.consoleCommands.setHostNaming(hostNaming);
     }
 
 
@@ -183,15 +181,15 @@ public class ClientAPI {
                     break;
                 }
                 break;
-            case (14):
-                if (paths.length == 1) {
-                    this.consoleCommands.setHostNaming(paths[0]);
-                    System.out.println(this.consoleCommands.getStatusStr(StatusCodes.OK));
-                } else {
-                    System.out.println("Invalid number of arguments: ``` setnameip <ip> ``` ");
-                    break;
-                }
-                break;
+//            case (14):
+//                if (paths.length == 1) {
+//                    this.consoleCommands.setHostNaming(paths[0]);
+//                    System.out.println(this.consoleCommands.getStatusStr(StatusCodes.OK));
+//                } else {
+//                    System.out.println("Invalid number of arguments: ``` setnameip <ip> ``` ");
+//                    break;
+//                }
+//                break;
             default:
                 System.out.println("Incorrect input");
                 break;
@@ -208,24 +206,24 @@ public class ClientAPI {
         System.out.println();
         if (!dir0.exists()) {
             if (dir0.mkdir()) {
-                System.out.println("Upload directory" + dir0.getAbsolutePath() + "created");
+                System.out.println("Upload directory created");
             } else {
-                System.out.println("Fail to create upload directory " + dir0.getAbsolutePath());
+                System.out.println("Fail to create upload directory");
             }
         } else {
-            System.out.println("Upload directory " + dir0.getAbsolutePath() + " already exists");
+            System.out.println("Upload directory already exists");
         }
         System.out.println("For uploading a file should be in project directory (default - " + this.consoleCommands.getCurrentUploadDir() + ")");
         File dir1 = new File("." + this.consoleCommands.getCurrentDownloadDir());
         System.out.println();
         if (!dir1.exists()) {
             if (dir1.mkdir()) {
-                System.out.println("Download directory" + dir1.getAbsolutePath() + "created");
+                System.out.println("Download directory created");
             } else {
-                System.out.println("Fail to create download directory " + dir1.getAbsolutePath());
+                System.out.println("Fail to create download directory");
             }
         } else {
-            System.out.println("Download directory " + dir1.getAbsolutePath() + " already exists");
+            System.out.println("Download directory already exists");
         }
         System.out.println();
         System.out.print("\nstorage:" + this.consoleCommands.getCurrentRemoteDir() + " " + "$ ");

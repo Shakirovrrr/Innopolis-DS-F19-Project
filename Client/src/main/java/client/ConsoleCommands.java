@@ -25,13 +25,17 @@ public class ConsoleCommands {
     private String currentRemoteDir = "/";
     private final String currentUploadDir ="DFSuploads";
 
-    private String hostNaming = "3.122.52.241";
+    private String hostNaming;
     private Scanner in = new Scanner(System.in);
 
-    public String getCurrentUploadDir(){return this.currentUploadDir;}
-    public void setHostNaming(String s) {
-        this.hostNaming = s;
+    public ConsoleCommands(String hostNaming) {
+        this.hostNaming = hostNaming;
     }
+
+    public String getCurrentUploadDir(){return this.currentUploadDir;}
+//    public void setHostNaming(String s) {
+//        this.hostNaming = s;
+//    }
 
     private HashMap<Integer, String> responseCodes = new HashMap<>() {
         {
