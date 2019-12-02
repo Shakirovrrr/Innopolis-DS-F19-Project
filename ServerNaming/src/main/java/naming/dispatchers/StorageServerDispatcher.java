@@ -13,11 +13,14 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class StorageServerDispatcher extends Thread {
     private int listeningPort;
     private ServerSocket server;
     private Dispatcher dispatcher;
+
+    private ReentrantLock serversHeartbeatsLock;
 
     private Map<UUID, Long> serversHeartbeats;
 
@@ -25,6 +28,7 @@ public class StorageServerDispatcher extends Thread {
         this.listeningPort = listeningPort;
         this.dispatcher = dispatcher;
         this.serversHeartbeats = new HashMap<>();
+        this.serversHeartbeatsLock = new ReentrantLock();
     }
 
     private void checkServers() {
@@ -32,12 +36,18 @@ public class StorageServerDispatcher extends Thread {
             try {
 
                 sleep(Constants.TIMER_SLEEP_TIME);
-                for (UUID nodeId : serversHeartbeats.keySet()) {
-                    if (serversHeartbeats.get(nodeId) + Constants.WAITING_TIME > new Date().getTime()) {
+                serversHeartbeatsLock.lock();
+                List<UUID> nodeIds = new LinkedList<>(serversHeartbeats.keySet());
+                serversHeartbeatsLock.unlock();
+                for (UUID nodeId : nodeIds) {
+//                    System.out.println("Check Servers THREAD Timestamp " + serversHeartbeats.get(nodeId));
+                    if (new Date().getTime() - serversHeartbeats.get(nodeId) > Constants.WAITING_TIME) {
+                        System.out.println("Check Servers THREAD Deleting Node " + nodeId);
                         dispatcher.removeNode(nodeId);
+
+                        serversHeartbeatsLock.lock();
                         serversHeartbeats.remove(nodeId);
-                    } else {
-                        break;
+                        serversHeartbeatsLock.unlock();
                     }
                 }
             } catch (InterruptedException ex) {
@@ -65,7 +75,12 @@ public class StorageServerDispatcher extends Thread {
                 InetAddress localAddress = ((RegisterNode) command).getLocalAddress();
 
                 dispatcher.registerNode(nodeId, files, publicAddress, localAddress);
+
+                serversHeartbeatsLock.lock();
                 serversHeartbeats.put(nodeId, new Date().getTime());
+                serversHeartbeatsLock.unlock();
+
+                System.out.println("Contains " + serversHeartbeats.containsKey(nodeId));
                 Command ack = new RegisterNodeAck(StatusCodes.OK);
                 IORoutines.sendSignal(conn, ack);
 
@@ -75,6 +90,7 @@ public class StorageServerDispatcher extends Thread {
                 System.out.println("Fetch Files Node " + nodeId);
 
                 Command ack;
+                System.out.println("Contains " + serversHeartbeats.containsKey(nodeId));
                 if (!serversHeartbeats.containsKey(nodeId)) {
                     ack = new FetchFilesAck(StatusCodes.UNKNOWN_NODE);
                 } else {
@@ -91,6 +107,7 @@ public class StorageServerDispatcher extends Thread {
                 System.out.println("Heartbeat Node " + nodeId);
 
             } else if (command instanceof FileUploadAck) {
+                System.out.println("File acknowledgement got");
                 if (((FileUploadAck) command).getStatusCode() == StatusCodes.OK) {
                     dispatcher.addKeepingNode(((FileUploadAck) command).getFileUuid(), ((FileUploadAck) command).getStorageUuid());
                 }
@@ -104,6 +121,7 @@ public class StorageServerDispatcher extends Thread {
 
         } catch (IOException ex) {
             System.err.println("Connection reset.");
+            ex.printStackTrace();
         } catch (ClassNotFoundException | ClassCastException ex) {
             ex.printStackTrace();
             System.err.println("Unable to dispatch the command.");

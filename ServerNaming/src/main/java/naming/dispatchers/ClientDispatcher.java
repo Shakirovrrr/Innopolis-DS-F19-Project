@@ -39,6 +39,8 @@ public class ClientDispatcher extends Thread {
             Command command = IORoutines.receiveSignal(conn);
             Command ack = new ErrorAck();
 
+            System.out.println("Client connected");
+
             if (command instanceof Init) {
                 dispatcher.init();
 
@@ -162,6 +164,11 @@ public class ClientDispatcher extends Thread {
                 ack = new MkdirAck(returnValue.getStatus());
             } else if (command instanceof RmFile) {
                 Path path = Paths.get(((RmFile) command).getRemotePath());
+                if (path.getNameCount() == 0) {
+                    ack = new RmAck(StatusCodes.INCORRECT_NAME);
+                    IORoutines.sendSignal(conn, ack);
+                    return;
+                }
 
                 if (dispatcher.folderExists(path)) {
                     ack = new RmAck(StatusCodes.CONFIRMATION_REQUIRED);
@@ -170,6 +177,7 @@ public class ClientDispatcher extends Thread {
                     command = IORoutines.receiveSignal(conn);
                     if (command instanceof RmConfirm) {
                         boolean isConfirmed = ((RmConfirm) command).isRemoveConfirmed();
+                        System.out.println("IS confirmed: " + isConfirmed);
                         if (isConfirmed) {
                             dispatcher.removeFolder(path);
                         }

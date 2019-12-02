@@ -19,18 +19,15 @@ public class FileManager {
         return root;
     }
 
-    public List<File> getAllFiles() {
-        List<File> files = new LinkedList<>();
-        appendFiles(getRoot(), files);
-
-        return files;
+    public List<Path> getAllFilesPaths() {
+        return getFilesPathsRecursively(getRoot(), Paths.get("/"));
     }
 
-    public List<File> getFilesRecursively(Folder directory) {
-        List<File> files = new LinkedList<>();
-        appendFiles(directory, files);
+    public List<Path> getFilesPathsRecursively(Folder directory, Path directoryPath) {
+        List<Path> filesPaths = new LinkedList<>();
+        appendFilesPaths(directory, directoryPath, filesPaths);
 
-        return files;
+        return filesPaths;
     }
 
     public Folder getFolder(Path path) {
@@ -74,7 +71,7 @@ public class FileManager {
 
     public boolean addFile(Path directoryPath, File file) {
         Folder directory = getFolder(directoryPath);
-        if (directory != null && directory.fileExists(file.getName()) == false) {
+        if (directory != null && !directory.fileExists(file.getName()) && !directory.folderExists(file.getName())) {
             directory.addFile(file);
             return true;
         }
@@ -97,10 +94,13 @@ public class FileManager {
         return false;
     }
 
-    private void appendFiles(Folder directory, List<File> files) {
+    private void appendFilesPaths(Folder directory, Path directoryPath, List<Path> filesPaths) {
         for (Folder folder : directory.getFolders()) {
-            appendFiles(folder, files);
+            Path path = Paths.get(directoryPath.toString(), folder.getName());
+            appendFilesPaths(folder, path, filesPaths);
         }
-        files.addAll(directory.getFiles());
+        for (File file : directory.getFiles()) {
+            filesPaths.add(Paths.get(directoryPath.toString(), file.getName()));
+        }
     }
 }

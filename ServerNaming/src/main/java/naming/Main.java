@@ -10,20 +10,29 @@ import java.net.UnknownHostException;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Date;
+import java.util.List;
 import java.util.PriorityQueue;
 import java.util.UUID;
 
 class Main {
-	public static void main(String[] args) throws UnknownHostException {
+	public static void main(String[] args) throws UnknownHostException, InterruptedException {
+		FileManager fileManager = Dumper.getTree();
+		NodeStorage nodeStorage = new NodeStorage();
+		FileStorage fileStorage = new FileStorage();
 
-		Path path = Paths.get("////a/!/garg/");
-		System.out.println(path.getParent());
-		System.out.println(path.getNameCount());
-		System.out.println(path.getFileName());
+		// No storaged file tree
+		if (fileManager == null) {
+			fileManager = new FileManager();
+			Dumper.dumpTree(fileManager);
+		} else {
+			List<Path> filesPaths = fileManager.getAllFilesPaths();
+			for (Path filePath : filesPaths) {
+				File file = fileManager.getFile(filePath);
+				fileStorage.addFile(file.getId(), filePath);
+			}
+		}
 
-//		FileTree fileTree = new FileTree("uniuser");
-//		Folder root = fileTree.getRoot();
-		FileManager fileManager = new FileManager();
 //		Folder root = fileManager.getRoot();
 //
 //		File fileOne = new File("hello.txx", 124, 12, UUID.randomUUID(), false);
@@ -49,9 +58,9 @@ class Main {
 //			System.out.println(currentFolder);
 //		}
 
-		NodeStorage nodeStorage = new NodeStorage();
+
 //		nodeStorage.addNode(UUID.randomUUID(), InetAddress.getByName("192.168.0.1"), InetAddress.getByName("192.168.0.1"), 30);
-		FileStorage fileStorage = new FileStorage();
+
 		Dispatcher dispatcher = new Dispatcher(fileManager, nodeStorage, fileStorage);
 
         ClientDispatcher clientDispatcher = new ClientDispatcher(Ports.PORT_NAMING, dispatcher);
@@ -59,6 +68,9 @@ class Main {
 
 		StorageServerDispatcher storageServerDispatcher = new StorageServerDispatcher(Ports.PORT_INTERNAL, dispatcher);
 		storageServerDispatcher.start();
+
+//		Path path = Paths.get("/de");
+//		System.out.println(Paths.get(path.toString(), "23"));
 
 //        while (true) {
 //

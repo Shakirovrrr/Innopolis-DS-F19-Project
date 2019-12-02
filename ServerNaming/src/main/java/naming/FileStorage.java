@@ -27,16 +27,6 @@ public class FileStorage {
         fileToNodes.remove(fileId);
     }
 
-    public void addFile(UUID fileId, Path filePath, UUID mainNodeId) {
-        if (!filePaths.containsKey(fileId)) {
-            Set<Path> paths = new HashSet<>();
-            filePaths.put(fileId, paths);
-            Set<Node> nodes = new HashSet<>();
-            fileToNodes.put(fileId, nodes);
-        }
-        filePaths.get(fileId).add(filePath);
-    }
-
     public void addFile(UUID fileId, Path filePath) {
         if (!filePaths.containsKey(fileId)) {
             Set<Path> paths = new HashSet<>();

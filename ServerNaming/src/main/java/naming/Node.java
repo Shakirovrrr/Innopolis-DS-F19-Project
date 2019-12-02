@@ -40,6 +40,12 @@ public class Node {
         this.keepingFiles = keepingFiles;
     }
 
+    public Node(Node node) {
+        this.nodeId = node.getNodeId();
+        this.nodeAddress = new NodeAddress(node.getPublicIpAddress(), node.getPrivateIpAddress());
+        this.keepingFiles = node.getKeepingFiles();
+    }
+
     public UUID getNodeId() {
         return nodeId;
     }
