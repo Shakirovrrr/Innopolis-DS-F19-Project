@@ -234,6 +234,7 @@ public class ConsoleCommands {
             remoteFileName = this.getCurrentRemoteDir() + "/" + filePaths[1];
         }
         String absLocPath = this.getAbsolutePath(filePaths[0]);
+
         Path path = Paths.get("." + absLocPath);
 
         if (Files.exists(path)) {
