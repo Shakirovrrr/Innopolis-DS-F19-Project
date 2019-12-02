@@ -21,7 +21,7 @@ public class ConsoleCommands {
 
     private String downloadsDir;
     private final String defaultDir = "/";
-    private final String defaultDownloadDir = "downloads";
+    private final String defaultDownloadDir = "DFSdownloads";
     private String currentRemoteDir = "/";
 
     private String hostNaming = "3.122.52.241";
@@ -234,6 +234,7 @@ public class ConsoleCommands {
             remoteFileName = this.getCurrentRemoteDir() + "/" + filePaths[1];
         }
         String absLocPath = this.getAbsolutePath(filePaths[0]);
+
         Path path = Paths.get("." + absLocPath);
 
         if (Files.exists(path)) {
@@ -253,8 +254,6 @@ public class ConsoleCommands {
             }
 
             NamingCommand namingCommand = new commons.commands.naming.PutFile(remoteFileName, rights.toString(), file.length());
-            System.out.println(Files.size(path));
-            System.out.println(file.length());
 
             Socket namingSocket = new Socket(hostNaming, Ports.PORT_NAMING);
             IORoutines.sendSignal(namingSocket, namingCommand);
@@ -268,7 +267,6 @@ public class ConsoleCommands {
                 if (receiveAknName.getStatusCode() == (StatusCodes.OK)) {
 //                    System.out.println("[TEST]: success with naming connection. Got :");
 //                    System.out.println(hostStorage + " " + fileId + " " + replicasAddresses.toString());
-
 
                     //STORAGE_SERVER_CONNECTION
                     try {
@@ -292,13 +290,16 @@ public class ConsoleCommands {
                             this.rm(remoteFileName, false);
                         }
                     } catch (IOException e) {
+                        System.out.println("Error connection with storage");
                         e.printStackTrace();
                         rm(remoteFileName, false);
                     }
+                } else {
+                    System.out.println(this.getStatusStr(receiveAknName.getStatusCode()));
                 }
             }
         } else {
-            System.out.println(this.getStatusStr(StatusCodes.FILE_OR_DIRECTORY_DOES_NOT_EXIST) + "\nNo local path " + absLocPath + " exists");
+            System.out.println("No local path " + absLocPath + " exists");
         }
 
     }

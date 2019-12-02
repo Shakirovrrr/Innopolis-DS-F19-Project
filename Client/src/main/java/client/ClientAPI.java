@@ -6,6 +6,9 @@ import commons.StatusCodes;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class ClientAPI {
@@ -200,6 +203,18 @@ public class ClientAPI {
         //connect to console
         //input - next line in console after enter press
         System.out.println("\nWelcome to the Distributed Storage!\nEnter 'help' for listing the commands");
+        File dir1 = new File("."+this.consoleCommands.getCurrentDownloadDir());
+        System.out.println();
+        if (!dir1.exists()) {
+            if (dir1.mkdir()) {
+                System.out.println("Download directory" + dir1.getAbsolutePath() + "created");
+            } else {
+                System.out.println("Fail to create download directory " + dir1.getAbsolutePath());
+            }
+        } else {
+            System.out.println("Download directory " + dir1.getAbsolutePath() + " already exists");
+        }
+        System.out.println();
         System.out.print("\nstorage:" + this.consoleCommands.getCurrentRemoteDir() + " " + "$ ");
         while (true) {
             if (this.consoleCommands.getInput().hasNextLine()) {
