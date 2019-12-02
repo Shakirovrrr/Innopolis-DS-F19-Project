@@ -16,7 +16,7 @@ class Main {
 	private static ClientDispatcher dispatcher;
 	private static HeartbeatRunner heartbeatRunner;
 
-	public static void main(String[] args) throws CouldNotRegisterException {
+	public static void main(String[] args) throws CouldNotStartException {
 		System.out.println("Hello Storage!");
 
 		dataPath = "./data/";
@@ -25,7 +25,9 @@ class Main {
 			saveAddresses(args);
 			Register.register();
 		} catch (IOException e) {
-			throw new CouldNotRegisterException("MAIN: Could not register at naming server.", e);
+			throw new CouldNotStartException("MAIN: Could not register at naming server.", e);
+		} catch (NullPointerException e) {
+			throw new CouldNotStartException("MAIN: Naming address was not provided.");
 		}
 
 		heartbeatRunner = new HeartbeatRunner();
@@ -43,9 +45,11 @@ class Main {
 	private static void saveAddresses(String[] args) throws UnknownHostException {
 		if (args.length >= 1) {
 			namingAddress = InetAddress.getByName(args[0]);
+			System.out.println("MAIN: Using naming address " + namingAddress);
 		}
 		if (args.length >= 2) {
 			localAddress = InetAddress.getByName(args[1]);
+			System.out.println("MAIN: Using local address " + localAddress);
 		}
 	}
 }

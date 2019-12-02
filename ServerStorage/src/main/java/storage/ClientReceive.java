@@ -11,7 +11,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.InetAddress;
 import java.net.Socket;
 
 public class ClientReceive extends Thread {
@@ -33,31 +32,24 @@ public class ClientReceive extends Thread {
 		IORoutines.sendSignal(conn, uploadAck);
 	}
 
-	private OutputStream[] getReplicaOutputStreams(OutputStream fileOut, InetAddress[] addresses) throws IOException {
-		OutputStream[] streams = new OutputStream[addresses.length + 1];
-		FileUpload uploadCommand = new FileUpload(command.getUuid(), command.getFileSize());
-		streams[0] = fileOut;
-		for (int i = 1; i < addresses.length; i++) {
-			Socket socket = new Socket(addresses[i], Ports.PORT_STORAGE);
-			IORoutines.sendSignal(socket, uploadCommand);
-			streams[i] = socket.getOutputStream();
-		}
-		return streams;
-	}
-
 	private void receiveFile() {
 		InputStream sockIn;
 		OutputStream sockOut;
 		FileOutputStream fileOut;
-		OutputStream[] sockReplica;
+		Replicator replicator = new Replicator(command);
 
 		try {
-			fileOut = new FileOutputStream(Main.dataPath + command.getUuid().toString());
+			if (StorageMaid.ensureDataDirCreated()) {
+				fileOut = new FileOutputStream(Main.dataPath + command.getUuid().toString());
+			} else throw new IOException();
 			conn.setSoTimeout(10000);
 			sockIn = conn.getInputStream();
 			sockOut = conn.getOutputStream();
-			sockReplica = getReplicaOutputStreams(fileOut, command.getReplicaAddresses());
 		} catch (IOException ex) {
+			try {
+				notifyClient(StatusCodes.UPLOAD_FAILED);
+			} catch (IOException ignored) {
+			}
 			ex.printStackTrace();
 			System.err.println("RECEIVE: Could not get/initialize streams for receiving files.");
 			return;
@@ -67,7 +59,7 @@ public class ClientReceive extends Thread {
 			IORoutines.sendSignal(conn, new ConfirmReady());
 
 			System.out.println("RECEIVE: Receiving file " + command.getUuid().toString());
-			IORoutines.transmitNBytesSplit(command.getFileSize(), sockIn, sockReplica);
+			IORoutines.transmitNBytes(command.getFileSize(), sockIn, fileOut);
 			System.out.println("RECEIVE: Done.");
 
 			notifyClient(StatusCodes.OK);
@@ -97,6 +89,8 @@ public class ClientReceive extends Thread {
 				System.err.println("RECEIVE: IOException thrown while trying to close streams.");
 			}
 		}
+
+		replicator.startReplica();
 	}
 
 	@Override

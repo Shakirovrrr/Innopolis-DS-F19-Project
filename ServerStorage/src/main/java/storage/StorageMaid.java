@@ -22,6 +22,14 @@ public class StorageMaid extends Thread {
 		return files;
 	}
 
+	public static boolean ensureDataDirCreated() {
+		File dataDir = new File(Main.dataPath);
+		if (!dataDir.exists()) {
+			return dataDir.mkdir();
+		}
+		return true;
+	}
+
 	public static long getFileSize(UUID uuid) {
 		File file = new File(Main.dataPath + uuid.toString());
 		return file.length();
