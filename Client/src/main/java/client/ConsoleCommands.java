@@ -21,7 +21,7 @@ public class ConsoleCommands {
 
     private String downloadsDir;
     private final String defaultDir = "/";
-    private final String defaultDownloadDir = "downloads";
+    private final String defaultDownloadDir = "DFSdownloads";
     private String currentRemoteDir = "/";
 
     private String hostNaming = "10.91.51.171";
@@ -266,7 +266,6 @@ public class ConsoleCommands {
 //                    System.out.println("[TEST]: success with naming connection. Got :");
 //                    System.out.println(hostStorage + " " + fileId + " " + replicasAddresses.toString());
 
-
                     //STORAGE_SERVER_CONNECTION
                     try {
                     Socket storageSocket = new Socket(hostStorage, Ports.PORT_STORAGE);
@@ -289,12 +288,15 @@ public class ConsoleCommands {
                             this.rm(remoteFileName, false);
                         }
                     } catch (IOException e) {
+                        System.out.println("Error connection with storage");
                         rm(remoteFileName, false);
                     }
+                } else {
+                    System.out.println(this.getStatusStr(receiveAknName.getStatusCode()));
                 }
             }
         } else {
-            System.out.println(this.getStatusStr(StatusCodes.FILE_OR_DIRECTORY_DOES_NOT_EXIST) + "\nNo local path " + absLocPath + " exists");
+            System.out.println("No local path " + absLocPath + " exists");
         }
 
     }

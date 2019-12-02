@@ -6,10 +6,14 @@ import commons.StatusCodes;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class ClientAPI {
     private ConsoleCommands consoleCommands;
+    private Scanner in = new Scanner(System.in);
 
 
     private HashMap<String, Integer> commandsSet = new HashMap<>() {
@@ -102,7 +106,7 @@ public class ClientAPI {
                 break;
             case (4):
                 if (paths.length == 1) {
-                    this.consoleCommands.rm(paths[0],true);
+                    this.consoleCommands.rm(paths[0], true);
                 } else {
                     System.out.println("Invalid number of arguments: ``` rm <file_path> ``` ");
                     break;
@@ -200,21 +204,33 @@ public class ClientAPI {
         //connect to console
         //input - next line in console after enter press
         System.out.println("\nWelcome to the Distributed Storage!\nEnter 'help' for listing the commands");
-        while (true) {
+        File dir1 = new File("."+this.consoleCommands.getCurrentDownloadDir());
+        System.out.println();
+        if (!dir1.exists()) {
+            if (dir1.mkdir()) {
+                System.out.println("Download directory" + dir1.getAbsolutePath() + "created");
+            } else {
+                System.out.println("Fail to create download directory " + dir1.getAbsolutePath());
+            }
+        } else {
+            System.out.println("Download directory " + dir1.getAbsolutePath() + " already exists");
+        }
+        System.out.println();
+        System.out.print("\nstorage:" + this.consoleCommands.getCurrentRemoteDir() + " " + "$ ");
 
-            System.out.print("\nstorage:" + this.consoleCommands.getCurrentRemoteDir() + " " + "$ ");
 
-            if (this.consoleCommands.getInput().hasNextLine()) {
-                String input = this.consoleCommands.getInput().nextLine();
-                try {
+        if (this.consoleCommands.getInput().hasNextLine()) {
+            String input = this.consoleCommands.getInput().nextLine();
+            try {
 
-                    commandRouter(input);
+                commandRouter(input);
+                System.out.print("\nstorage:" + this.consoleCommands.getCurrentRemoteDir() + " " + "$ ");
 
-                } catch (IOException | ClassNotFoundException ex) {
-                    ex.printStackTrace();
-                }
+            } catch (IOException | ClassNotFoundException ex) {
+                ex.printStackTrace();
             }
         }
-
     }
+
+
 }
