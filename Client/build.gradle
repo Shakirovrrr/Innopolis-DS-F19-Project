@@ -5,7 +5,17 @@ plugins {
 
 dependencies {
 	implementation project(':Commons')
-    // No dependencies for now
+	// No dependencies for now
 }
 
 mainClassName = 'client.Main'
+
+jar {
+	manifest {
+		attributes "Main-Class": mainClassName
+	}
+
+	from {
+		configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+	}
+}
