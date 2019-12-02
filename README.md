@@ -1,8 +1,19 @@
-# Innopolis-DS-F19-Project
-[F19] Distributed Systems - Course Project
 # [F19] Distributed Systems - Course Project
 The **Distributed File System** has been written as a project for Innopolis University Distributed Systems course, Fall 2019.
 ## Installation
+### Naming server
+1. Run an AWS instance and install Docker on it.
+1. Pull [*naming server image*](https://hub.docker.com/r/shakirovrrr/dfs_naming).
+2. Run docker image with docker run 
+
+
+### Storage servers
+1. Run required number of instances and install Docker on them. 
+1. Pull  [*storage server image*](https://hub.docker.com/r/shakirovrrr/dfs_storage).
+2. Run docker image
+
+### Client
+1. Pull [*client image*](https://hub.docker.com/r/shakirovrrr/dfs_client).
 
 ## Specification
 ### Functionality
@@ -130,6 +141,24 @@ While file downloading/uploading (get/put) Client and Storage Server use the fol
 |  TOUCHED |  everything is OK, but the requested file has no content     |get|
 | CONFIRMATION_REQUIRED   | procedure requires confirmation for continuing    |rm|
 
+## Implementation details
+### Technologies
+* Java
+* Gradle
+* Docker
+
+
+
+
+
+### Continuous integration
+
+CI is done for the project! 
+```
+Push to github -> auto gradle build -> push to dockerhub
+```
+
+![](https://i.imgur.com/Z659f9P.png)
 
 
 ## Team
