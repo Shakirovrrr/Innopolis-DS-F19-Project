@@ -3,9 +3,9 @@ package storage;
 import commons.commands.Command;
 import commons.commands.storage.FileDownload;
 import commons.commands.storage.FileUpload;
+import commons.routines.IORoutines;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -29,8 +29,7 @@ public class ClientDispatcher extends Thread {
 
 	private void dispatch(Socket conn) {
 		try {
-			ObjectInputStream input = new ObjectInputStream(conn.getInputStream());
-			Command command = (Command) input.readObject();
+			Command command = IORoutines.receiveSignal(conn);
 
 			if (command instanceof FileDownload) {
 				System.out.println("DISPATCHER: Asked to download file.");
@@ -42,8 +41,8 @@ public class ClientDispatcher extends Thread {
 				receiver.start();
 			}
 
-
 		} catch (IOException ex) {
+			ex.printStackTrace();
 			System.err.println("DISPATCHER: Connection reset.");
 		} catch (ClassNotFoundException | ClassCastException ex) {
 			ex.printStackTrace();
@@ -53,15 +52,7 @@ public class ClientDispatcher extends Thread {
 
 	@Override
 	public void run() {
-		this.setUncaughtExceptionHandler((t, e) -> {
-//			try {
-//				server.close();
-//			} catch (IOException ex) {
-//				ex.printStackTrace();
-//				System.err.println("IOException thrown while handling another exception " + ex);
-//			}
-			System.err.println("DISPATCHER: Ne padat'!");
-		});
+		this.setUncaughtExceptionHandler((t, e) -> System.err.println("DISPATCHER: Ne padat'!"));
 
 		try {
 			server = new ServerSocket(listeningPort);

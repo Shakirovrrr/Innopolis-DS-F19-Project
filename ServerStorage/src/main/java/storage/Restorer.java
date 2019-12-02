@@ -1,12 +1,15 @@
 package storage;
 
 import commons.Ports;
+import commons.StatusCodes;
+import commons.commands.general.FileUploadAck;
 import commons.commands.internal.FetchFilesAck;
 import commons.commands.storage.AskReady;
 import commons.commands.storage.ConfirmReady;
 import commons.commands.storage.FileDownload;
 import commons.routines.IORoutines;
 
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,7 +43,11 @@ public class Restorer {
 		}
 
 		try {
-			fileOut = new FileOutputStream(Main.dataPath + toDownload.getFileUuid().toString());
+			if (StorageMaid.ensureDataDirCreated()) {
+				fileOut = new FileOutputStream(Main.dataPath + toDownload.getFileUuid().toString());
+			} else {
+				throw new FileNotFoundException();
+			}
 			sockIn = conn.getInputStream();
 		} catch (IOException e) {
 			try {
@@ -53,11 +60,15 @@ public class Restorer {
 		try {
 			IORoutines.sendSignal(conn, request);
 			AskReady ready = (AskReady) IORoutines.receiveSignal(conn);
+
 			IORoutines.sendSignal(conn, new ConfirmReady());
 
 			System.out.println("RESTORER: Downloading file " + toDownload.getFileUuid());
 			IORoutines.transmit(sockIn, fileOut);
 			System.out.println("RESTORER: Restored file " + toDownload.getFileUuid());
+
+			IORoutines.sendSignalOnce(Main.namingAddress, Ports.PORT_INTERNAL,
+					new FileUploadAck(StatusCodes.OK, toDownload.getFileUuid(), Main.nodeUuid));
 		} catch (IOException | ClassNotFoundException | ClassCastException ignored) {
 		} finally {
 			try {

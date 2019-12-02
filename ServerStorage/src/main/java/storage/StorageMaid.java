@@ -44,10 +44,13 @@ public class StorageMaid extends Thread {
 		Collection<UUID> localFiles = getFiles();
 		localFiles.removeAll(uuids);
 
-		if (!localFiles.isEmpty()) System.out.println("MAID: Tidying...");
+		if (localFiles.isEmpty()) return;
+
+		System.out.println("MAID: Tidying...");
 		for (UUID uuid : localFiles) {
 			deleteFile(uuid);
 		}
+		System.out.println("MAID: Done tidying.");
 	}
 
 	@Override
