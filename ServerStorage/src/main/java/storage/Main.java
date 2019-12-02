@@ -4,12 +4,14 @@ import commons.Ports;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.UUID;
 
 class Main {
 	static UUID nodeUuid;
 	static String dataPath;
 	static InetAddress namingAddress;
+	static InetAddress localAddress;
 
 	private static ClientDispatcher dispatcher;
 	private static HeartbeatRunner heartbeatRunner;
@@ -20,8 +22,8 @@ class Main {
 		dataPath = "./data/";
 		nodeUuid = UUID.randomUUID();
 		try {
-			namingAddress = InetAddress.getByName(args[0]);
-			Register.register(namingAddress);
+			saveAddresses(args);
+			Register.register();
 		} catch (IOException e) {
 			throw new CouldNotRegisterException("MAIN: Could not register at naming server.", e);
 		}
@@ -36,5 +38,14 @@ class Main {
 	public static void die() {
 		dispatcher.interrupt();
 		heartbeatRunner.interrupt();
+	}
+
+	private static void saveAddresses(String[] args) throws UnknownHostException {
+		if (args.length >= 1) {
+			namingAddress = InetAddress.getByName(args[0]);
+		}
+		if (args.length >= 2) {
+			localAddress = InetAddress.getByName(args[1]);
+		}
 	}
 }

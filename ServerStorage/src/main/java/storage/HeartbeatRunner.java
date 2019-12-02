@@ -24,7 +24,7 @@ public class HeartbeatRunner extends Thread {
 
 		if (ack.getStatus() == StatusCodes.UNKNOWN_NODE) {
 			System.err.println("HEARTBEAT: This server has been forgotten, re-registering...");
-			Register.register(Main.namingAddress);
+			Register.register();
 		}
 
 		if (ack.getExistedFiles() != null) {

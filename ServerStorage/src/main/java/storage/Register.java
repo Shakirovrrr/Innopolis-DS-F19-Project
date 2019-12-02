@@ -14,11 +14,11 @@ import java.net.URL;
 import java.util.UUID;
 
 class Register {
-	static void register(InetAddress namingAddress) throws IOException {
-		register(namingAddress, new URL("http://checkip.amazonaws.com"));
+	static void register() throws IOException {
+		register(new URL("http://checkip.amazonaws.com"));
 	}
 
-	static void register(InetAddress namingAddress, URL ipCheckSite) throws IOException {
+	static void register(URL ipCheckSite) throws IOException {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(ipCheckSite.openStream()));
 		String publicIp = reader.readLine();
 		reader.close();
@@ -26,9 +26,9 @@ class Register {
 		UUID[] localFiles = StorageMaid.getFiles().toArray(new UUID[0]);
 
 		RegisterNode registerNodeCmd = new RegisterNode(Main.nodeUuid, localFiles,
-				InetAddress.getByName(publicIp), InetAddress.getLocalHost());
+				InetAddress.getByName(publicIp), Main.localAddress);
 
-		Socket conn = new Socket(namingAddress, Ports.PORT_INTERNAL);
+		Socket conn = new Socket(Main.namingAddress, Ports.PORT_INTERNAL);
 		IORoutines.sendSignal(conn, registerNodeCmd);
 		try {
 			RegisterNodeAck ack = (RegisterNodeAck) IORoutines.receiveSignal(conn);
