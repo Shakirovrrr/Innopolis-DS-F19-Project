@@ -32,6 +32,9 @@ class Main {
 			throw new CouldNotStartException("MAIN: Naming address was not provided.");
 		}
 
+		System.out.println("MAIN: Using naming address " + namingAddress);
+		System.out.println("MAIN: Using local address " + localAddress);
+
 		heartbeatRunner = new HeartbeatRunner();
 		heartbeatRunner.start();
 
@@ -47,11 +50,9 @@ class Main {
 	private static void saveAddresses(String[] args) throws UnknownHostException {
 		if (args.length >= 1) {
 			namingAddress = InetAddress.getByName(args[0]);
-			System.out.println("MAIN: Using naming address " + namingAddress);
 		}
 		if (args.length >= 2) {
 			localAddress = InetAddress.getByName(args[1]);
-			System.out.println("MAIN: Using local address " + localAddress);
 		}
 	}
 
@@ -60,6 +61,7 @@ class Main {
 		int bufferSize = message.length();
 		try {
 			DatagramSocket socket = new DatagramSocket(Ports.PORT_BROADCAST);
+			socket.setSoTimeout(20000);
 			byte[] buffer = new byte[bufferSize];
 			DatagramPacket packet = new DatagramPacket(buffer, bufferSize);
 			socket.receive(packet);
@@ -68,7 +70,7 @@ class Main {
 				namingAddress = socket.getInetAddress();
 				localAddress = socket.getLocalAddress();
 				socket.close();
-			}
+			} else throw new IOException();
 		} catch (IOException e) {
 			throw new CouldNotStartException("MAIN: Could not get naming address.");
 		}
