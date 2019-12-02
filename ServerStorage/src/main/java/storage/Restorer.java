@@ -9,6 +9,7 @@ import commons.commands.storage.ConfirmReady;
 import commons.commands.storage.FileDownload;
 import commons.routines.IORoutines;
 
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,7 +43,11 @@ public class Restorer {
 		}
 
 		try {
-			fileOut = new FileOutputStream(Main.dataPath + toDownload.getFileUuid().toString());
+			if (StorageMaid.ensureDataDirCreated()) {
+				fileOut = new FileOutputStream(Main.dataPath + toDownload.getFileUuid().toString());
+			} else {
+				throw new FileNotFoundException();
+			}
 			sockIn = conn.getInputStream();
 		} catch (IOException e) {
 			try {
