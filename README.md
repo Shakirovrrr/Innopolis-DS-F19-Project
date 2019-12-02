@@ -2,18 +2,31 @@
 The **Distributed File System** has been written as a project for Innopolis University Distributed Systems course, Fall 2019.
 ## Installation
 ### Naming server
-1. Run an AWS instance and install Docker on it.
-1. Pull [*naming server image*](https://hub.docker.com/r/shakirovrrr/dfs_naming).
-2. Run docker image with docker run 
+1. Run an AWS instance and install docker-compose on it.
+1. Clone [docker compose file](https://raw.githubusercontent.com/Shakirovrrr/Innopolis-DS-F19-Project/master/ServerNaming/docker-compose.yml) from GitHub repository.
+2. `docker-compose up`
 
 
 ### Storage servers
-1. Run required number of instances and install Docker on them. 
-1. Pull  [*storage server image*](https://hub.docker.com/r/shakirovrrr/dfs_storage).
-2. Run docker image
+1. Run required number of instances and install docker-compose on them. 
+1. Clone [docker compose file](https://raw.githubusercontent.com/Shakirovrrr/Innopolis-DS-F19-Project/master/ServerStorage/docker-compose.yml) from GitHub repository.
+2. In docker-compose.yml file in `command` line specify private address of naming server and private own address of storage server correspondingly.
+3. `docker-compose up`
 
-### Client
-1. Pull [*client image*](https://hub.docker.com/r/shakirovrrr/dfs_client).
+### CLient
+#### Docker way
+1. Download [docker-compose.yml for Client](https://github.com/Shakirovrrr/Innopolis-DS-F19-Project/suites/338581469/artifacts/521281)
+2. Run `docker-compose up -d` in directory of download
+3. Run `docker ps` to get the container ID
+4. Run `docker exec -ti <container ID> /bin/bash`
+5. Inside the container run `./Client <naming server IP>`
+6. Here you go.
+
+#### JAR way
+1. [Download archive](https://github.com/Shakirovrrr/Innopolis-DS-F19-Project/suites/338581469/artifacts/521281)
+2. Extract JAR
+3. Run `java -jar Client.jar <naming server IP>`
+4. Here you go.
 
 ## Specification
 ### Functionality
