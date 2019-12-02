@@ -8,4 +8,4 @@ services:
       - 14175:14175
       - 14177:14177
     volumes:
-      - './:/dist/ServerNaming/bin/data'
+      - './:/dist/ServerNaming/bin/data/'
