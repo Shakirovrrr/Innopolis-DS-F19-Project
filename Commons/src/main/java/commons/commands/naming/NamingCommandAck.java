@@ -12,6 +12,4 @@ public abstract class NamingCommandAck extends NamingCommand {
 	public int getStatusCode() {
 		return statusCode;
 	}
-
-
 }
