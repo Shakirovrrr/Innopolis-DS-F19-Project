@@ -26,16 +26,34 @@ public class IORoutines {
 		int count;
 		byte[] buffer = new byte[bufferSize];
 		while ((count = streamFrom.read(buffer)) > 0) {
-
 			for (OutputStream to : streamTo) {
 				to.write(buffer, 0, count);
 			}
 		}
 	}
 
-	@Deprecated(forRemoval = true)
-	public static void notify(InetAddress address, int port, Command command) throws IOException {
-		sendSignalOnce(address, port, command);
+	public static void transmitNBytes(long n, InputStream streamFrom, OutputStream streamTo) throws IOException {
+		transmitNBytes(n, streamFrom, streamTo, defaultTransmitBufferSize);
+	}
+
+	public static void transmitNBytes(long n, InputStream streamFrom, OutputStream streamTo, int bufferSize) throws IOException {
+		transmitNBytesSplit(n, streamFrom, bufferSize, streamTo);
+	}
+
+	public static void transmitNBytesSplit(long n, InputStream streamFrom, OutputStream... streamTo) throws IOException {
+		transmitNBytesSplit(n, streamFrom, defaultTransmitBufferSize, streamTo);
+	}
+
+	public static void transmitNBytesSplit(long n, InputStream streamFrom, int bufferSize, OutputStream... streamTo) throws IOException {
+		int count;
+		int total = 0;
+		byte[] buffer = new byte[bufferSize];
+		while (total < n && (count = streamFrom.read(buffer)) > 0) {
+			for (OutputStream to : streamTo) {
+				to.write(buffer, 0, count);
+			}
+			total += count;
+		}
 	}
 
 	public static void sendSignalOnce(InetAddress address, int port, Command command) throws IOException {

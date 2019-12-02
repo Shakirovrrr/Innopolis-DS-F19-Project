@@ -2,19 +2,27 @@ package commons.commands.naming;
 
 import commons.StatusCodes;
 
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.UUID;
 
 public class InfoAck extends NamingCommandAck {
     private long fileSize;
     private int accessRights;
-    private Collection<UUID> nodes;
+    private UUID[] nodes;
 
-    public InfoAck(StatusCodes.Code statusCode, long fileSize, int accessRights, Collection<UUID> nodes) {
-        this.status = statusCode;
+    public InfoAck(int statusCode, long fileSize, int accessRights, UUID[] nodes) {
+        super(statusCode);
         this.fileSize = fileSize;
         this.accessRights = accessRights;
         this.nodes = nodes;
+    }
+
+    public InfoAck(int statusCode, long fileSize, int accessRights, Collection<UUID> nodes) {
+        super(statusCode);
+        this.fileSize = fileSize;
+        this.accessRights = accessRights;
+        this.nodes = nodes.toArray(new UUID[0]);
     }
 
     public long getFileSize() {
@@ -25,7 +33,7 @@ public class InfoAck extends NamingCommandAck {
         return accessRights;
     }
 
-    public Collection<UUID> getNodes() {
+    public UUID[] getNodes() {
         return nodes;
     }
 }

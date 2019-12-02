@@ -4,22 +4,52 @@ import commons.Ports;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.UUID;
 
 class Main {
 	static UUID nodeUuid;
+	static String dataPath;
+	static InetAddress namingAddress;
+	static InetAddress localAddress;
 
-	public static void main(String[] args) throws CouldNotRegisterException {
+	private static ClientDispatcher dispatcher;
+	private static HeartbeatRunner heartbeatRunner;
+
+	public static void main(String[] args) throws CouldNotStartException {
 		System.out.println("Hello Storage!");
 
+		dataPath = "./data/";
 		nodeUuid = UUID.randomUUID();
 		try {
-			Register.register(InetAddress.getByName("192.168.0.1"));
+			saveAddresses(args);
+			Register.register();
 		} catch (IOException e) {
-			throw new CouldNotRegisterException("Could not register at naming server.", e);
+			throw new CouldNotStartException("MAIN: Could not register at naming server.", e);
+		} catch (NullPointerException e) {
+			throw new CouldNotStartException("MAIN: Naming address was not provided.");
 		}
 
-		ClientDispatcher dispatcher = new ClientDispatcher(Ports.PORT_STORAGE);
+		heartbeatRunner = new HeartbeatRunner();
+		heartbeatRunner.start();
+
+		dispatcher = new ClientDispatcher(Ports.PORT_STORAGE);
 		dispatcher.start();
+	}
+
+	public static void die() {
+		dispatcher.interrupt();
+		heartbeatRunner.interrupt();
+	}
+
+	private static void saveAddresses(String[] args) throws UnknownHostException {
+		if (args.length >= 1) {
+			namingAddress = InetAddress.getByName(args[0]);
+			System.out.println("MAIN: Using naming address " + namingAddress);
+		}
+		if (args.length >= 2) {
+			localAddress = InetAddress.getByName(args[1]);
+			System.out.println("MAIN: Using local address " + localAddress);
+		}
 	}
 }

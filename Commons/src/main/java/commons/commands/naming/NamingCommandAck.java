@@ -3,9 +3,13 @@ package commons.commands.naming;
 import commons.StatusCodes;
 
 public abstract class NamingCommandAck extends NamingCommand {
-    StatusCodes.Code status;
+	private int statusCode;
 
-    public StatusCodes.Code getStatus() {
-        return status;
-    }
+	public NamingCommandAck(int statusCode) {
+		this.statusCode = statusCode;
+	}
+
+	public int getStatusCode() {
+		return statusCode;
+	}
 }
