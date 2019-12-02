@@ -15,13 +15,19 @@ public class IORoutines {
 	}
 
 	public static void transmit(InputStream streamFrom, OutputStream streamTo, int bufferSize) throws IOException {
-		transmitSplit(streamFrom, bufferSize, streamTo);
+		int count;
+		byte[] buffer = new byte[bufferSize];
+		while ((count = streamFrom.read(buffer)) > 0) {
+			streamTo.write(buffer, 0, count);
+		}
 	}
 
+	@Deprecated
 	public static void transmitSplit(InputStream streamFrom, OutputStream... streamTo) throws IOException {
 		transmitSplit(streamFrom, defaultTransmitBufferSize, streamTo);
 	}
 
+	@Deprecated
 	public static void transmitSplit(InputStream streamFrom, int bufferSize, OutputStream... streamTo) throws IOException {
 		int count;
 		byte[] buffer = new byte[bufferSize];
@@ -37,13 +43,21 @@ public class IORoutines {
 	}
 
 	public static void transmitNBytes(long n, InputStream streamFrom, OutputStream streamTo, int bufferSize) throws IOException {
-		transmitNBytesSplit(n, streamFrom, bufferSize, streamTo);
+		int count;
+		int total = 0;
+		byte[] buffer = new byte[bufferSize];
+		while (total < n && (count = streamFrom.read(buffer)) > 0) {
+			streamTo.write(buffer, 0, count);
+			total += count;
+		}
 	}
 
+	@Deprecated
 	public static void transmitNBytesSplit(long n, InputStream streamFrom, OutputStream... streamTo) throws IOException {
 		transmitNBytesSplit(n, streamFrom, defaultTransmitBufferSize, streamTo);
 	}
 
+	@Deprecated
 	public static void transmitNBytesSplit(long n, InputStream streamFrom, int bufferSize, OutputStream... streamTo) throws IOException {
 		int count;
 		int total = 0;
