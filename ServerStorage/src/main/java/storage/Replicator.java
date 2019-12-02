@@ -19,7 +19,9 @@ public class Replicator {
 	}
 
 	public void startReplica() {
-
+		for (InetAddress replicaAddress : this.command.getReplicaAddresses()) {
+			new Thread(() -> replicaJob(replicaAddress)).start();
+		}
 	}
 
 	private void replicaJob(InetAddress address) {
