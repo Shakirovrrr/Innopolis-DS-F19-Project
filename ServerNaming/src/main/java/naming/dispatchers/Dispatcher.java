@@ -1,7 +1,6 @@
 package naming.dispatchers;
 
 import commons.StatusCodes;
-import commons.commands.internal.FetchFiles;
 import commons.commands.internal.FetchFilesAck;
 import naming.*;
 import naming.dispatchers.returns.*;
@@ -27,7 +26,7 @@ public class Dispatcher {
         this.mutex = new ReentrantLock();
     }
 
-    public boolean init() {
+    void init() {
         mutex.lock();
         fileManager = new FileManager();
         fileStorage = new FileStorage();
@@ -37,23 +36,22 @@ public class Dispatcher {
         Dumper.dumpTree(fileManager);
         mutex.unlock();
 
-        return true;
     }
 
-    public List<Node> getNodes() {
+    List<Node> getNodes() {
         mutex.lock();
         List<Node> nodes = new LinkedList<>(nodeStorage.getNodes());
         mutex.unlock();
         return nodes;
     }
 
-    public TouchReturnValue touch(Path directoryPath, String fileName) {
+    TouchReturnValue touch(Path directoryPath, String fileName) {
         PutReturnValue returnValue = put(directoryPath, fileName, true, 0, Constants.DEFAULT_RIGHTS);
         Dumper.dumpTree(fileManager);
         return new TouchReturnValue(returnValue.getStatus());
     }
 
-    public PutReturnValue put(Path directoryPath, String fileName, boolean isTouched, long fileSize, String fileRights) {
+    PutReturnValue put(Path directoryPath, String fileName, boolean isTouched, long fileSize, String fileRights) {
         UUID fileId = UUID.randomUUID();
         File file = new File(fileName, fileSize, fileRights, fileId, isTouched);
 
@@ -76,7 +74,7 @@ public class Dispatcher {
         return returnValue;
     }
 
-    public InfoReturnValue info(Path path) {
+    InfoReturnValue info(Path path) {
         InfoReturnValue returnValue;
 
         mutex.lock();
@@ -95,7 +93,7 @@ public class Dispatcher {
         return returnValue;
     }
 
-    public CpReturnValue copy(Path fromPath, Path toPath) {
+    CpReturnValue copy(Path fromPath, Path toPath) {
         CpReturnValue returnValue;
 
         mutex.lock();
@@ -127,7 +125,7 @@ public class Dispatcher {
         return returnValue;
     }
 
-    public MvReturnValue move(Path fromPath, Path toPath) {
+    MvReturnValue move(Path fromPath, Path toPath) {
         MvReturnValue returnValue;
 
         mutex.lock();
@@ -162,14 +160,14 @@ public class Dispatcher {
         return returnValue;
     }
 
-    public boolean directoryExists(Path path) {
+    boolean directoryExists(Path path) {
         mutex.lock();
         boolean exists = fileManager.getFolder(path) != null;
         mutex.unlock();
         return exists;
     }
 
-    public LsReturnValue listDirectory(Path path) {
+    LsReturnValue listDirectory(Path path) {
         LsReturnValue returnValue;
 
         mutex.lock();
@@ -192,7 +190,7 @@ public class Dispatcher {
         return returnValue;
     }
 
-    public MkDirReturnValue makeDirectory(Path path) {
+    MkDirReturnValue makeDirectory(Path path) {
         MkDirReturnValue returnValue;
 
         Path parentDirectoryPath = path.getParent();
@@ -220,7 +218,7 @@ public class Dispatcher {
         return returnValue;
     }
 
-    public GetReturnValue get(Path path) {
+    GetReturnValue get(Path path) {
         GetReturnValue returnValue;
 
         mutex.lock();
@@ -245,7 +243,7 @@ public class Dispatcher {
         return returnValue;
     }
 
-    public void removeNode(UUID nodeId) {
+    void removeNode(UUID nodeId) {
         mutex.lock();
         Node node = nodeStorage.getNode(nodeId);
         Set<UUID> keepingFiles = node.getKeepingFiles();
@@ -256,15 +254,15 @@ public class Dispatcher {
         mutex.unlock();
     }
 
-    public boolean folderExists(Path path) {
+    boolean folderExists(Path path) {
         return (fileManager.getFolder(path) != null);
     }
 
-    public boolean fileExists(Path path) {
+    boolean fileExists(Path path) {
         return (fileManager.getFile(path) != null);
     }
 
-    public void removeFolder(Path path) {
+    void removeFolder(Path path) {
         mutex.lock();
         Folder folder = fileManager.getFolder(path);
         System.out.println("Remove Folder");
@@ -276,19 +274,14 @@ public class Dispatcher {
                 remove(filePath);
             }
             if (!folder.getName().equals("root")) {
-                Folder parentFolder = fileManager.getFolder(path.getParent());
-                parentFolder.removeFolder(path.getFileName().toString());
+                fileManager.removeFolder(path.getParent(), path.getFileName().toString());
             }
-//            for (Folder innerFolder : folder.getFolders()) {
-//                folder.removeFolder(innerFolder.getName());
-//            }
         }
         Dumper.dumpTree(fileManager);
         mutex.unlock();
     }
 
-    // TODO: Removes all copies of files, not only file from path
-    public void removeFile(Path path) {
+    void removeFile(Path path) {
         mutex.lock();
         File file = fileManager.getFile(path);
         remove(path);
@@ -296,7 +289,7 @@ public class Dispatcher {
         mutex.unlock();
     }
 
-    public void remove(Path path) {
+    private void remove(Path path) {
         File file = fileManager.getFile(path);
         if (file != null) {
             UUID fileId = file.getId();
@@ -307,20 +300,10 @@ public class Dispatcher {
                     node.removeKeepingFile(fileId);
                 }
             }
-//            List<Path> directories = fileStorage.getFilePaths(file.getId());
-//            for (Path directory : directories) {
-//                Folder folder = fileManager.getFolder(directory);
-//                folder.removeFile(file.getName());
-//            }
-//            List<Node> nodes = fileStorage.getFileNodes(file.getId());
-//            for (Node node : nodes) {
-//                node.removeKeepingFile(file.getId());
-//            }
-//            fileStorage.removeFile(file.getId());
         }
     }
 
-    public void registerNode(UUID nodeId, List<UUID> fileIds, InetAddress publicAddress, InetAddress privateAddress) {
+    void registerNode(UUID nodeId, List<UUID> fileIds, InetAddress publicAddress, InetAddress privateAddress) {
         Node node = new Node(nodeId, publicAddress, privateAddress);
         mutex.lock();
         nodeStorage.addNode(node);
@@ -333,7 +316,7 @@ public class Dispatcher {
         mutex.unlock();
     }
 
-    public FetchFilesReturnValue fetchFiles(UUID nodeId) {
+    FetchFilesReturnValue fetchFiles(UUID nodeId) {
         mutex.lock();
         Node node = nodeStorage.getNode(nodeId);
         System.out.println("\n" + "Node: " + nodeId + " " + node.getKeepingFiles().size() + "\n" +
@@ -359,7 +342,7 @@ public class Dispatcher {
         return new FetchFilesReturnValue(StatusCodes.OK, existedFiles, filesToDownload);
     }
 
-    public void addKeepingNode(UUID fileId, UUID nodeId) {
+    void addKeepingNode(UUID fileId, UUID nodeId) {
         mutex.lock();
         Node node = nodeStorage.getNode(nodeId);
         if (node != null && fileStorage.fileExists(fileId)) {

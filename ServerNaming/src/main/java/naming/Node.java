@@ -6,20 +6,20 @@ import java.util.Set;
 import java.util.UUID;
 
 public class Node {
-    private class NodeAddress {
+    private static class NodeAddress {
         private InetAddress publicAddress;
         private InetAddress privateAddress;
 
-        public NodeAddress(InetAddress publicAddress, InetAddress privateAddress) {
+        NodeAddress(InetAddress publicAddress, InetAddress privateAddress) {
             this.publicAddress = publicAddress;
             this.privateAddress = privateAddress;
         }
 
-        public InetAddress getPublicAddress() {
+        InetAddress getPublicAddress() {
             return publicAddress;
         }
 
-        public InetAddress getPrivateAddress() {
+        InetAddress getPrivateAddress() {
             return privateAddress;
         }
     }
@@ -32,12 +32,6 @@ public class Node {
         this.nodeId = nodeId;
         this.nodeAddress = new NodeAddress(publicAddress, privateAddress);
         this.keepingFiles = new HashSet<>();
-    }
-
-    public Node(UUID nodeId, InetAddress publicAddress, InetAddress privateAddress, Set<UUID> keepingFiles) {
-        this.nodeId = nodeId;
-        this.nodeAddress = new NodeAddress(publicAddress, privateAddress);
-        this.keepingFiles = keepingFiles;
     }
 
     public Node(Node node) {
@@ -62,12 +56,12 @@ public class Node {
         return keepingFiles;
     }
 
-    public boolean addKeepingFile(UUID fileId) {
-        return keepingFiles.add(fileId);
+    public void addKeepingFile(UUID fileId) {
+        keepingFiles.add(fileId);
     }
 
-    public boolean removeKeepingFile(UUID fileId) {
-        return keepingFiles.remove(fileId);
+    public void removeKeepingFile(UUID fileId) {
+        keepingFiles.remove(fileId);
     }
 
     public void removeAllKeepingFiles() {
