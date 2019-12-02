@@ -24,7 +24,7 @@ public class ConsoleCommands {
     private final String defaultDownloadDir = "downloads";
     private String currentRemoteDir = "/";
 
-    private String hostNaming = "10.91.51.171";
+    private String hostNaming = "3.122.52.241";
     private Scanner in = new Scanner(System.in);
 
     public void setHostNaming(String s) {

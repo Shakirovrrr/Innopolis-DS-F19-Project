@@ -305,6 +305,8 @@ public class Dispatcher {
 
     void registerNode(UUID nodeId, List<UUID> fileIds, InetAddress publicAddress, InetAddress privateAddress) {
         Node node = new Node(nodeId, publicAddress, privateAddress);
+        System.out.println("Node public addres " + publicAddress);
+        System.out.println("Node private addres " + privateAddress);
         mutex.lock();
         nodeStorage.addNode(node);
         for (UUID fileId : fileIds) {
