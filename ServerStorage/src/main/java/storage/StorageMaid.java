@@ -44,6 +44,7 @@ public class StorageMaid extends Thread {
 		Collection<UUID> localFiles = getFiles();
 		localFiles.removeAll(uuids);
 
+		if (!localFiles.isEmpty()) System.out.println("MAID: Tidying...");
 		for (UUID uuid : localFiles) {
 			deleteFile(uuid);
 		}

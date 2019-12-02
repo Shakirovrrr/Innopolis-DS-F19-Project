@@ -54,7 +54,7 @@ public class Replicator {
 				IORoutines.transmit(fileIn, sockOut);
 			}
 			IORoutines.receiveSignal(conn);
-		} catch (IOException | ClassNotFoundException ignored) {
+		} catch (IOException | ClassNotFoundException | ClassCastException ignored) {
 		} finally {
 			try {
 				fileIn.close();
