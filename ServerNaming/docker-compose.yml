@@ -1,0 +1,11 @@
+version: '3.3'
+
+services:
+
+  naming_server:
+    image: shakirovrrr/dfs_naming
+    ports:
+      - 14175:14175
+      - 14177:14177
+    volumes:
+      - './:/dist/ServerNaming/bin/data'

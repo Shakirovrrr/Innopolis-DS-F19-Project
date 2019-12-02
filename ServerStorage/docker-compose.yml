@@ -1,0 +1,12 @@
+version: '3.3'
+
+services:
+
+  storage_server:
+    image: shakirovrrr/dfs_storage
+    ports:
+      - 14176:14176
+      - 14178:14178
+    volumes:
+      - './data:/dist/ServerStorage/bin/data'
+    command: '10.0.0.62 10.0.0.112' # Put appropriate IPs

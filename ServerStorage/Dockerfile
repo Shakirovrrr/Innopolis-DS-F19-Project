@@ -7,5 +7,10 @@ RUN tar -xf ./ServerStorage.tar
 
 WORKDIR /dist/ServerStorage/bin
 RUN chmod +x ./ServerStorage
+
 EXPOSE 14176
-ENTRYPOINT ["./ServerStorage"]
+EXPOSE 14178
+
+RUN mkdir data
+WORKDIR /dist/ServerStorage/bin/data
+ENTRYPOINT ["../ServerStorage"]
