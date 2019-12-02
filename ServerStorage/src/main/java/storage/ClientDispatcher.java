@@ -52,15 +52,7 @@ public class ClientDispatcher extends Thread {
 
 	@Override
 	public void run() {
-		this.setUncaughtExceptionHandler((t, e) -> {
-//			try {
-//				server.close();
-//			} catch (IOException ex) {
-//				ex.printStackTrace();
-//				System.err.println("IOException thrown while handling another exception " + ex);
-//			}
-			System.err.println("DISPATCHER: Ne padat'!");
-		});
+		this.setUncaughtExceptionHandler((t, e) -> System.err.println("DISPATCHER: Ne padat'!"));
 
 		try {
 			server = new ServerSocket(listeningPort);
