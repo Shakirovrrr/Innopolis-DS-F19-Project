@@ -108,29 +108,34 @@ Possible Acknowledgements: OK, INCORRECT_NAME, FILE_OR_DIRECTORY_DOES_NOT_EXIST
 ```
 #### cp
 ![](https://i.imgur.com/808bmna.png)
+
 ```Naming server keeps structures of unique fileIDs and Storage paths by which the file could be reached. Thus, when copying, Naming Server just adds a new path to the corresponding file list.```
 ```
 Possible Acknowledgements: OK, INCORRECT_NAME, FILE_OR_DIRECTORY_DOES_NOT_EXIST, FILE_OR_DIRECTORY_ALREADY_EXISTS 
 ```
 #### mv
 ![](https://i.imgur.com/MgshiSy.png)
+
 ```Naming server keeps structures of unique fileIDs and Storage paths by which the file could be reached. Thus, when moving, Naming Serverat first adds a new path to the corresponding file list, and then deletes the fromPath from the corresponding file list.```
 ```
 Possible Acknowledgements: OK, INCORRECT_NAME, FILE_OR_DIRECTORY_DOES_NOT_EXIST, FILE_OR_DIRECTORY_ALREADY_EXISTS
 ```
 #### ls
 ![](https://i.imgur.com/M8oy1zh.png)
+
 ```
 Possible Acknowledgements: OK, FILE_OR_DIRECTORY_DOES_NOT_EXIST
 ```
 #### cd
 ![](https://i.imgur.com/YPLJO2m.png)
+
 ```If the requested path exists in NAming Server fileTree, it notifies Client with either success or fail. Current directory is displayed in console.```
 ```
 Possible Acknowledgements: OK, FILE_OR_DIRECTORY_DOES_NOT_EXIST
 ```
 #### mkdir
 ![](https://i.imgur.com/MiEuXDU.png)
+
 ```
 Possible Acknowledgements: OK, FILE_OR_DIRECTORY_DOES_NOT_EXIST, FILE_OR_DIRECTORY_ALREADY_EXISTS
 ```
