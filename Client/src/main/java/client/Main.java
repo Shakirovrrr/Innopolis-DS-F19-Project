@@ -7,10 +7,10 @@ class Main {
 //        if (args.length >= 1) {
 //            String namingAddress = args[0];
         String namingAddress = args[0];
-            System.out.println("Using naming address " + namingAddress);
+        System.out.println("Using naming address " + namingAddress);
 
-            ClientAPI clientAPI = new ClientAPI(namingAddress);
-            clientAPI.commandHandler();
+        ClientAPI clientAPI = new ClientAPI(namingAddress);
+        clientAPI.commandHandler();
 //        } else {
 //            System.out.println("Wrong number of arguments");
 //            System.exit(0);

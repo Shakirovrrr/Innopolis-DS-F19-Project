@@ -1,7 +1,5 @@
 package commons.commands.naming;
 
-import commons.StatusCodes;
-
 public abstract class NamingCommandAck extends NamingCommand {
 	private int statusCode;
 

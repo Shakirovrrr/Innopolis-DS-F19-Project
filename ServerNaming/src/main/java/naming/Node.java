@@ -6,65 +6,65 @@ import java.util.Set;
 import java.util.UUID;
 
 public class Node {
-    private static class NodeAddress {
-        private InetAddress publicAddress;
-        private InetAddress privateAddress;
+	private UUID nodeId;
+	private NodeAddress nodeAddress;
+	private Set<UUID> keepingFiles;
 
-        NodeAddress(InetAddress publicAddress, InetAddress privateAddress) {
-            this.publicAddress = publicAddress;
-            this.privateAddress = privateAddress;
-        }
+	public Node(UUID nodeId, InetAddress publicAddress, InetAddress privateAddress) {
+		this.nodeId = nodeId;
+		this.nodeAddress = new NodeAddress(publicAddress, privateAddress);
+		this.keepingFiles = new HashSet<>();
+	}
 
-        InetAddress getPublicAddress() {
-            return publicAddress;
-        }
+	public Node(Node node) {
+		this.nodeId = node.getNodeId();
+		this.nodeAddress = new NodeAddress(node.getPublicIpAddress(), node.getPrivateIpAddress());
+		this.keepingFiles = node.getKeepingFiles();
+	}
 
-        InetAddress getPrivateAddress() {
-            return privateAddress;
-        }
-    }
+	public UUID getNodeId() {
+		return nodeId;
+	}
 
-    private UUID nodeId;
-    private NodeAddress nodeAddress;
-    private Set<UUID> keepingFiles;
+	public InetAddress getPublicIpAddress() {
+		return nodeAddress.getPublicAddress();
+	}
 
-    public Node(UUID nodeId, InetAddress publicAddress, InetAddress privateAddress) {
-        this.nodeId = nodeId;
-        this.nodeAddress = new NodeAddress(publicAddress, privateAddress);
-        this.keepingFiles = new HashSet<>();
-    }
+	public InetAddress getPrivateIpAddress() {
+		return nodeAddress.getPrivateAddress();
+	}
 
-    public Node(Node node) {
-        this.nodeId = node.getNodeId();
-        this.nodeAddress = new NodeAddress(node.getPublicIpAddress(), node.getPrivateIpAddress());
-        this.keepingFiles = node.getKeepingFiles();
-    }
+	public Set<UUID> getKeepingFiles() {
+		return keepingFiles;
+	}
 
-    public UUID getNodeId() {
-        return nodeId;
-    }
+	public void addKeepingFile(UUID fileId) {
+		keepingFiles.add(fileId);
+	}
 
-    public InetAddress getPublicIpAddress() {
-        return nodeAddress.getPublicAddress();
-    }
+	public void removeKeepingFile(UUID fileId) {
+		keepingFiles.remove(fileId);
+	}
 
-    public InetAddress getPrivateIpAddress() {
-        return nodeAddress.getPrivateAddress();
-    }
+	public void removeAllKeepingFiles() {
+		keepingFiles = new HashSet<>();
+	}
 
-    public Set<UUID> getKeepingFiles() {
-        return keepingFiles;
-    }
+	private static class NodeAddress {
+		private InetAddress publicAddress;
+		private InetAddress privateAddress;
 
-    public void addKeepingFile(UUID fileId) {
-        keepingFiles.add(fileId);
-    }
+		NodeAddress(InetAddress publicAddress, InetAddress privateAddress) {
+			this.publicAddress = publicAddress;
+			this.privateAddress = privateAddress;
+		}
 
-    public void removeKeepingFile(UUID fileId) {
-        keepingFiles.remove(fileId);
-    }
+		InetAddress getPublicAddress() {
+			return publicAddress;
+		}
 
-    public void removeAllKeepingFiles() {
-        keepingFiles = new HashSet<>();
-    }
+		InetAddress getPrivateAddress() {
+			return privateAddress;
+		}
+	}
 }

@@ -19,24 +19,13 @@ import java.util.*;
 
 public class ConsoleCommands {
 
-    private String downloadsDir;
     private final String defaultDir = "/";
     private final String defaultDownloadDir = "DFSdownloads";
+    private final String currentUploadDir = "DFSuploads";
+    private String downloadsDir;
     private String currentRemoteDir = "/";
-    private final String currentUploadDir ="DFSuploads";
-
     private String hostNaming;
     private Scanner in = new Scanner(System.in);
-
-    public ConsoleCommands(String hostNaming) {
-        this.hostNaming = hostNaming;
-    }
-
-    public String getCurrentUploadDir(){return this.currentUploadDir;}
-//    public void setHostNaming(String s) {
-//        this.hostNaming = s;
-//    }
-
     private HashMap<Integer, String> responseCodes = new HashMap<>() {
         {
             put(StatusCodes.OK, "OK");
@@ -50,6 +39,16 @@ public class ConsoleCommands {
         }
     };
 
+    public ConsoleCommands(String hostNaming) {
+        this.hostNaming = hostNaming;
+    }
+//    public void setHostNaming(String s) {
+//        this.hostNaming = s;
+//    }
+
+    public String getCurrentUploadDir() {
+        return this.currentUploadDir;
+    }
 
     public String getHostNaming() {
         return this.hostNaming;
@@ -283,8 +282,8 @@ public class ConsoleCommands {
 
                     //STORAGE_SERVER_CONNECTION
                     try {
-                    Socket storageSocket = new Socket(hostStorage, Ports.PORT_STORAGE);
-                    StorageCommand storageCommand = new commons.commands.storage.FileUpload(fileId, file.length(), replicasAddresses);
+                        Socket storageSocket = new Socket(hostStorage, Ports.PORT_STORAGE);
+                        StorageCommand storageCommand = new commons.commands.storage.FileUpload(fileId, file.length(), replicasAddresses);
 
                         IORoutines.sendSignal(storageSocket, storageCommand);
 

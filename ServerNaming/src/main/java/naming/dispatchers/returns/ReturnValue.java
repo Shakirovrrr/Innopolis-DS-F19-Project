@@ -1,13 +1,13 @@
 package naming.dispatchers.returns;
 
 public abstract class ReturnValue {
-    private int status;
+	private int status;
 
-    ReturnValue(int statusCode) {
-        this.status = statusCode;
-    }
+	ReturnValue(int statusCode) {
+		this.status = statusCode;
+	}
 
-    public int getStatus() {
-        return status;
-    }
+	public int getStatus() {
+		return status;
+	}
 }
