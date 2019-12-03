@@ -5,6 +5,6 @@ services:
   dfs_client:
     image: shakirovrrr/dfs_client
     volumes:
-      - './uploads:/dist/Client/bin/uploads/'
-      - './downloads:/dist/Client/bin/downloads/'
+      - './uploads:/dist/Client/bin/DFSuploads/'
+      - './downloads:/dist/Client/bin/DFSdownloads/'
     command: '3.125.123.71'

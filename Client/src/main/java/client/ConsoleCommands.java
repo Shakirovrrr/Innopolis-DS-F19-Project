@@ -78,7 +78,7 @@ public class ConsoleCommands {
 
     public String getAbsolutePath(String path) {
         String remoteDir = this.getCurrentRemoteDir();
-        if ((path.charAt(0) == '.' && path.charAt(1) == '/')) {
+        if (path.length() > 1 && (path.charAt(0) == '.' && path.charAt(1) == '/')) {
             if (remoteDir.equals("/")) {
                 return remoteDir + path.substring(2);
             } else {
@@ -86,15 +86,16 @@ public class ConsoleCommands {
             }
         } else if (path.charAt(0) == '/') {
             return path;
-        } else if ((path.charAt(0) != '.' && path.charAt(1) != '/')) {
+        } else if (path.length() > 1 && (path.charAt(0) != '.' && path.charAt(1) != '/')) {
             if (remoteDir.equals("/")) {
                 return remoteDir + path;
             } else {
                 return remoteDir + "/" + path;
             }
-
+        } else {
+            return remoteDir + path;
         }
-        return "-1";
+//        return "-1";
     }
 
     public Scanner getInput() {
@@ -188,7 +189,7 @@ public class ConsoleCommands {
         }
 
         Socket namingSocket = new Socket(hostNaming, Ports.PORT_NAMING);
-        NamingCommand namingCommand = new commons.commands.naming.Get(filePaths[0]);
+        NamingCommand namingCommand = new commons.commands.naming.Get(this.getCurrentRemoteDir() + '/' + filePaths[0]);
         IORoutines.sendSignal(namingSocket, namingCommand);
         commons.commands.naming.GetAck receiveAknName = (commons.commands.naming.GetAck) IORoutines.receiveSignal(namingSocket);
         int statusCode = receiveAknName.getStatusCode();
@@ -237,11 +238,17 @@ public class ConsoleCommands {
             String[] fileDirChain = filePaths[0].split("/");
             remoteFileName = this.getCurrentRemoteDir() + "/" + fileDirChain[fileDirChain.length - 1];
         } else {
-            remoteFileName = this.getCurrentRemoteDir() + "/" + filePaths[1];
+            if (filePaths[1].charAt(0) == '/') {
+                remoteFileName = filePaths[1];
+            } else {
+                remoteFileName = this.getCurrentRemoteDir() + "/" + filePaths[1];
+            }
         }
-        String absLocPath = this.getAbsolutePath(filePaths[0]);
+//        String absLocPath = this.getAbsolutePath(filePaths[0]);
+        String absLocPath = filePaths[0];
 
-        Path path = Paths.get("." + absLocPath);
+//        Path path = Paths.get("." + absLocPath);
+        Path path = Paths.get(absLocPath);
 
         if (Files.exists(path)) {
 
@@ -332,11 +339,7 @@ public class ConsoleCommands {
                 }
                 String answer = this.in.nextLine();
                 boolean answ;
-                if (answer.strip().equals("y")) {
-                    answ = true;
-                } else {
-                    answ = false;
-                }
+                answ = answer.strip().equals("y");
                 commons.commands.naming.RmConfirm namingCommand1 = new commons.commands.naming.RmConfirm(answ);
                 IORoutines.sendSignal(socket, namingCommand1);
                 if (!answ) {

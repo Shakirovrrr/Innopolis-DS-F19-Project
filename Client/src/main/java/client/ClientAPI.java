@@ -1,7 +1,5 @@
 package client;
 
-import commons.StatusCodes;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -57,7 +55,6 @@ public class ClientAPI {
 
     private ConsoleToken parseCommand(String input) {
         String[] input_mod = input.strip().replaceAll("\\s+", " ").split(" ");
-        ;
         int key = commandsSet.getOrDefault(input_mod[0], -1);
         String[] paths = Arrays.copyOfRange(input_mod, 1, input_mod.length);
         return new ConsoleToken(key, paths);
@@ -202,7 +199,7 @@ public class ClientAPI {
         //connect to console
         //input - next line in console after enter press
         System.out.println("\nWelcome to the Distributed Storage!\nEnter 'help' for listing the commands");
-        File dir0 = new File("." + this.consoleCommands.getCurrentUploadDir());
+        File dir0 = new File(this.consoleCommands.getCurrentUploadDir());
         System.out.println();
         if (!dir0.exists()) {
             if (dir0.mkdir()) {
@@ -214,7 +211,7 @@ public class ClientAPI {
             System.out.println("Upload directory already exists");
         }
         System.out.println("For uploading a file should be in project directory (default - " + this.consoleCommands.getCurrentUploadDir() + ")");
-        File dir1 = new File("." + this.consoleCommands.getCurrentDownloadDir());
+        File dir1 = new File(this.consoleCommands.getCurrentDownloadDir());
         System.out.println();
         if (!dir1.exists()) {
             if (dir1.mkdir()) {
