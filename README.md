@@ -1,11 +1,12 @@
 # [F19] Distributed Systems - Course Project
+
 The **Distributed File System** has been written as a project for Innopolis University Distributed Systems course, Fall 2019.
+
 ## Installation
 ### Naming server
-1. Run an AWS instance and install docker-compose on it.
+1. Run a server instance and install docker-compose on it.
 1. Clone [docker compose file](https://raw.githubusercontent.com/Shakirovrrr/Innopolis-DS-F19-Project/master/ServerNaming/docker-compose.yml) from GitHub repository.
 2. `docker-compose up`
-
 
 ### Storage servers
 1. Run required number of instances and install docker-compose on them. 
@@ -13,7 +14,7 @@ The **Distributed File System** has been written as a project for Innopolis Univ
 2. In docker-compose.yml file in `command` line specify private address of naming server and private own address of storage server correspondingly.
 3. `docker-compose up`
 
-### CLient
+### Client
 #### Docker way
 1. Download [docker-compose.yml for Client](https://github.com/Shakirovrrr/Innopolis-DS-F19-Project/suites/338581469/artifacts/521281)
 2. Run `docker-compose up -d` in directory of download
@@ -144,7 +145,7 @@ In our project custom protocols based on Socket connection were used being used.
 
 While file downloading/uploading (get/put) Client and Storage Server use the following protocol alike TCP:
 
-  ![](https://i.imgur.com/rLzyqar.png)     ![](https://i.imgur.com/iUZRiwJ.png) 
+![](https://i.imgur.com/rLzyqar.png)  ![](https://i.imgur.com/iUZRiwJ.png) 
 
 
 #### Response Codes
@@ -162,11 +163,8 @@ While file downloading/uploading (get/put) Client and Storage Server use the fol
 ## Implementation details
 ### Technologies
 * Java
-* Gradle
 * Docker
-
-
-
+* Gradle
 
 
 ### Continuous integration
@@ -180,6 +178,6 @@ Push to github -> auto gradle build -> push to dockerhub
 
 
 ## Team
-* Elena Lukyanchikova, SE-17-01 -- (client, documentation)
-* Rim Rakhimov, SB --  (naming server, deployment)
-* Ruslan Shakirov, SE-17-01 --  (storage server, deployment)
+* Elena Lukyanchikova, B17-SE-01 -- (client, documentation)
+* Rim Rakhimov, B17-SB --  (naming server, deployment)
+* Ruslan Shakirov, B17-SE-01 --  (storage server, deployment)
