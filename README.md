@@ -23,7 +23,7 @@ The **Distributed File System** has been written as a project for Innopolis Univ
 6. Here you go.
 
 #### JAR way
-1. [Download archive](https://github.com/Shakirovrrr/Innopolis-DS-F19-Project/suites/338581469/artifacts/521281)
+1. [Download archive](https://github.com/Shakirovrrr/Innopolis-DS-F19-Project/suites/339975731/artifacts/532593)
 2. Extract JAR
 3. Run `java -jar Client.jar <naming server IP>`
 4. Here you go.
